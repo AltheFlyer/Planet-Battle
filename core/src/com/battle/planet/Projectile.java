@@ -4,16 +4,18 @@ import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 
-public abstract class Projectile {
+abstract public class Projectile {
 
     Rectangle hitbox;
     Vector2 velocity;
+    float time;
     boolean isDestroyed;
 
     public Projectile(Rectangle r, Vector2 v) {
         hitbox = r;
         velocity = v;
         isDestroyed = false;
+        time = 0f;
     }
 
     public Projectile(float x, float y, float vx, float vy) {
@@ -30,6 +32,7 @@ public abstract class Projectile {
     public void move(float frame) {
         hitbox.x += velocity.x * frame;
         hitbox.y += velocity.y * frame;
+        time += frame;
     }
 
     /**

@@ -30,30 +30,20 @@ public class Mars extends Enemy {
     //For phase two direction
     boolean isGoingLeft;
 
-    Array<Projectile> bullets;
+    public Mars(float x, float y) {
+        super(x, y, 100, 80);
 
-    public Mars() {
-        collisionBox = new Circle(0, 200, 100);
-        hitbox = new Circle(10, 210, 80);
         spearCooldown = SPEAR_MAX_COOLDOWN;
         chargeCooldown = CHARGE_MAX_COOLDOWN;
         burstCooldown = BURST_MAX_COOLDOWN;
-        bullets = new Array<Projectile>();
         health = 1000;
     }
 
-    /**
-     * Draws the planet sprite/ shape render.
-     * @param r
-     */
     public void drawBody(ShapeRenderer r) {
         r.circle(hitbox.x, hitbox.y, hitbox.radius);
     }
 
-    /**
-     * Draws other planet-based objects (warnings, alerts, animations)
-     * @param r
-     */
+    @Override
     public void drawObjects(ShapeRenderer r) {
         r.setColor(Color.YELLOW);
         if (inCharge) {
@@ -61,6 +51,7 @@ public class Mars extends Enemy {
         }
     }
 
+    @Override
     public Array<Projectile> attack(float x, float y, float frame) {
         bullets.clear();
         if (phase == 1) {
@@ -190,15 +181,5 @@ public class Mars extends Enemy {
             float angle = theta + ((float) i / amount) * spread - (spread / 2);;
             bullets.add(new WaveProjectile(hitbox.x, hitbox.y, MathUtils.cos(angle) * 180, MathUtils.sin(angle) * 180, mo));
         }
-    }
-
-    public Array<Projectile> collide(Array<Projectile> bullets) {
-        for (Projectile p: bullets) {
-            if (!p.isDestroyed && this.hitbox.contains(p.hitbox.x, p.hitbox.y)) {
-                p.isDestroyed = true;
-                this.health -= 1;
-            }
-        }
-        return bullets;
     }
 }

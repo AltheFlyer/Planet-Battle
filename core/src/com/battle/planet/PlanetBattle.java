@@ -52,7 +52,7 @@ public class PlanetBattle extends ApplicationAdapter {
 		//Initialize enemies
 		enemyBullets = new Array<Projectile>();
 		//enemyBullets.add(new WaveProjectile(0, 200, 60, 0, 10));
-		mars = new Mars();
+		mars = new Mars(200, 200);
 	}
 
 	@Override
