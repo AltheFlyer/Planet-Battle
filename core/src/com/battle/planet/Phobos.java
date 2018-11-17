@@ -31,6 +31,14 @@ public class Phobos extends Enemy {
     }
 
     @Override
+    public void drawObjects(float x, float y, ShapeRenderer r) {
+        r.setColor(Color.YELLOW);
+        r.set(ShapeRenderer.ShapeType.Line);
+        r.circle(x, y, 170);
+        r.set(ShapeRenderer.ShapeType.Filled);
+    }
+
+    @Override
     public Array<Projectile> attack(float x, float y, float frame) {
         bullets.clear();
         boltCooldown -= frame;

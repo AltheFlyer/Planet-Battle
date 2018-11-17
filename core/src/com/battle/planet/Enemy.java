@@ -38,7 +38,7 @@ abstract public class Enemy {
      * Draws other planet-based objects (warnings, alerts, animations)
      * @param r The shape renderer to draw with.
      */
-    public void drawObjects(ShapeRenderer r) {
+    public void drawObjects(float x, float y, ShapeRenderer r) {
 
     }
 

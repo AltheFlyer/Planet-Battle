@@ -27,7 +27,7 @@ public class PlanetBattle extends ApplicationAdapter {
 	Array<Projectile> playerBullets;
 	Array<Projectile> enemyBullets;
 	Vector2 hitboxCenter;
-	final float MAX_COOLDOWN = 0.2f;
+	final float MAX_COOLDOWN = 0.08f;
 	float cooldown;
 	Array<Enemy> enemies;
 	float LEVEL_WIDTH = 600;
@@ -81,8 +81,7 @@ public class PlanetBattle extends ApplicationAdapter {
 		//Draw all enemies
 		for (Enemy e: enemies) {
 			e.drawBody(render);
-			e.drawObjects(render);
-			e.collide(playerBullets);
+			e.drawObjects(hitboxCenter.x, hitboxCenter.y, render);
 		}
 
 		//Check collisions (FOR NOW)
@@ -137,12 +136,17 @@ public class PlanetBattle extends ApplicationAdapter {
 		}
 
 		//Player shooting
-		if (Gdx.input.isTouched()) {
+		if (Gdx.input.isTouched() && cooldown <= 0) {
 			float theta = MathUtils.atan2(mouse.y - playerHitbox.y, mouse.x - playerHitbox.x);
 			float vx = MathUtils.cos(theta) * 400;
 			float vy = MathUtils.sin(theta) * 400;
 
 			playerBullets.add(new BasicProjectile(hitboxCenter.x, hitboxCenter.y, vx, vy));
+			cooldown = MAX_COOLDOWN;
+		}
+		cooldown -= frame;
+		if (cooldown < 0) {
+			cooldown = 0;
 		}
 
 		//Enemy actions
@@ -150,6 +154,15 @@ public class PlanetBattle extends ApplicationAdapter {
 			enemyBullets.addAll(e.attack(hitboxCenter.x, hitboxCenter.y, frame));
 			if (e.canSpawn) {
 				enemies.addAll(e.spawn(hitboxCenter.x, hitboxCenter.y, frame));
+			}
+			if (e instanceof Mars && ((Mars) e).phase == 2 && enemies.size == 1) {
+				((Mars) e).phase = -2;
+			} else {
+				if (e instanceof Mars && ((Mars) e).phase == 2) {
+
+				} else {
+					e.collide(playerBullets);
+				}
 			}
 		}
 

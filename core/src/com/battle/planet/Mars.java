@@ -19,6 +19,7 @@ public class Mars extends Enemy {
     //Second phase: Downward spears
     final float SPEAR_MAX_COOLDOWN = 2.0f;
     float spearCooldown;
+    int spearCount = 0; //For Third phase
 
     //Cooldown for charging attack:
     //First phase: Aimed charge
@@ -28,6 +29,7 @@ public class Mars extends Enemy {
     boolean inCharge = false; //If Mars is charging or not
     Vector2 chargeVelocity; //Direction of the charge
     Vector2 chargeDestination; //Where to stop charging
+    int bounces; //For Third phase
 
     //Cooldown for burst attack:
     //First phase: Radial burst
@@ -44,7 +46,7 @@ public class Mars extends Enemy {
         spearCooldown = SPEAR_MAX_COOLDOWN;
         chargeCooldown = CHARGE_MAX_COOLDOWN;
         burstCooldown = BURST_MAX_COOLDOWN;
-        health = 1000;
+        health = 500;
     }
 
     public void drawBody(ShapeRenderer r) {
@@ -52,7 +54,7 @@ public class Mars extends Enemy {
     }
 
     @Override
-    public void drawObjects(ShapeRenderer r) {
+    public void drawObjects(float x, float y, ShapeRenderer r) {
         r.setColor(Color.YELLOW);
         if (inCharge) {
             r.rectLine(hitbox.x, hitbox.y, chargeDestination.x, chargeDestination.y, 5f);
@@ -127,9 +129,52 @@ public class Mars extends Enemy {
                 createWaveSpread(-1.57079633f, 7, 1.5708f, 20);
                 burstCooldown = BURST_MAX_COOLDOWN * 5;
             }
+        } else if (phase == 3) {
+            spearCooldown -= frame;
+            if (spearCooldown <= 0) {
+                createSpear(MathUtils.atan2(y - hitbox.y, x - hitbox.x), 275);
+                spearCount += 1;
+                if (spearCount > MathUtils.random(5, 8)) {
+                    spearCooldown = SPEAR_MAX_COOLDOWN;
+                    spearCount = 0;
+                } else {
+                    spearCooldown = MathUtils.random(0.4f, 0.7f);
+                }
+            }
+            hitbox.x += chargeVelocity.x * frame;
+            hitbox.y += chargeVelocity.y * frame;
+            if (hitbox.x < 0) {
+                hitbox.x = 1;
+                chargeVelocity.x *= -1;
+                bounces += 1;
+                createSpread(0, 36, 360 * MathUtils.degreesToRadians);
+            }
+            if (hitbox.x > 600) {
+                hitbox.x = 599;
+                chargeVelocity.x *= -1;
+                bounces += 1;
+                createSpread(0, 36, 360 * MathUtils.degreesToRadians);
+            }
+            if (hitbox.y < 0) {
+                hitbox.y = 1;
+                chargeVelocity.y *= -1;
+                bounces += 1;
+                createSpread(0, 36, 360 * MathUtils.degreesToRadians);
+            }
+            if (hitbox.y > 600) {
+                hitbox.y = 599;
+                chargeVelocity.y *= -1;
+                bounces += 1;
+                createSpread(0, 36, 360 * MathUtils.degreesToRadians);
+            }
+            if (bounces >= 4) {
+                bounces = 0;
+                float angle = MathUtils.atan2(y - hitbox.y, x - hitbox.x);
+                chargeVelocity.set(MathUtils.cos(angle) * 300, MathUtils.sin(angle) * 300);
+            }
         }
         //Transition to 2nd phase
-        if (phase == 1 && health <= 800) {
+        if (phase == 1 && health <= 300) {
             phase = -1;
             //Enters charge to get to top of screen
             chargeDestination.set(hitbox.x, 550);
@@ -149,9 +194,13 @@ public class Mars extends Enemy {
                 inCharge = false;
             }
         }
-        //Transition between phase 2 to 3
-        if (phase == 2 && health <= 700) {
-
+        //Transition to phase 3
+        if (phase == -2) {
+            phase = 3;
+            spearCooldown = SPEAR_MAX_COOLDOWN;
+            chargeCooldown = CHARGE_MAX_COOLDOWN;
+            float angle = MathUtils.atan2(y - hitbox.y, x - hitbox.x);
+            chargeVelocity.set(MathUtils.cos(angle) * 300, MathUtils.sin(angle) * 300);
         }
         return bullets;
     }
