@@ -35,6 +35,10 @@ abstract public class Projectile {
         time += frame;
     }
 
+    public void move(float x, float y, float frame) {
+        this.move(frame);
+    }
+
     /**
      * Draws any special graphics for the projectile
      * @param r

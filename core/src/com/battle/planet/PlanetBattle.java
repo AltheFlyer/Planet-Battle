@@ -29,7 +29,7 @@ public class PlanetBattle extends ApplicationAdapter {
 	Vector2 hitboxCenter;
 	final float MAX_COOLDOWN = 0.2f;
 	float cooldown;
-	Mars mars;
+	Array<Enemy> enemies;
 	float LEVEL_WIDTH = 600;
 	float LEVEL_HEIGHT = 600;
 	float SCREEN_WIDTH = 600;
@@ -52,7 +52,8 @@ public class PlanetBattle extends ApplicationAdapter {
 		//Initialize enemies
 		enemyBullets = new Array<Projectile>();
 		//enemyBullets.add(new WaveProjectile(0, 200, 60, 0, 10));
-		mars = new Mars(200, 200);
+		enemies = new Array<Enemy>();
+		enemies.add(new Mars(200, 200));
 	}
 
 	@Override
@@ -77,9 +78,13 @@ public class PlanetBattle extends ApplicationAdapter {
 		render.set(ShapeRenderer.ShapeType.Filled);
 		render.setColor(Color.RED);
 
-		mars.drawBody(render);
-		mars.drawObjects(render);
-		mars.collide(playerBullets);
+		//Draw all enemies
+		for (Enemy e: enemies) {
+			e.drawBody(render);
+			e.drawObjects(render);
+			e.collide(playerBullets);
+		}
+
 		//Check collisions (FOR NOW)
 		render.setColor(Color.BLUE);
 		for (Projectile p: enemyBullets) {
@@ -92,17 +97,16 @@ public class PlanetBattle extends ApplicationAdapter {
 		//Draw player bullets, then enemy bullets
 		render.setColor(Color.YELLOW);
 		for (Projectile p: playerBullets) {
-			p.move(frame);
+			p.move(hitboxCenter.x, hitboxCenter.y, frame);
 			drawRectangle(p.hitbox);
 			p.drawSpecial(render);
 		}
 		render.setColor(Color.RED);
 		for (Projectile p: enemyBullets) {
-			p.move(frame);
+			p.move(hitboxCenter.x, hitboxCenter.y, frame);
 			drawRectangle(p.hitbox);
 			p.drawSpecial(render);
 		}
-
 
 		render.end();
 
@@ -142,7 +146,12 @@ public class PlanetBattle extends ApplicationAdapter {
 		}
 
 		//Enemy actions
-		enemyBullets.addAll(mars.attack(hitboxCenter.x, hitboxCenter.y, frame));
+		for (Enemy e: enemies) {
+			enemyBullets.addAll(e.attack(hitboxCenter.x, hitboxCenter.y, frame));
+			if (e.canSpawn) {
+				enemies.addAll(e.spawn(hitboxCenter.x, hitboxCenter.y, frame));
+			}
+		}
 
 		//Remove offscreen player bullets
 		Iterator<Projectile> iterE = enemyBullets.iterator();
@@ -158,6 +167,15 @@ public class PlanetBattle extends ApplicationAdapter {
 			Projectile p = iterF.next();
 			if (p.isDestroyed || p.hitbox.x < 0 || p.hitbox.x > SCREEN_WIDTH || p.hitbox.y < 0 || p.hitbox.y > SCREEN_HEIGHT) {
 				iterF.remove();
+			}
+		}
+
+		//Remove dead enemies
+		Iterator<Enemy> iterEnemy = enemies.iterator();
+		while (iterEnemy.hasNext()) {
+			Enemy e = iterEnemy.next();
+			if (e.health <= 0) {
+				iterEnemy.remove();
 			}
 		}
 	}

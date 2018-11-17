@@ -14,16 +14,24 @@ public class Mars extends Enemy {
     int phase = 1;
 
     //Attack cooldowns and other related values
+    //Cooldown for spear based attacks:
+    //First phase: Aimed spears
+    //Second phase: Downward spears
     final float SPEAR_MAX_COOLDOWN = 2.0f;
     float spearCooldown;
 
-
+    //Cooldown for charging attack:
+    //First phase: Aimed charge
+    //First->Second phase: Charge towards top of screen
     final float CHARGE_MAX_COOLDOWN = 4.0f;
     float chargeCooldown;
     boolean inCharge = false; //If Mars is charging or not
     Vector2 chargeVelocity; //Direction of the charge
     Vector2 chargeDestination; //Where to stop charging
 
+    //Cooldown for burst attack:
+    //First phase: Radial burst
+    //Second phase: Wavy projectile wave shot downwards
     final float BURST_MAX_COOLDOWN = 2.0f;
     float burstCooldown;
 
@@ -127,6 +135,7 @@ public class Mars extends Enemy {
             chargeDestination.set(hitbox.x, 550);
             chargeVelocity.set(0, 200);
             inCharge = true;
+            canSpawn = true;
         }
         //Transition between phase 1 and 2
         if (phase == -1) {
@@ -140,7 +149,19 @@ public class Mars extends Enemy {
                 inCharge = false;
             }
         }
+        //Transition between phase 2 to 3
+        if (phase == 2 && health <= 700) {
+
+        }
         return bullets;
+    }
+
+    public Array<Enemy> spawn(float x, float y, float frame) {
+        Array<Enemy> e = new Array<Enemy>();
+        e.add(new Phobos(x, y));
+        e.add(new Deimos(x, y));
+        canSpawn = false;
+        return e;
     }
 
     public void createSpear(float theta) {
