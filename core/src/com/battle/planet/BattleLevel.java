@@ -1,6 +1,8 @@
 package com.battle.planet;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -39,7 +41,7 @@ public class BattleLevel implements Screen {
         camera.setToOrtho(false, SCREEN_WIDTH, SCREEN_HEIGHT);
 
         //Initialize player
-        playerHitbox = new Rectangle(0, 0, 20, 20);
+        playerHitbox = new Rectangle(0, 0, 10, 10);
         playerBullets = new Array<Projectile>();
         hitboxCenter = new Vector2(0, 0);
 
@@ -50,12 +52,16 @@ public class BattleLevel implements Screen {
     }
 
     @Override
-    public void show() {
-
+    public void render(float delta) {
+        camera.update();
+        batch.setProjectionMatrix(camera.combined);
+        render.setProjectionMatrix(camera.combined);
+        Gdx.gl.glClearColor(0, 0, 0, 1);
+        Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     }
 
     @Override
-    public void render(float delta) {
+    public void show() {
 
     }
 
@@ -82,5 +88,9 @@ public class BattleLevel implements Screen {
     @Override
     public void dispose() {
 
+    }
+
+    public void drawRectangle(Rectangle r) {
+        render.box(r.x, r.y, 0, r.width, r.height, 0);
     }
 }

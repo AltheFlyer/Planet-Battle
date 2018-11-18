@@ -27,11 +27,7 @@ public class MarsLevel extends BattleLevel {
 
 	@Override
 	public void render (float delta) {
-		camera.update();
-		batch.setProjectionMatrix(camera.combined);
-		render.setProjectionMatrix(camera.combined);
-		Gdx.gl.glClearColor(0, 0, 0, 1);
-		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		super.render(delta);
 
 		float frame = Gdx.graphics.getDeltaTime();
 		if (frame > 0.2f) {
@@ -60,7 +56,11 @@ public class MarsLevel extends BattleLevel {
 				render.setColor(Color.RED);
 			}
 		}
-		drawRectangle(playerHitbox);
+
+		//Draw player
+		drawRectangle(new Rectangle(playerHitbox.x - 5, playerHitbox.y - 5, 20, 20));
+		//render.setColor(Color.GREEN);
+		//drawRectangle(playerHitbox);
 
 		//Draw player bullets, then enemy bullets
 		render.setColor(Color.YELLOW);
@@ -93,15 +93,15 @@ public class MarsLevel extends BattleLevel {
 		}
 
 		//Keep player in bounds
-		if (playerHitbox.x < 0) {
-			playerHitbox.x = 0;
-		} else if (playerHitbox.x + playerHitbox.height > LEVEL_WIDTH) {
-			playerHitbox.x = LEVEL_WIDTH - playerHitbox.height;
+		if (playerHitbox.x - 5 < 0) {
+			playerHitbox.x = 5;
+		} else if (playerHitbox.x + playerHitbox.height + 5 > LEVEL_WIDTH) {
+			playerHitbox.x = LEVEL_WIDTH - playerHitbox.width - 5;
 		}
-		if (playerHitbox.y < 0) {
-			playerHitbox.y = 0;
-		} else if (playerHitbox.y + playerHitbox.height > LEVEL_HEIGHT) {
-			playerHitbox.y = LEVEL_HEIGHT - playerHitbox.height;
+		if (playerHitbox.y - 5 < 0) {
+			playerHitbox.y = 5;
+		} else if (playerHitbox.y + playerHitbox.height + 5 > LEVEL_HEIGHT) {
+			playerHitbox.y = LEVEL_HEIGHT - playerHitbox.height - 5;
 		}
 
 		//Player shooting
@@ -197,8 +197,5 @@ public class MarsLevel extends BattleLevel {
 		batch.dispose();
 	}
 
-	public void drawRectangle(Rectangle r) {
-		render.box(r.x, r.y, 0, r.width, r.height, 0);
-	}
 }
 
