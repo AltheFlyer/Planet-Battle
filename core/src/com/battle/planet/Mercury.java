@@ -21,7 +21,7 @@ public class Mercury extends Enemy {
         super(x, y, 50, 60);
         health = 500;
         velocity = new Vector2(200, 200);
-        phase = 1;
+        phase = 2;
 
         passiveCooldown = PASSIVE_MAX_COOLDOWN;
         aimCooldown = AIM_MAX_COOLDOWN;
@@ -43,7 +43,7 @@ public class Mercury extends Enemy {
             passiveCooldown -= frame;
             aimCooldown -= frame;
             if (passiveCooldown <= 0) {
-                bullets.add(new StaticProjectile(
+                bullets.add(new TimeProjectile(
                         hitbox.x + MathUtils.random(0, hitbox.radius) * MathUtils.cos(MathUtils.random(0, MathUtils.PI * 2)),
                         hitbox.y + MathUtils.random(0, hitbox.radius) * MathUtils.sin(MathUtils.random(0, MathUtils.PI * 2)),
                         2.0f));
@@ -90,7 +90,24 @@ public class Mercury extends Enemy {
                 velocity.y *= -1;
                 randomBounce();
             }
+        } else if (phase == 2) {
+            passiveCooldown -= frame;
+            aimCooldown -= frame;
+            if (passiveCooldown <= 0) {
+                bullets.add(new TimeProjectile(
+                        hitbox.x + MathUtils.random(0, hitbox.radius) * MathUtils.cos(MathUtils.random(0, MathUtils.PI * 2)),
+                        hitbox.y + MathUtils.random(0, hitbox.radius) * MathUtils.sin(MathUtils.random(0, MathUtils.PI * 2)),
+                        MathUtils.cos(MathUtils.random(0, MathUtils.PI * 2)) * 200,
+                                MathUtils.sin(MathUtils.random(0, MathUtils.PI * 2)) * 200,
+                        2.0f));
+                passiveCooldown = PASSIVE_MAX_COOLDOWN;
+            }
         }
+        //Phase 1->2 transition
+        if (health <= 350) {
+            phase = 2;
+        }
+
         return bullets;
     }
 

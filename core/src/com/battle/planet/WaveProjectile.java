@@ -1,5 +1,6 @@
 package com.battle.planet;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
@@ -84,6 +85,7 @@ public class WaveProjectile extends Projectile {
     }
 
     public void drawSpecial(ShapeRenderer r) {
+        r.setColor(Color.ORANGE);
         for (Vector2 p: path) {
             r.ellipse(p.x, p.y, 1, 1);
         }

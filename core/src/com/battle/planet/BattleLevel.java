@@ -143,8 +143,9 @@ public class BattleLevel implements Screen {
             drawRectangle(p.hitbox);
             p.drawSpecial(render);
         }
-        render.setColor(Color.RED);
+        
         for (Projectile p: enemyBullets) {
+            render.setColor(Color.RED);
             p.move(hitboxCenter.x, hitboxCenter.y, frame);
             drawRectangle(p.hitbox);
             p.drawSpecial(render);

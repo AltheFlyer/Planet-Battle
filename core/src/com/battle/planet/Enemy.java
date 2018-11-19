@@ -2,6 +2,7 @@ package com.battle.planet;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
 
 abstract public class Enemy {
@@ -77,5 +78,19 @@ abstract public class Enemy {
             }
         }
         return bullets;
+    }
+
+    public void createSpread(float theta, int amount, float spread) {
+        for (int i = 0; i < amount; ++i) {
+            float angle = theta + ((float) i / amount) * spread - (spread / 2);;
+            bullets.add(new BasicProjectile(hitbox.x, hitbox.y, MathUtils.cos(angle) * 180, MathUtils.sin(angle) * 180));
+        }
+    }
+
+    public void createWaveSpread(float theta, int amount, float spread, float mo) {
+        for (int i = 0; i < amount; ++i) {
+            float angle = theta + ((float) i / amount) * spread - (spread / 2);;
+            bullets.add(new WaveProjectile(hitbox.x, hitbox.y, MathUtils.cos(angle) * 180, MathUtils.sin(angle) * 180, mo));
+        }
     }
 }

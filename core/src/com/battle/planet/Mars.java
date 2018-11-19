@@ -239,17 +239,5 @@ public class Mars extends Enemy {
         }
     }
 
-    public void createSpread(float theta, int amount, float spread) {
-        for (int i = 0; i < amount; ++i) {
-            float angle = theta + ((float) i / amount) * spread - (spread / 2);;
-            bullets.add(new BasicProjectile(hitbox.x, hitbox.y, MathUtils.cos(angle) * 180, MathUtils.sin(angle) * 180));
-        }
-    }
 
-    public void createWaveSpread(float theta, int amount, float spread, float mo) {
-        for (int i = 0; i < amount; ++i) {
-            float angle = theta + ((float) i / amount) * spread - (spread / 2);;
-            bullets.add(new WaveProjectile(hitbox.x, hitbox.y, MathUtils.cos(angle) * 180, MathUtils.sin(angle) * 180, mo));
-        }
-    }
 }
