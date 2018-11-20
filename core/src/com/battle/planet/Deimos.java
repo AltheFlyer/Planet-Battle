@@ -21,8 +21,7 @@ public class Deimos extends Enemy {
     float angularVelocity = 0.872665f;
 
     public Deimos(float x, float y) {
-        super(x, y, 30, 40);
-        health = 80;
+        super(x, y, 30, 40, 80);
         boltCooldown = MAX_BOLT_COOLDOWN;
     }
 

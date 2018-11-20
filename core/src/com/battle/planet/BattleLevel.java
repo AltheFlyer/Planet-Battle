@@ -30,6 +30,7 @@ public class BattleLevel implements Screen {
     Vector2 hitboxCenter;
     final float MAX_COOLDOWN = 0.08f;
     float cooldown;
+    float playerSpeed = 200;
 
     //Other level things
     Array<Projectile> playerBullets;
@@ -45,6 +46,9 @@ public class BattleLevel implements Screen {
     //Render function things
     float frame;
     Vector3 mouse;
+
+    //Special controls
+    boolean areHealthBarsVisible;
 
     public BattleLevel(final PlanetBattle g) {
         game = g;
@@ -69,6 +73,9 @@ public class BattleLevel implements Screen {
         //Initialize other
         frame = 0;
         mouse = new Vector3(0, 0, 0);
+
+        //Special controls
+        areHealthBarsVisible = true;
     }
 
     @Override
@@ -90,6 +97,8 @@ public class BattleLevel implements Screen {
         removeEnemies();
 
         checkWin();
+
+        specialControls();
     }
 
     public void prepareGraphics() {
@@ -121,6 +130,9 @@ public class BattleLevel implements Screen {
         for (Enemy e: enemies) {
             e.drawBody(render);
             e.drawObjects(hitboxCenter.x, hitboxCenter.y, render);
+            if (areHealthBarsVisible) {
+                e.drawHealthBars(render);
+            }
         }
 
         //Check collisions (FOR NOW)
@@ -143,7 +155,7 @@ public class BattleLevel implements Screen {
             drawRectangle(p.hitbox);
             p.drawSpecial(render);
         }
-        
+
         for (Projectile p: enemyBullets) {
             render.setColor(Color.RED);
             p.move(hitboxCenter.x, hitboxCenter.y, frame);
@@ -184,17 +196,17 @@ public class BattleLevel implements Screen {
 
     public void movePlayer() {
         //Player movements
-        if (Gdx.input.isKeyPressed(Input.Keys.W)) {
-            playerHitbox.y += 200 * frame;
+        if (Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.UP)) {
+            playerHitbox.y += playerSpeed * frame;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.A)) {
-            playerHitbox.x -= 200 * frame;
+        if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
+            playerHitbox.x -= playerSpeed * frame;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.S)) {
-            playerHitbox.y -= 200 * frame;
+        if (Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
+            playerHitbox.y -= playerSpeed * frame;
         }
-        if (Gdx.input.isKeyPressed(Input.Keys.D)) {
-            playerHitbox.x += 200 * frame;
+        if (Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
+            playerHitbox.x += playerSpeed * frame;
         }
 
         //Keep player in bounds
@@ -242,6 +254,26 @@ public class BattleLevel implements Screen {
 
     public void checkWin() {
         if (enemies.size == 0) {
+            game.setScreen(new LevelSelectScreen(game));
+            dispose();
+        }
+    }
+
+    public void specialControls() {
+        //Toggle Health Bars
+        if (Gdx.input.isKeyJustPressed(Input.Keys.H)) {
+            areHealthBarsVisible = !areHealthBarsVisible;
+        }
+        //Press either shift to toggle slow movement
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_RIGHT)) {
+            //Toggles the speed
+            if (playerSpeed == 200) {
+                playerSpeed = 150;
+            } else {
+                playerSpeed = 200;
+            }
+        }
+        if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
             game.setScreen(new LevelSelectScreen(game));
             dispose();
         }

@@ -41,6 +41,8 @@ public class MarsLevel extends BattleLevel {
 		removeEnemies();
 
 		checkWin();
+
+		specialControls();
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package com.battle.planet;
 
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
@@ -10,6 +11,7 @@ abstract public class Enemy {
     Circle collisionBox; //For player-enemy collision
     Circle hitbox; //For bullet-enemy collision
     float health; //Also controls when phases change
+    final float MAX_HEALTH;
     boolean canSpawn; // Checks if spawning abilities are allowed
 
     //An array that is used to store bullets for the next attack.
@@ -22,11 +24,13 @@ abstract public class Enemy {
      * @param r0 The radius of the player-enemy hitbox
      * @param r1 The radius of the bullet-enemy hitbox
      */
-    public Enemy(float x, float y, float r0, float r1){
+    public Enemy(float x, float y, float r0, float r1, float hp){
         collisionBox = new Circle(x, y, r0);
         hitbox = new Circle(x, y, r1);
         bullets = new Array<Projectile>();
         canSpawn = false;
+        MAX_HEALTH = hp;
+        health = hp;
     }
 
     /**
@@ -92,5 +96,12 @@ abstract public class Enemy {
             float angle = theta + ((float) i / amount) * spread - (spread / 2);;
             bullets.add(new WaveProjectile(hitbox.x, hitbox.y, MathUtils.cos(angle) * 180, MathUtils.sin(angle) * 180, mo));
         }
+    }
+
+    public void drawHealthBars(ShapeRenderer r) {
+        r.setColor(Color.DARK_GRAY);
+        r.rect(hitbox.x - hitbox.radius, hitbox.y - hitbox.radius, hitbox.radius * 2, 10);
+        r.setColor(Color.GREEN);
+        r.rect(hitbox.x - hitbox.radius, hitbox.y - hitbox.radius, hitbox.radius * 2 * (health / MAX_HEALTH), 10);
     }
 }

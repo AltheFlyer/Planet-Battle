@@ -20,8 +20,7 @@ public class Phobos extends Enemy {
     float angularVelocity = 1.5708f;
 
     public Phobos(float x, float y) {
-        super(x, y, 30, 50);
-        health = 100;
+        super(x, y, 30, 50, 100);
         boltCooldown = MAX_BOLT_COOLDOWN;
     }
 

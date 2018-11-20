@@ -41,12 +41,10 @@ public class Mars extends Enemy {
     boolean isGoingLeft;
 
     public Mars(float x, float y) {
-        super(x, y, 100, 80);
-
+        super(x, y, 100, 80, 500);
         spearCooldown = SPEAR_MAX_COOLDOWN;
         chargeCooldown = CHARGE_MAX_COOLDOWN;
         burstCooldown = BURST_MAX_COOLDOWN;
-        health = 500;
     }
 
     public void drawBody(ShapeRenderer r) {
@@ -147,25 +145,25 @@ public class Mars extends Enemy {
                 hitbox.x = 1;
                 chargeVelocity.x *= -1;
                 bounces += 1;
-                createSpread(0, 36, 360 * MathUtils.degreesToRadians);
+                createSpread(0, 20, 200 * MathUtils.degreesToRadians);
             }
             if (hitbox.x > 600) {
                 hitbox.x = 599;
                 chargeVelocity.x *= -1;
                 bounces += 1;
-                createSpread(0, 36, 360 * MathUtils.degreesToRadians);
+                createSpread(3.14159f, 20, 200 * MathUtils.degreesToRadians);
             }
             if (hitbox.y < 0) {
                 hitbox.y = 1;
                 chargeVelocity.y *= -1;
                 bounces += 1;
-                createSpread(0, 36, 360 * MathUtils.degreesToRadians);
+                createSpread(1.5708f, 20, 200 * MathUtils.degreesToRadians);
             }
             if (hitbox.y > 600) {
                 hitbox.y = 599;
                 chargeVelocity.y *= -1;
                 bounces += 1;
-                createSpread(0, 36, 360 * MathUtils.degreesToRadians);
+                createSpread(4.71239f, 20, 200 * MathUtils.degreesToRadians);
             }
             if (bounces >= 4) {
                 bounces = 0;

@@ -11,6 +11,8 @@ public class Mercury extends Enemy {
     Vector2 velocity;
     int phase;
 
+    final float SPEED = 282.84f;
+
     float passiveCooldown;
     final float PASSIVE_MAX_COOLDOWN = 0.04f;
 
@@ -18,10 +20,9 @@ public class Mercury extends Enemy {
     final float AIM_MAX_COOLDOWN = 0.3f;
 
     public Mercury(float x, float y) {
-        super(x, y, 50, 60);
-        health = 500;
+        super(x, y, 50, 60, 500);
         velocity = new Vector2(200, 200);
-        phase = 2;
+        phase = 1;
 
         passiveCooldown = PASSIVE_MAX_COOLDOWN;
         aimCooldown = AIM_MAX_COOLDOWN;
@@ -94,18 +95,34 @@ public class Mercury extends Enemy {
             passiveCooldown -= frame;
             aimCooldown -= frame;
             if (passiveCooldown <= 0) {
+                float angle = MathUtils.random(0, MathUtils.PI * 2);
                 bullets.add(new TimeProjectile(
-                        hitbox.x + MathUtils.random(0, hitbox.radius) * MathUtils.cos(MathUtils.random(0, MathUtils.PI * 2)),
-                        hitbox.y + MathUtils.random(0, hitbox.radius) * MathUtils.sin(MathUtils.random(0, MathUtils.PI * 2)),
-                        MathUtils.cos(MathUtils.random(0, MathUtils.PI * 2)) * 200,
-                                MathUtils.sin(MathUtils.random(0, MathUtils.PI * 2)) * 200,
-                        2.0f));
+                        hitbox.x,
+                        hitbox.y,
+                        MathUtils.cos(angle) * 200,
+                        MathUtils.sin(angle) * 200,
+                        0.5f));
                 passiveCooldown = PASSIVE_MAX_COOLDOWN;
+            }
+            //Movement
+            hitbox.x += velocity.x * frame;
+            hitbox.y += velocity.y * frame;
+            //Off-screen looping
+            if (hitbox.x > 750) {
+                setDirection(false, true);
+            } else if (hitbox.x < -150) {
+                setDirection(true, true);
+            } else if (hitbox.y > 750) {
+                setDirection(false, false);
+            } else if (hitbox.y < -150) {
+                setDirection(true, false);
             }
         }
         //Phase 1->2 transition
-        if (health <= 350) {
+        if (phase == 1 && health <= 350) {
             phase = 2;
+            velocity.x = SPEED;
+            velocity.y = 0f;
         }
 
         return bullets;
@@ -115,8 +132,48 @@ public class Mercury extends Enemy {
         if (MathUtils.random(1, 6) == 6) {
             //Prevent angles too close to 0, 90, 180, 270 degrees
             float angle = MathUtils.random(0.523599f, 1.0472f) + (1.5708f * MathUtils.random(0, 3));
-            velocity.x = MathUtils.cos(angle) * 282.84f;
-            velocity.y = MathUtils.sin(angle) * 282.84f;
+            velocity.x = MathUtils.cos(angle) * SPEED;
+            velocity.y = MathUtils.sin(angle) * SPEED;
         }
     }
+
+    /**
+     *
+     * @param isNegative Whether the ending position is negative or not
+     * @param isX Whether the velocity is on the X axis or not.
+     */
+    public void setDirection(boolean isNegative, boolean isX) {
+        float newSpeed = -SPEED;
+        float placement = 700;
+
+        boolean isExitNegative = MathUtils.randomBoolean();
+        boolean isExitX = MathUtils.randomBoolean();
+
+        //Prevent Mercury from coming out the same side they leave the screen
+        if (isExitNegative == isNegative && isExitX == isX) {
+            if (MathUtils.randomBoolean()) {
+                isExitNegative = !isExitNegative;
+            } else {
+                isExitX = !isExitX;
+            }
+        }
+
+        if (isExitNegative) {
+            newSpeed *= -1;
+            placement -= 800;
+        }
+        if (isExitX) {
+            hitbox.x = placement;
+            velocity.x = newSpeed;
+            velocity.y = 0;
+            hitbox.y = MathUtils.random(100, 500);
+        } else {
+            hitbox.y = placement;
+            velocity.y = newSpeed;
+            velocity.x = 0;
+            hitbox.x = MathUtils.random(100, 500);
+        }
+
+    }
+
 }

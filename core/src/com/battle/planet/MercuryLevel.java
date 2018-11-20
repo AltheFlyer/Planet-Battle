@@ -26,6 +26,8 @@ public class MercuryLevel extends BattleLevel {
         removeEnemies();
 
         checkWin();
+
+        specialControls();
     }
 
 }
