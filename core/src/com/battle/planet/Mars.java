@@ -45,6 +45,7 @@ public class Mars extends Enemy {
         spearCooldown = SPEAR_MAX_COOLDOWN;
         chargeCooldown = CHARGE_MAX_COOLDOWN;
         burstCooldown = BURST_MAX_COOLDOWN;
+        phaseMarkers.add(300);
     }
 
     public void drawBody(ShapeRenderer r) {

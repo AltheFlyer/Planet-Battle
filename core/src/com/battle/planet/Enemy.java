@@ -13,6 +13,7 @@ abstract public class Enemy {
     float health; //Also controls when phases change
     final float MAX_HEALTH;
     boolean canSpawn; // Checks if spawning abilities are allowed
+    Array<Integer> phaseMarkers;
 
     //An array that is used to store bullets for the next attack.
     Array<Projectile> bullets;
@@ -31,6 +32,7 @@ abstract public class Enemy {
         canSpawn = false;
         MAX_HEALTH = hp;
         health = hp;
+        phaseMarkers = new Array<Integer>();
     }
 
     /**
@@ -71,17 +73,17 @@ abstract public class Enemy {
 
     /**
      * Checks collisions with player bullets
-     * @param bullets The array of player bullets in the level.
+     * @param projectiles The array of player bullets in the level.
      * @return The array of player bullets after all collisions have been checked.
      */
-    public Array<Projectile> collide(Array<Projectile> bullets) {
-        for (Projectile p: bullets) {
+    public Array<Projectile> collide(Array<Projectile> projectiles) {
+        for (Projectile p: projectiles) {
             if (!p.isDestroyed && this.hitbox.contains(p.hitbox.x, p.hitbox.y)) {
                 p.isDestroyed = true;
                 this.health -= 1;
             }
         }
-        return bullets;
+        return projectiles;
     }
 
     public void createSpread(float theta, int amount, float spread) {
@@ -103,5 +105,12 @@ abstract public class Enemy {
         r.rect(hitbox.x - hitbox.radius, hitbox.y - hitbox.radius, hitbox.radius * 2, 10);
         r.setColor(Color.GREEN);
         r.rect(hitbox.x - hitbox.radius, hitbox.y - hitbox.radius, hitbox.radius * 2 * (health / MAX_HEALTH), 10);
+        r.setColor(Color.BLACK);
+        //Phase transition markers
+        for (int i: phaseMarkers) {
+            if (health > i) {
+                r.rect(hitbox.x - hitbox.radius + hitbox.radius * 2 * (i / MAX_HEALTH), hitbox.y - hitbox.radius, 2, 10);
+            }
+        }
     }
 }

@@ -277,6 +277,12 @@ public class BattleLevel implements Screen {
             game.setScreen(new LevelSelectScreen(game));
             dispose();
         }
+        //Deal damage (go to Next phase)
+        if (Gdx.input.isKeyJustPressed(Input.Keys.N)) {
+            for (Enemy e: enemies) {
+                e.health -= 50;
+            }
+        }
     }
 
     @Override

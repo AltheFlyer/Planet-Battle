@@ -35,6 +35,24 @@ public class WaveProjectile extends Projectile {
         normalPosition = new Vector2(hitbox.x, hitbox.y);
     }
 
+    //For special wave effects (since direction usually won't matter
+    public WaveProjectile(Rectangle r, Vector2 v, float mo, boolean startPositive) {
+        super(r, v);
+        direction = MathUtils.atan2(v.y, v.x);
+        //Kinematics
+        maxOffset = mo;
+        offset = 0;
+        if (startPositive) {
+            offsetVel = (2 * maxOffset) / period;
+            offsetAccel = -offsetVel / period;
+        } else {
+            offsetVel = -(2 * maxOffset) / period;
+            offsetAccel = offsetVel / period;
+        }
+        //System.out.printf("%f, %f, %f\n", offset, offsetVel, offsetAccel);
+        normalPosition = new Vector2(hitbox.x, hitbox.y);
+    }
+
     public void move(float frame) {
         //Undo previous wave shift
         hitbox.x = normalPosition.x;
