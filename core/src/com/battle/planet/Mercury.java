@@ -30,6 +30,8 @@ public class Mercury extends Enemy {
 
     boolean inChaseMode = true;
 
+    Array<Vector2> trail;
+
     public Mercury(float x, float y) {
         super(x, y, 50, 60, 700);
         velocity = new Vector2(200, 200);
@@ -38,6 +40,8 @@ public class Mercury extends Enemy {
         passiveCooldown = PASSIVE_MAX_COOLDOWN;
         aimCooldown = AIM_MAX_COOLDOWN;
         attackModeCooldown = ATTACK_MODE_MAX_COOLDOWN;
+
+        trail = new Array<Vector2>();
 
         phaseMarkers.add(550);
         phaseMarkers.add(350);
@@ -65,6 +69,12 @@ public class Mercury extends Enemy {
             //From the top
             } else if (hitbox.y > 500 && velocity.y < 0) {
                 r.triangle(hitbox.x + 50, 600,hitbox.x - 50, 600, hitbox.x, 550);
+            }
+        //Tracer trail
+        } else if (phase == 3) {
+            r.setColor(50, 50, 50, 0.05f);
+            for (Vector2 v: trail) {
+                r.circle(v.x, v.y, hitbox.radius);
             }
         }
     }
@@ -162,6 +172,12 @@ public class Mercury extends Enemy {
         //Third phase: Chase mode
         } else if (phase == 3) {
             aimCooldown -= frame;
+            //Trail additions
+            trail.add(new Vector2(hitbox.x, hitbox.y));
+            if (trail.size > 10) {
+                trail.removeIndex(0);
+            }
+
             float angle = MathUtils.atan2(y - hitbox.y, x - hitbox.x);
             if (inChaseMode) {
                 hitbox.x += velocity.x * frame;

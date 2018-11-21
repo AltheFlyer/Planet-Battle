@@ -122,6 +122,8 @@ public class BattleLevel implements Screen {
         batch.begin();
         batch.end();
 
+        Gdx.gl.glEnable(GL20.GL_BLEND);
+        Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
         render.begin();
         render.set(ShapeRenderer.ShapeType.Filled);
         render.setColor(Color.RED);
