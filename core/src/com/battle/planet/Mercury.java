@@ -12,24 +12,38 @@ public class Mercury extends Enemy {
     Vector2 velocity;
     int phase;
 
+    //Controls the speed of Mercury
     final float SPEED = 282.84f;
     float chaseSpeed = 0;
-    //For 3rd phase
+
+    //For 3rd phase to control transitions to/from chase mode
     int bulletHits = 0;
     int bulletHitsNeeded = 50;
     float startVel = 0;
 
+    //Passive Attack Cooldown:
+    //First Phase: Leaves behind a temporary static trail of bullets
+    //Second Phase: Spews out temporary bullets in a short range
+    //Third Phase: Does nothing
     float passiveCooldown;
     final float PASSIVE_MAX_COOLDOWN = 0.04f;
 
+    //For attacks that are aimed
+    //First Phase: Aimed wave projectiles, sometimes launches 2 more in random directions
+    //Second Phase: Launches projectiles perpendicular to Mercury's path
+    //Third Phase: Leaves behind a trail of delay bullets in chase mode
+    //Launches caduceus shots when not in chase mode
     float aimCooldown;
     final float AIM_MAX_COOLDOWN = 0.3f;
 
+    //Controls 'attack mode' for third phase
     float attackModeCooldown;
     final float ATTACK_MODE_MAX_COOLDOWN = 2.0f;
 
+    //Controls whether Mercury is chasing or attacking in phase 3
     boolean inChaseMode = true;
 
+    //Trail for visual effects during chase mode
     Array<Vector2> trail;
 
     public Mercury(float x, float y) {
@@ -84,6 +98,7 @@ public class Mercury extends Enemy {
         if (phase == 1) {
             passiveCooldown -= frame;
             aimCooldown -= frame;
+            //Leave behind trail of static bullets
             if (passiveCooldown <= 0) {
                 bullets.add(new TimeProjectile(
                         hitbox.x + MathUtils.random(0, hitbox.radius) * MathUtils.cos(MathUtils.random(0, MathUtils.PI * 2)),
@@ -91,7 +106,7 @@ public class Mercury extends Enemy {
                         2.0f));
                 passiveCooldown = PASSIVE_MAX_COOLDOWN;
             }
-
+            //Launch wave projectiles
             if (aimCooldown <= 0) {
                 float angle;
                 //Normally shoot at player,
@@ -135,6 +150,7 @@ public class Mercury extends Enemy {
         } else if (phase == 2) {
             passiveCooldown -= frame;
             aimCooldown -= frame;
+            //Spew out short range projectiles
             if (passiveCooldown <= 0) {
                 float angle = MathUtils.random(0, MathUtils.PI * 2);
                 bullets.add(new TimeProjectile(
@@ -146,6 +162,7 @@ public class Mercury extends Enemy {
 
                 passiveCooldown = PASSIVE_MAX_COOLDOWN;
             }
+            //Create trail of perpendicular projectiles
             if (aimCooldown <= 0) {
                 //Swap x and y velocities to make bullets perpendicular to Mercury's path
                 if (MathUtils.randomBoolean()) {
@@ -153,7 +170,7 @@ public class Mercury extends Enemy {
                 } else {
                     bullets.add(new BasicProjectile(new Rectangle(hitbox.x, hitbox.y, 10, 10), new Vector2(-velocity.y, -velocity.x)));
                 }
-                //Increase frequency of shots
+                //Increases frequency of shots compared to phase 1
                 aimCooldown = AIM_MAX_COOLDOWN / 4;
             }
             //Movement
@@ -182,35 +199,42 @@ public class Mercury extends Enemy {
             if (inChaseMode) {
                 hitbox.x += velocity.x * frame;
                 hitbox.y += velocity.y * frame;
+                //Slight homing effect
                 velocity.x += MathUtils.cos(angle) * chaseSpeed / 15;
                 velocity.y += MathUtils.sin(angle) * chaseSpeed / 15;
+                //Prevent overspeeding
                 velocity.nor().scl(chaseSpeed);
 
+                //Gradually increase maximum speed
                 if (chaseSpeed < SPEED * 1.5) {
                     chaseSpeed += (SPEED / 4) * frame;
                 }
+
                 //Takes knockback!
                 if (bulletHits == bulletHitsNeeded) {
                     bulletHitsNeeded += 10;
+                    //Reverse velocity
                     velocity.x = MathUtils.cos(angle + 3.14159f) * chaseSpeed * 0.5f;
                     velocity.y = MathUtils.sin(angle + 3.14159f) * chaseSpeed * 0.5f;
                     chaseSpeed = velocity.dst(0, 0);
+                    //This value is used to save the original speed at the beginning of attack mode
                     startVel = chaseSpeed;
                     bulletHits = 0;
                     inChaseMode = false;
                     attackModeCooldown = ATTACK_MODE_MAX_COOLDOWN;
+                    //Surprise bullet wave
                     createSpread(0, 36, 360 * MathUtils.degreesToRadians);
                 }
-
+                //Constantly shoot delay projectiles
                 if (aimCooldown <= 0) {
                     bullets.add(new DelayProjectile(new Rectangle(hitbox.x, hitbox.y, 10, 10), 1));
                     aimCooldown = AIM_MAX_COOLDOWN;
                 }
-
             } else {
                 attackModeCooldown -= frame;
                 hitbox.x += velocity.x * frame;
                 hitbox.y += velocity.y * frame;
+                //Decelerate Mercury to a halt
                 if (chaseSpeed > 0) {
                     chaseSpeed -= startVel * frame;
                     velocity.nor().scl(chaseSpeed);
