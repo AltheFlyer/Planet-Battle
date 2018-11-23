@@ -26,10 +26,10 @@ public class MarsLevel extends BattleLevel {
 				enemies.addAll(e.spawn(hitboxCenter.x, hitboxCenter.y, frame));
 			}
 			e.move();
-			if (e instanceof Mars && ((Mars) e).phase == 2 && enemies.size == 1) {
+			if (e instanceof Mars && (((Mars) e).phase == 2)&& enemies.size == 1) {
 				((Mars) e).phase = -2;
 			} else {
-				if (e instanceof Mars && ((Mars) e).phase == 2) {
+				if (e instanceof Mars && (((Mars) e).phase == 2 || ((Mars) e).phase == -1)) {
 
 				} else {
 					e.collide(playerBullets);

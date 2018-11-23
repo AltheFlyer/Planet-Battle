@@ -29,7 +29,7 @@ public class Mars extends Enemy {
     boolean inCharge = false; //If Mars is charging or not
     Vector2 chargeVelocity; //Direction of the charge
     Vector2 chargeDestination; //Where to stop charging
-    int bounces; //For Third phase
+    int bounces = 0; //For Third phase
 
     //Cooldown for burst attack:
     //First phase: Radial burst
@@ -46,9 +46,16 @@ public class Mars extends Enemy {
         chargeCooldown = CHARGE_MAX_COOLDOWN;
         burstCooldown = BURST_MAX_COOLDOWN;
         phaseMarkers.add(300);
+        chargeDestination = new Vector2(x, y);
+        chargeVelocity = new Vector2(0, 0);
     }
 
     public void drawBody(ShapeRenderer r) {
+        if (phase == 2 || phase == -1) {
+            r.setColor(Color.valueOf("6C1F1EFF"));
+        } else {
+            r.setColor(Color.RED);
+        }
         r.circle(hitbox.x, hitbox.y, hitbox.radius);
     }
 
@@ -82,7 +89,7 @@ public class Mars extends Enemy {
                 }
                 //Start up charge attack
                 if (chargeCooldown <= 0) {
-                    chargeDestination = new Vector2(x, y);
+                    chargeDestination.set(x, y);
                     float angle = MathUtils.atan2(y - hitbox.y, x - hitbox.x);
                     chargeVelocity = new Vector2(MathUtils.cos(angle) * 200, MathUtils.sin(angle) * 200);
                     inCharge = true;
