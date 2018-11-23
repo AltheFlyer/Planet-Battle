@@ -12,7 +12,7 @@ public class AcidCloud extends Enemy {
     //(Like an acid aura)
 
     public AcidCloud(float x, float y) {
-        super(x, y, 60, 10, 2);
+        super(x, y, 60, 12, 2);
     }
 
     @Override
@@ -26,8 +26,8 @@ public class AcidCloud extends Enemy {
     @Override
     public Array<Projectile> attack(float x, float y, float frame) {
         float angle = MathUtils.atan2(y - hitbox.y, x - hitbox.x);
-        hitbox.x += MathUtils.cos(angle) * 170 * frame;
-        hitbox.y += MathUtils.sin(angle) * 170 * frame;
+        hitbox.x += MathUtils.cos(angle) * 150 * frame;
+        hitbox.y += MathUtils.sin(angle) * 150 * frame;
         return bullets;
     }
 }

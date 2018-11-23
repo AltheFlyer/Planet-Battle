@@ -7,7 +7,7 @@ import com.badlogic.gdx.utils.Array;
 
 public class Venus extends Enemy {
 
-    int phase = 1;
+    int phase = 0;
 
     float spawnCooldown;
     final float SPAWN_MAX_COOLDOWN = 3f;
@@ -27,10 +27,21 @@ public class Venus extends Enemy {
     @Override
     public Array<Projectile> attack(float x, float y, float frame) {
         bullets.clear();
-        spawnCooldown -= frame;
-        if (spawnCooldown <= 0) {
-            spawnCooldown = SPAWN_MAX_COOLDOWN;
-            canSpawn = true;
+        if (phase == 1) {
+            spawnCooldown -= frame;
+            if (spawnCooldown <= 0) {
+                spawnCooldown = SPAWN_MAX_COOLDOWN;
+                canSpawn = true;
+            }
+        }
+        if (phase == 0) {
+            //Create orbital ring
+            for (int i = 0; i < 36; ++i) {
+                float angle = (float) (i/36.0) * 6.28f;
+                System.out.println(angle * MathUtils.radiansToDegrees);
+                bullets.add(new OrbitalProjectile(150,300 + 200 * MathUtils.cos(angle), 300 + 200 * MathUtils.sin(angle), 0.03f, 3.14f));
+            }
+            phase = 1;
         }
         return bullets;
     }
@@ -38,7 +49,17 @@ public class Venus extends Enemy {
     @Override
     public Array<Enemy> spawn(float x, float y, float frame) {
         Array<Enemy> enemies = new Array<Enemy>();
-        enemies.add(new AcidCloud(MathUtils.random(0, 600), MathUtils.random(600, 670)));
+        int rand = MathUtils.random(0, 3);
+        //Spawn from random sides
+        if (rand == 0) {
+            enemies.add(new AcidCloud(MathUtils.random(0, 600), 670));
+        } else if (rand == 1) {
+            enemies.add(new AcidCloud(MathUtils.random(0, 600), -70));
+        } else if (rand == 2) {
+            enemies.add(new AcidCloud(670, MathUtils.random(0, 600)));
+        } else if (rand == 3) {
+            enemies.add(new AcidCloud(-70, MathUtils.random(0, 600)));
+        }
         canSpawn = false;
         return enemies;
     }

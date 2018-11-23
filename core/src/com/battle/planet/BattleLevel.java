@@ -249,7 +249,7 @@ public class BattleLevel implements Screen {
         Iterator<Projectile> iterE = enemyBullets.iterator();
         while (iterE.hasNext()) {
             Projectile p = iterE.next();
-            if (p.isDestroyed || p.hitbox.x < 0 || p.hitbox.x > SCREEN_WIDTH || p.hitbox.y < 0 || p.hitbox.y > SCREEN_HEIGHT) {
+            if (p.isDestroyed || p.hitbox.x < -150 || p.hitbox.x > SCREEN_WIDTH + 150 || p.hitbox.y < -150 || p.hitbox.y > SCREEN_HEIGHT + 150) {
                 iterE.remove();
             }
         }
@@ -257,7 +257,7 @@ public class BattleLevel implements Screen {
         Iterator<Projectile> iterF = playerBullets.iterator();
         while (iterF.hasNext()) {
             Projectile p = iterF.next();
-            if (p.isDestroyed || p.hitbox.x < 0 || p.hitbox.x > SCREEN_WIDTH || p.hitbox.y < 0 || p.hitbox.y > SCREEN_HEIGHT) {
+            if (p.isDestroyed || p.hitbox.x < -150 || p.hitbox.x > SCREEN_WIDTH + 150 || p.hitbox.y < -150 || p.hitbox.y > SCREEN_HEIGHT + 150) {
                 iterF.remove();
             }
         }
