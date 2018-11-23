@@ -113,4 +113,11 @@ abstract public class Enemy {
             }
         }
     }
+
+    /**
+     * Sets collision hitbox position to bullet hitbox position
+     */
+    public void move() {
+        collisionBox.setPosition(hitbox.x, hitbox.y);
+    }
 }

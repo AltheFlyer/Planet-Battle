@@ -25,6 +25,7 @@ public class MarsLevel extends BattleLevel {
 			if (e.canSpawn) {
 				enemies.addAll(e.spawn(hitboxCenter.x, hitboxCenter.y, frame));
 			}
+			e.move();
 			if (e instanceof Mars && ((Mars) e).phase == 2 && enemies.size == 1) {
 				((Mars) e).phase = -2;
 			} else {
@@ -35,6 +36,8 @@ public class MarsLevel extends BattleLevel {
 				}
 			}
 		}
+
+		playerCollisions();
 
 		removeBullets();
 

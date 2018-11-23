@@ -41,7 +41,7 @@ public class Mars extends Enemy {
     boolean isGoingLeft;
 
     public Mars(float x, float y) {
-        super(x, y, 100, 80, 500);
+        super(x, y, 70, 80, 500);
         spearCooldown = SPEAR_MAX_COOLDOWN;
         chargeCooldown = CHARGE_MAX_COOLDOWN;
         burstCooldown = BURST_MAX_COOLDOWN;

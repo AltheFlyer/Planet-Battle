@@ -7,27 +7,4 @@ public class MercuryLevel extends BattleLevel {
         enemies.add(new Mercury(300, 500));
     }
 
-    @Override
-    public void render(float delta) {
-        prepareGraphics();
-
-        prepareValues();
-
-        draw();
-
-        movePlayer();
-
-        playerShoot();
-
-        enemyActions();
-
-        removeBullets();
-
-        removeEnemies();
-
-        checkWin();
-
-        specialControls();
-    }
-
 }

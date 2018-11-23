@@ -31,6 +31,8 @@ public class BattleLevel implements Screen {
     final float MAX_COOLDOWN = 0.08f;
     float cooldown;
     float playerSpeed = 200;
+    float MAX_INVINCIBLE = 1f;
+    float invincible = 0;
 
     //Other level things
     Array<Projectile> playerBullets;
@@ -92,6 +94,8 @@ public class BattleLevel implements Screen {
 
         enemyActions();
 
+        playerCollisions();
+
         removeBullets();
 
         removeEnemies();
@@ -137,15 +141,12 @@ public class BattleLevel implements Screen {
             }
         }
 
-        //Check collisions (FOR NOW)
-        render.setColor(Color.BLUE);
-        for (Projectile p: enemyBullets) {
-            if (playerHitbox.overlaps(p.hitbox)) {
-                render.setColor(Color.RED);
-            }
-        }
-
         //Draw player
+        if (invincible <= 0) {
+            render.setColor(Color.BLUE);
+        } else {
+            render.setColor(Color.RED);
+        }
         drawRectangle(new Rectangle(playerHitbox.x - 5, playerHitbox.y - 5, 20, 20));
         //render.setColor(Color.GREEN);
         //drawRectangle(playerHitbox);
@@ -192,6 +193,7 @@ public class BattleLevel implements Screen {
             if (e.canSpawn) {
                 enemies.addAll(e.spawn(hitboxCenter.x, hitboxCenter.y, frame));
             }
+            e.move();
             e.collide(playerBullets);
         }
     }
@@ -221,6 +223,24 @@ public class BattleLevel implements Screen {
             playerHitbox.y = 5;
         } else if (playerHitbox.y + playerHitbox.height + 5 > LEVEL_HEIGHT) {
             playerHitbox.y = LEVEL_HEIGHT - playerHitbox.height - 5;
+        }
+    }
+
+    public void playerCollisions() {
+        if (invincible > 0) {
+            invincible -= frame;
+        }
+
+        for (Projectile p: enemyBullets) {
+            if (invincible <= 0 && playerHitbox.overlaps(p.hitbox)) {
+                invincible = MAX_INVINCIBLE;
+            }
+        }
+
+        for (Enemy e: enemies) {
+            if (invincible <= 0 && e.collisionBox.contains(hitboxCenter)) {
+                invincible = MAX_INVINCIBLE;
+            }
         }
     }
 
