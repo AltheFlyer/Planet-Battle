@@ -19,7 +19,9 @@ public class MarsLevel extends BattleLevel {
 
 		playerShoot();
 
+		enemyActions();
 		//Enemy actions
+		/*
 		for (Enemy e: enemies) {
 			enemyBullets.addAll(e.attack(hitboxCenter.x, hitboxCenter.y, frame));
 			if (e.canSpawn) {
@@ -36,6 +38,7 @@ public class MarsLevel extends BattleLevel {
 				}
 			}
 		}
+		*/
 
 		playerCollisions();
 

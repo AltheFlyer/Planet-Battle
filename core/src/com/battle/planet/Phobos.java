@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Array;
 
 public class Phobos extends Enemy {
 
+    final Mars mars;
     //Bolt attack, creates stationary bolts that
     //aim at the player after some time.
     final float MAX_BOLT_COOLDOWN = 2f;
@@ -19,8 +20,9 @@ public class Phobos extends Enemy {
     //~90 degrees
     float angularVelocity = 1.5708f;
 
-    public Phobos(float x, float y) {
+    public Phobos(float x, float y, Mars m) {
         super(x, y, 30, 50, 100);
+        mars = m;
         boltCooldown = MAX_BOLT_COOLDOWN;
     }
 
@@ -49,7 +51,20 @@ public class Phobos extends Enemy {
         hitbox.x = x + MathUtils.cos(angularPosition) * 170;
         hitbox.y = y + MathUtils.sin(angularPosition) * 170;
         angularPosition += angularVelocity * frame;
-
         return bullets;
+    }
+
+    @Override
+    public Array<Projectile> collide(Array<Projectile> projectiles) {
+        for (Projectile p: projectiles) {
+            if (!p.isDestroyed && this.hitbox.contains(p.hitbox.x, p.hitbox.y)) {
+                p.isDestroyed = true;
+                this.health -= 1;
+            }
+        }
+        if (health <= 0) {
+            mars.phobosDead = true;
+        }
+        return projectiles;
     }
 }

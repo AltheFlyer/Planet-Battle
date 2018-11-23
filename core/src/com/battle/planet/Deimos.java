@@ -8,6 +8,7 @@ import com.badlogic.gdx.utils.Array;
 
 public class Deimos extends Enemy {
 
+    final Mars mars;
     //Bolt attack, creates a set of stationary bolts that
     //all aim at the player and launch at the same time.
     final float MAX_BOLT_COOLDOWN = 5f;
@@ -20,8 +21,9 @@ public class Deimos extends Enemy {
     //~50 degrees
     float angularVelocity = 0.872665f;
 
-    public Deimos(float x, float y) {
+    public Deimos(float x, float y, Mars m) {
         super(x, y, 30, 40, 80);
+        mars = m;
         boltCooldown = MAX_BOLT_COOLDOWN;
     }
 
@@ -63,5 +65,19 @@ public class Deimos extends Enemy {
         angularPosition += angularVelocity * frame;
 
         return bullets;
+    }
+
+    @Override
+    public Array<Projectile> collide(Array<Projectile> projectiles) {
+        for (Projectile p: projectiles) {
+            if (!p.isDestroyed && this.hitbox.contains(p.hitbox.x, p.hitbox.y)) {
+                p.isDestroyed = true;
+                this.health -= 1;
+            }
+        }
+        if (health <= 0) {
+            mars.deimosDead = true;
+        }
+        return projectiles;
     }
 }

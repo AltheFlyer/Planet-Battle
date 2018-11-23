@@ -40,6 +40,10 @@ public class Mars extends Enemy {
     //For phase two direction
     boolean isGoingLeft;
 
+    //EXPERIMENTAL
+    boolean deimosDead = false;
+    boolean phobosDead = false;
+
     public Mars(float x, float y) {
         super(x, y, 70, 80, 500);
         spearCooldown = SPEAR_MAX_COOLDOWN;
@@ -135,6 +139,10 @@ public class Mars extends Enemy {
                 createWaveSpread(-1.57079633f, 7, 1.5708f, 20);
                 burstCooldown = BURST_MAX_COOLDOWN * 5;
             }
+
+            if (deimosDead && phobosDead) {
+                phase =-2;
+            }
         } else if (phase == 3) {
             spearCooldown -= frame;
             if (spearCooldown <= 0) {
@@ -213,8 +221,8 @@ public class Mars extends Enemy {
 
     public Array<Enemy> spawn(float x, float y, float frame) {
         Array<Enemy> e = new Array<Enemy>();
-        e.add(new Phobos(x, y));
-        e.add(new Deimos(x, y));
+        e.add(new Phobos(x, y, this));
+        e.add(new Deimos(x, y, this));
         canSpawn = false;
         return e;
     }
@@ -245,5 +253,16 @@ public class Mars extends Enemy {
         }
     }
 
-
+    @Override
+    public Array<Projectile> collide(Array<Projectile> projectiles) {
+        if (phase != 2 && phase != -1) {
+            for (Projectile p : projectiles) {
+                if (!p.isDestroyed && this.hitbox.contains(p.hitbox.x, p.hitbox.y)) {
+                    p.isDestroyed = true;
+                    this.health -= 1;
+                }
+            }
+        }
+        return projectiles;
+    }
 }
