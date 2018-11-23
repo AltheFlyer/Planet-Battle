@@ -27,6 +27,7 @@ public class LevelSelectScreen implements Screen {
         buttons = new Array<Rectangle>();
         buttons.add(new Rectangle(50, 500, 50, 50));
         buttons.add(new Rectangle(150, 500, 50, 50));
+        buttons.add(new Rectangle(250, 500, 50, 50));
     }
 
     @Override
@@ -54,6 +55,9 @@ public class LevelSelectScreen implements Screen {
                         break;
                     case 1:
                         game.setScreen(new MercuryLevel(game));
+                        break;
+                    case 2:
+                        game.setScreen(new VenusLevel(game));
                         break;
                 }
                 dispose();
