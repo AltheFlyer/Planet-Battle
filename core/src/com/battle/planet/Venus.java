@@ -15,15 +15,20 @@ public class Venus extends Enemy {
     int spawned = 0;
 
     float aimCooldown;
-    final float AIM_MAX_COOLDOWN = 3f;
+    final float AIM_MAX_COOLDOWN = 1f;
+
+    float mainCooldown;
+    final float MAIN_MAX_COOLDOWN = 5f;
 
     public Venus(float x, float y) {
         super(x, y, 70, 80, 500);
 
         spawnCooldown = SPAWN_MAX_COOLDOWN;
         aimCooldown = AIM_MAX_COOLDOWN;
+        mainCooldown = MAIN_MAX_COOLDOWN;
 
         phaseMarkers.add(400);
+        phaseMarkers.add(300);
     }
 
     @Override
@@ -43,31 +48,20 @@ public class Venus extends Enemy {
             }
         }
         if (phase == 2) {
-            //Try to get away from player if distance < 200
-            if (Vector2.dst2(x, y, hitbox.x, hitbox.y) <= 40000) {
-                float angle = MathUtils.atan2(y - hitbox.y, x - hitbox.x);
-                hitbox.x -= MathUtils.cos(angle) * 200 * frame;
-                hitbox.y -= MathUtils.sin(angle) * 200 * frame;
-            //Try to get closer to player if distance > 300
-            } else if (Vector2.dst2(x, y, hitbox.x, hitbox.y) >= 90000) {
-                float angle = MathUtils.atan2(y - hitbox.y, x - hitbox.x);
-                hitbox.x += MathUtils.cos(angle) * 200 * frame;
-                hitbox.y += MathUtils.sin(angle) * 200 * frame;
+            if (hitbox.y < 550) {
+                float direction = MathUtils.atan2(550 - hitbox.y, 300 - hitbox.x);
+                hitbox.x += MathUtils.cos(direction) * 200 * frame;
+                hitbox.y += MathUtils.sin(direction) * 200 * frame;
+            } else {
+                mainCooldown -= frame;
+                aimCooldown -= frame;
+                if (aimCooldown <= 0) {
+                    canSpawn = true;
+                }
+                if (mainCooldown <= 0) {
+                    canSpawn = true;
+                }
             }
-
-            //Prevent offscreen
-            if (hitbox.x < 0 + hitbox.radius) {
-                hitbox.x = 0 + hitbox.radius;
-            } else if (hitbox.x > 600 - hitbox.radius) {
-                hitbox.x = 600 - hitbox.radius;
-            }
-            if (hitbox.y < 0 + hitbox.radius) {
-                hitbox.y = 0 + hitbox.radius;
-            } else if (hitbox.y > 600 - hitbox.radius) {
-                hitbox.y = 600 - hitbox.radius;
-            }
-
-
         }
         if (phase == 0) {
             //Create orbital ring
@@ -78,11 +72,10 @@ public class Venus extends Enemy {
             phase = 1;
         }
         if (phase == 1 && health <= 400) {
-            phase = -1;
+            phase = 2;
         }
-        if (phase == -1) {
-            canSpawn = true;
-
+        if (phase == 2 && health <= 300) {
+            phase = 3;
         }
         return bullets;
     }
@@ -94,17 +87,33 @@ public class Venus extends Enemy {
             int rand = MathUtils.random(0, 3);
             //Spawn from random sides
             if (rand == 0) {
-                enemies.add(new AcidCloud(MathUtils.random(0, 600), 670, this));
+                enemies.add(new AcidSeeker(MathUtils.random(0, 600), 670, this));
             } else if (rand == 1) {
-                enemies.add(new AcidCloud(MathUtils.random(0, 600), -70, this));
+                enemies.add(new AcidSeeker(MathUtils.random(0, 600), -70, this));
             } else if (rand == 2) {
-                enemies.add(new AcidCloud(670, MathUtils.random(0, 600), this));
+                enemies.add(new AcidSeeker(670, MathUtils.random(0, 600), this));
             } else if (rand == 3) {
-                enemies.add(new AcidCloud(-70, MathUtils.random(0, 600), this));
+                enemies.add(new AcidSeeker(-70, MathUtils.random(0, 600), this));
             }
             canSpawn = false;
             spawned += 1;
         }
+        if (phase == 2) {
+            if (aimCooldown <= 0) {
+                enemies.add(new AcidCloud(x, 700, 0, -200));
+                aimCooldown = AIM_MAX_COOLDOWN;
+                canSpawn = false;
+            }
+            if (mainCooldown <= 0) {
+                for (int i = 0; i < 25; ++i) {
+                    enemies.add(new AcidCloud(MathUtils.random(20, 580), MathUtils.random(620, 749), 0, -MathUtils.random(175, 200)));
+                }
+                mainCooldown = MAIN_MAX_COOLDOWN;
+                canSpawn = false;
+            }
+        }
+
+        /*
         if (phase == -1) {
             for (int i = 0; i < 8; ++i) {
                 enemies.add(new VenusShield(130, 0.785398f * i, 0.785398f, this));
@@ -114,6 +123,7 @@ public class Venus extends Enemy {
             canSpawn = false;
             phase = 2;
         }
+         */
         return enemies;
     }
 

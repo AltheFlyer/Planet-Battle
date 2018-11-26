@@ -3,18 +3,19 @@ package com.battle.planet;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import jdk.nashorn.internal.ir.PropertyKey;
 
-public class AcidCloud extends Enemy {
+public class AcidSeeker extends Enemy {
+
+    final Venus venus;
 
     //Small enemy, with a larger damage area
     //(Like an acid aura)
-    Vector2 velocity;
 
-    public AcidCloud(float x, float y, float vx, float vy) {
+    public AcidSeeker(float x, float y, Venus v) {
         super(x, y, 60, 12, 2);
-        velocity = new Vector2(vx, vy);
+        venus = v;
     }
 
     @Override
@@ -45,13 +46,23 @@ public class AcidCloud extends Enemy {
 
     @Override
     public Array<Projectile> attack(float x, float y, float frame) {
-        hitbox.x += velocity.x * frame;
-        hitbox.y += velocity.y * frame;
-        //Destroy when too far offscreen
-        if (hitbox.x < -150 || hitbox.x >= 750 || hitbox.y < -150 || hitbox.y > 750) {
-            health = 0;
-        }
+        float angle = MathUtils.atan2(y - hitbox.y, x - hitbox.x);
+        hitbox.x += MathUtils.cos(angle) * 150 * frame;
+        hitbox.y += MathUtils.sin(angle) * 150 * frame;
         return bullets;
     }
 
+    @Override
+    public Array<Projectile> collide(Array<Projectile> projectiles) {
+        for (Projectile p: projectiles) {
+            if (!p.isDestroyed && this.hitbox.contains(p.hitbox.x, p.hitbox.y)) {
+                p.isDestroyed = true;
+                this.health -= 1;
+            }
+        }
+        if (health <= 0) {
+            venus.spawned -= 1;
+        }
+        return projectiles;
+    }
 }
