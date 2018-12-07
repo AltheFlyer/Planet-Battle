@@ -33,8 +33,20 @@ public class Venus extends Enemy {
 
     @Override
     public void drawBody(ShapeRenderer r) {
-        r.setColor(Color.GOLDENROD);
+        if (spawned == 0) {
+            r.setColor(Color.GOLDENROD);
+        } else {
+            r.setColor(Color.valueOf("#c1a868"));
+        }
         r.circle(hitbox.x, hitbox.y, hitbox.radius);
+    }
+
+    @Override
+    public void drawObjects( float x, float y, ShapeRenderer r) {
+        if (phase == -1) {
+            r.setColor(Color.YELLOW);
+            r.rectLine(hitbox.x, hitbox.y, hitbox.x, 550, 5);
+        }
     }
 
     @Override
@@ -71,8 +83,18 @@ public class Venus extends Enemy {
             }
             phase = 1;
         }
+        if (phase == -1) {
+            mainCooldown -= frame;
+            if (mainCooldown <= 0) {
+                //mainCooldown = MAIN_MAX_COOLDOWN;
+                phase = 2;
+            }
+        }
+
+        //Phase transitions
         if (phase == 1 && health <= 400) {
-            phase = 2;
+            phase = -1;
+            mainCooldown = 1.5f;
         }
         if (phase == 2 && health <= 300) {
             phase = 3;

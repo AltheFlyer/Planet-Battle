@@ -8,6 +8,7 @@ public class VenusRingProjectile extends OrbitalProjectile {
 
     final Venus venus;
     boolean orbiting = true;
+    float wait = 3.0f;
 
     public VenusRingProjectile(float dst, float cx, float cy, float omega, float angle, Venus v) {
         super(dst, cx, cy, omega, angle);
@@ -16,17 +17,20 @@ public class VenusRingProjectile extends OrbitalProjectile {
         angularPosition = angle;
         distance = dst;
         venus = v;
+        hitbox.x = center.x + MathUtils.cos(angularPosition) * distance;
+        hitbox.y = center.y + MathUtils.sin(angularPosition) * distance;
     }
 
     @Override
     public void move(float x, float y, float frame) {
-        if (orbiting) {
+        if (orbiting && wait <= 0) {
             angularPosition += angularVelocity * frame;
             hitbox.x = center.x + MathUtils.cos(angularPosition) * distance;
             hitbox.y = center.y + MathUtils.sin(angularPosition) * distance;
         } else {
             hitbox.x += velocity.x * frame;
             hitbox.y += velocity.y * frame;
+            wait -= frame;
         }
         if (venus.phase != 1) {
             float newAngle = MathUtils.atan2(hitbox.y - (300 + 200 * MathUtils.sin(angularPosition)), hitbox.x - (300 + 200 * MathUtils.cos(angularPosition)));

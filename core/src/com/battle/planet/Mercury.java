@@ -174,17 +174,18 @@ public class Mercury extends Enemy {
                 aimCooldown = AIM_MAX_COOLDOWN / 4;
             }
             //Movement
+            //Speed scales based on missing health
             hitbox.x += (1.5 - ((health - 350) / 200.0) * 0.5) * velocity.x * frame;
             hitbox.y += (1.5 - ((health - 350) / 200.0) * 0.5) * velocity.y * frame;
             //Off-screen looping
             if (hitbox.x > 750) {
-                setDirection(false, true);
+                setDirection(false, true, x, y);
             } else if (hitbox.x < -150) {
-                setDirection(true, true);
+                setDirection(true, true, x, y);
             } else if (hitbox.y > 750) {
-                setDirection(false, false);
+                setDirection(false, false, x, y);
             } else if (hitbox.y < -150) {
-                setDirection(true, false);
+                setDirection(true, false, x, y);
             }
         //Third phase: Chase mode
         } else if (phase == 3) {
@@ -301,7 +302,7 @@ public class Mercury extends Enemy {
      * @param isNegative Whether the ending position is negative or not
      * @param isX Whether the velocity is on the X axis or not.
      */
-    public void setDirection(boolean isNegative, boolean isX) {
+    public void setDirection(boolean isNegative, boolean isX, float x, float y) {
         float newSpeed = -SPEED;
         float placement = 700;
 
@@ -326,11 +327,21 @@ public class Mercury extends Enemy {
             velocity.x = newSpeed;
             velocity.y = 0;
             hitbox.y = MathUtils.random(100, 500);
+            if (hitbox.y - y < 30) {
+                hitbox.y += 30;
+            } else if (hitbox.y - y > -30) {
+                hitbox.y -= 30;
+            }
         } else {
             hitbox.y = placement;
             velocity.y = newSpeed;
             velocity.x = 0;
             hitbox.x = MathUtils.random(100, 500);
+            if (hitbox.x - x < 30) {
+                hitbox.x += 30;
+            } else if (hitbox.x - x > -30) {
+                hitbox.x -= 30;
+            }
         }
 
     }
