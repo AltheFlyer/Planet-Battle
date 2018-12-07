@@ -174,8 +174,8 @@ public class Mercury extends Enemy {
                 aimCooldown = AIM_MAX_COOLDOWN / 4;
             }
             //Movement
-            hitbox.x += velocity.x * frame;
-            hitbox.y += velocity.y * frame;
+            hitbox.x += (1.5 - ((health - 350) / 200.0) * 0.5) * velocity.x * frame;
+            hitbox.y += (1.5 - ((health - 350) / 200.0) * 0.5) * velocity.y * frame;
             //Off-screen looping
             if (hitbox.x > 750) {
                 setDirection(false, true);

@@ -67,7 +67,7 @@ public class Venus extends Enemy {
             //Create orbital ring
             for (int i = 0; i < 72; ++i) {
                 float angle = (float) (i/72.0) * 6.28f;
-                bullets.add(new VenusRingProjectile(150,300 + 200 * MathUtils.cos(angle), 300 + 200 * MathUtils.sin(angle), 1.5f, 3.14f, this));
+                bullets.add(new VenusRingProjectile(150,300 + 200 * MathUtils.cos(angle), 300 + 200 * MathUtils.sin(angle), 1.0f, 3.14f, this));
             }
             phase = 1;
         }
