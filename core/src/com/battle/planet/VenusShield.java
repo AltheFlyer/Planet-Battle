@@ -33,7 +33,9 @@ public class VenusShield extends Enemy {
     }
 
     @Override
-    public Array<Projectile> attack(float x, float y, float frame) {
+    public Array<Projectile> attack(final Player player, float frame) {
+        float x = player.hitboxCenter.x;
+        float y = player.hitboxCenter.y;
         bullets.clear();
         aimCooldown -= frame;
         if (aimCooldown <= 0) {

@@ -17,4 +17,12 @@ public class Player {
         hitbox = new Rectangle(x, y, 10, 10);
         hitboxCenter = new Vector2(0, 0);
     }
+
+    public void tick(float frame) {
+        cooldown -= frame;
+        if (cooldown < 0) {
+            cooldown = 0;
+        }
+    }
+
 }

@@ -33,7 +33,9 @@ public class Deimos extends Enemy {
     }
 
     @Override
-    public void drawObjects(float x, float y, ShapeRenderer r) {
+    public void drawObjects(final Player player, ShapeRenderer r) {
+        float x = player.hitboxCenter.x;
+        float y = player.hitboxCenter.y;
         r.setColor(Color.YELLOW);
         r.set(ShapeRenderer.ShapeType.Line);
         r.circle(x, y, 280);
@@ -41,7 +43,9 @@ public class Deimos extends Enemy {
     }
 
     @Override
-    public Array<Projectile> attack(float x, float y, float frame) {
+    public Array<Projectile> attack(final Player player, float frame) {
+        float x = player.hitboxCenter.x;
+        float y = player.hitboxCenter.y;
         bullets.clear();
         boltCooldown -= frame;
         for (int i = 0; i < boltSet.length; ++i) {

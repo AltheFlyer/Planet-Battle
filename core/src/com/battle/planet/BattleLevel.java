@@ -96,6 +96,8 @@ public class BattleLevel implements Screen {
         checkWin();
 
         specialControls();
+
+        player.tick(frame);
     }
 
     public void prepareGraphics() {
@@ -128,7 +130,7 @@ public class BattleLevel implements Screen {
         //Draw all enemies
         for (Enemy e: enemies) {
             e.drawBody(render);
-            e.drawObjects(player.hitboxCenter.x, player.hitboxCenter.y, render);
+            e.drawObjects(player, render);
             if (areHealthBarsVisible) {
                 e.drawHealthBars(render);
             }
@@ -173,18 +175,14 @@ public class BattleLevel implements Screen {
             playerBullets.add(new BasicProjectile(player.hitboxCenter.x, player.hitboxCenter.y, vx, vy));
             player.cooldown = player.PRIMARY_COOLDOWN;
         }
-        player.cooldown -= frame;
-        if (player.cooldown < 0) {
-            player.cooldown = 0;
-        }
     }
 
     public void enemyActions() {
         //Enemy actions
         for (Enemy e: enemies) {
-            enemyBullets.addAll(e.attack(player.hitboxCenter.x, player.hitboxCenter.y, frame));
+            enemyBullets.addAll(e.attack(player, frame));
             if (e.canSpawn) {
-                enemies.addAll(e.spawn(player.hitboxCenter.x, player.hitboxCenter.y, frame));
+                enemies.addAll(e.spawn(player, frame));
             }
             e.move();
             e.collide(playerBullets);

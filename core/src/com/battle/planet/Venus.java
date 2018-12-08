@@ -42,7 +42,9 @@ public class Venus extends Enemy {
     }
 
     @Override
-    public void drawObjects( float x, float y, ShapeRenderer r) {
+    public void drawObjects(final Player player, ShapeRenderer r) {
+        float x = player.hitboxCenter.x;
+        float y = player.hitboxCenter.y;
         if (phase == -1) {
             r.setColor(Color.YELLOW);
             r.rectLine(hitbox.x, hitbox.y, hitbox.x, 550, 5);
@@ -50,7 +52,9 @@ public class Venus extends Enemy {
     }
 
     @Override
-    public Array<Projectile> attack(float x, float y, float frame) {
+    public Array<Projectile> attack(final Player player, float frame) {
+        float x = player.hitboxCenter.x;
+        float y = player.hitboxCenter.y;
         bullets.clear();
         if (phase == 1) {
             spawnCooldown -= frame;
@@ -103,7 +107,9 @@ public class Venus extends Enemy {
     }
 
     @Override
-    public Array<Enemy> spawn(float x, float y, float frame) {
+    public Array<Enemy> spawn(final Player player, float frame) {
+        float x = player.hitboxCenter.x;
+        float y = player.hitboxCenter.y;
         Array<Enemy> enemies = new Array<Enemy>();
         if (phase == 1) {
             int rand = MathUtils.random(0, 3);

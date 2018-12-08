@@ -26,7 +26,7 @@ public class AcidCloud extends Enemy {
     }
 
     @Override
-    public void drawObjects(float x, float y, ShapeRenderer r) {
+    public void drawObjects(final Player player, ShapeRenderer r) {
         r.setColor(Color.ORANGE);
         //Coming from left side
         if (hitbox.x < 10) {
@@ -44,7 +44,7 @@ public class AcidCloud extends Enemy {
     }
 
     @Override
-    public Array<Projectile> attack(float x, float y, float frame) {
+    public Array<Projectile> attack(final Player player, float frame) {
         hitbox.x += velocity.x * frame;
         hitbox.y += velocity.y * frame;
         //Destroy when too far offscreen

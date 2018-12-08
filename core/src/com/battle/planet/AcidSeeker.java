@@ -27,7 +27,7 @@ public class AcidSeeker extends Enemy {
     }
 
     @Override
-    public void drawObjects(float x, float y, ShapeRenderer r) {
+    public void drawObjects(final Player player, ShapeRenderer r) {
         r.setColor(Color.ORANGE);
         //Coming from left side
         if (hitbox.x < 10) {
@@ -47,7 +47,9 @@ public class AcidSeeker extends Enemy {
     }
 
     @Override
-    public Array<Projectile> attack(float x, float y, float frame) {
+    public Array<Projectile> attack(final Player player, float frame) {
+        float x = player.hitboxCenter.x;
+        float y = player.hitboxCenter.y;
         float angle = MathUtils.atan2(y - hitbox.y, x - hitbox.x);
         hitbox.x += MathUtils.cos(angle) * 150 * frame;
         hitbox.y += MathUtils.sin(angle) * 150 * frame;

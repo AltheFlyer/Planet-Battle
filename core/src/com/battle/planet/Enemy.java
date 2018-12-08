@@ -45,29 +45,27 @@ abstract public class Enemy {
      * Draws other planet-based objects (warnings, alerts, animations)
      * @param r The shape renderer to draw with.
      */
-    public void drawObjects(float x, float y, ShapeRenderer r) {
+    public void drawObjects(final Player player, ShapeRenderer r) {
 
     }
 
     /**
      * Controls the attacks of the enemy, and returns an array of projectiles.
-     * @param x The x coordinate of the player
-     * @param y The y coordinate of the player
+     * @param player The targetted player
      * @param frame The amount of time that has passed in the last frame
      * @return An array of projectiles to be used in the level
      */
-    public Array<Projectile> attack(float x, float y, float frame) {
+    public Array<Projectile> attack(final Player player, float frame) {
         return bullets;
     }
 
     /**
      * Spawns additional enemies, should only be used when canSpawn is true.
-     * @param x The x coordinate of the player
-     * @param y The y coordinate of the player
+     * @param player The targetted player
      * @param frame The amount of time that has passed in the last frame
      * @return An array of enemies to be spawned
      */
-    public Array<Enemy> spawn(float x, float y, float frame) {
+    public Array<Enemy> spawn(final Player player, float frame) {
         return new Array<Enemy>();
     }
 

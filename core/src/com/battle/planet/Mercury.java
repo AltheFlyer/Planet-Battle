@@ -67,7 +67,10 @@ public class Mercury extends Enemy {
         r.circle(hitbox.x, hitbox.y, hitbox.radius);
     }
 
-    public void drawObjects(float x, float y, ShapeRenderer r) {
+    @Override
+    public void drawObjects(final Player player, ShapeRenderer r) {
+        float x = player.hitboxCenter.x;
+        float y = player.hitboxCenter.y;
         //Indicators for where Mercury is charging from
         if (phase == 2) {
             r.setColor(Color.ORANGE);
@@ -93,7 +96,10 @@ public class Mercury extends Enemy {
         }
     }
 
-    public Array<Projectile> attack(float x, float y, float frame) {
+    @Override
+    public Array<Projectile> attack(final Player player, float frame) {
+        float x = player.hitboxCenter.x;
+        float y = player.hitboxCenter.y;
         bullets.clear();
         if (phase == 1) {
             passiveCooldown -= frame;

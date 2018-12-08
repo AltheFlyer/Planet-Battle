@@ -64,7 +64,7 @@ public class Mars extends Enemy {
     }
 
     @Override
-    public void drawObjects(float x, float y, ShapeRenderer r) {
+    public void drawObjects(final Player player, ShapeRenderer r) {
         r.setColor(Color.YELLOW);
         if (inCharge) {
             r.rectLine(hitbox.x, hitbox.y, chargeDestination.x, chargeDestination.y, 5f);
@@ -72,7 +72,9 @@ public class Mars extends Enemy {
     }
 
     @Override
-    public Array<Projectile> attack(float x, float y, float frame) {
+    public Array<Projectile> attack(final Player player, float frame) {
+        float x = player.hitboxCenter.x;
+        float y = player.hitboxCenter.y;
         bullets.clear();
         if (phase == 1) {
             spearCooldown -= frame;
@@ -219,7 +221,10 @@ public class Mars extends Enemy {
         return bullets;
     }
 
-    public Array<Enemy> spawn(float x, float y, float frame) {
+    @Override
+    public Array<Enemy> spawn(final Player player, float frame) {
+        float x = player.hitboxCenter.x;
+        float y = player.hitboxCenter.y;
         Array<Enemy> e = new Array<Enemy>();
         e.add(new Phobos(x, y, this));
         e.add(new Deimos(x, y, this));
