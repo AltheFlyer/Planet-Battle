@@ -26,13 +26,7 @@ public class BattleLevel implements Screen {
     OrthographicCamera camera;
 
     //Player values
-    Rectangle playerHitbox;
-    Vector2 hitboxCenter;
-    final float MAX_COOLDOWN = 0.08f;
-    float cooldown;
-    float playerSpeed = 200;
-    float MAX_INVINCIBLE = 1f;
-    float invincible = 0;
+    Player player;
 
     //Other level things
     Array<Projectile> playerBullets;
@@ -63,9 +57,8 @@ public class BattleLevel implements Screen {
         camera.setToOrtho(false, SCREEN_WIDTH, SCREEN_HEIGHT);
 
         //Initialize player
-        playerHitbox = new Rectangle(0, 0, 10, 10);
+        player = new Player(0, 0);
         playerBullets = new Array<Projectile>();
-        hitboxCenter = new Vector2(0, 0);
 
         //Initialize enemies
         enemyBullets = new Array<Projectile>();
@@ -119,7 +112,7 @@ public class BattleLevel implements Screen {
             frame = 0.2f;
         }
         mouse = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-        playerHitbox.getCenter(hitboxCenter);
+        player.hitbox.getCenter(player.hitboxCenter);
     }
 
     public void draw() {
@@ -135,33 +128,33 @@ public class BattleLevel implements Screen {
         //Draw all enemies
         for (Enemy e: enemies) {
             e.drawBody(render);
-            e.drawObjects(hitboxCenter.x, hitboxCenter.y, render);
+            e.drawObjects(player.hitboxCenter.x, player.hitboxCenter.y, render);
             if (areHealthBarsVisible) {
                 e.drawHealthBars(render);
             }
         }
 
         //Draw player
-        if (invincible <= 0) {
+        if (player.invincible <= 0) {
             render.setColor(Color.BLUE);
         } else {
             render.setColor(Color.RED);
         }
-        drawRectangle(new Rectangle(playerHitbox.x - 5, playerHitbox.y - 5, 20, 20));
+        drawRectangle(new Rectangle(player.hitbox.x - 5, player.hitbox.y - 5, 20, 20));
         //render.setColor(Color.GREEN);
         //drawRectangle(playerHitbox);
 
         //Draw player bullets, then enemy bullets
         render.setColor(Color.YELLOW);
         for (Projectile p: playerBullets) {
-            p.move(hitboxCenter.x, hitboxCenter.y, frame);
+            p.move(player.hitboxCenter.x, player.hitboxCenter.y, frame);
             drawRectangle(p.hitbox);
             p.drawSpecial(render);
         }
 
         for (Projectile p: enemyBullets) {
             render.setColor(Color.RED);
-            p.move(hitboxCenter.x, hitboxCenter.y, frame);
+            p.move(player.hitboxCenter.x, player.hitboxCenter.y, frame);
             drawRectangle(p.hitbox);
             p.drawSpecial(render);
         }
@@ -172,26 +165,26 @@ public class BattleLevel implements Screen {
 
     public void playerShoot() {
         //Player shooting
-        if (/*Gdx.input.isTouched() && */cooldown <= 0) {
-            float theta = MathUtils.atan2(mouse.y - playerHitbox.y, mouse.x - playerHitbox.x);
+        if (/*Gdx.input.isTouched() && */player.cooldown <= 0) {
+            float theta = MathUtils.atan2(mouse.y - player.hitbox.y, mouse.x - player.hitbox.x);
             float vx = MathUtils.cos(theta) * 400;
             float vy = MathUtils.sin(theta) * 400;
 
-            playerBullets.add(new BasicProjectile(hitboxCenter.x, hitboxCenter.y, vx, vy));
-            cooldown = MAX_COOLDOWN;
+            playerBullets.add(new BasicProjectile(player.hitboxCenter.x, player.hitboxCenter.y, vx, vy));
+            player.cooldown = player.PRIMARY_COOLDOWN;
         }
-        cooldown -= frame;
-        if (cooldown < 0) {
-            cooldown = 0;
+        player.cooldown -= frame;
+        if (player.cooldown < 0) {
+            player.cooldown = 0;
         }
     }
 
     public void enemyActions() {
         //Enemy actions
         for (Enemy e: enemies) {
-            enemyBullets.addAll(e.attack(hitboxCenter.x, hitboxCenter.y, frame));
+            enemyBullets.addAll(e.attack(player.hitboxCenter.x, player.hitboxCenter.y, frame));
             if (e.canSpawn) {
-                enemies.addAll(e.spawn(hitboxCenter.x, hitboxCenter.y, frame));
+                enemies.addAll(e.spawn(player.hitboxCenter.x, player.hitboxCenter.y, frame));
             }
             e.move();
             e.collide(playerBullets);
@@ -201,45 +194,45 @@ public class BattleLevel implements Screen {
     public void movePlayer() {
         //Player movements
         if (Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            playerHitbox.y += playerSpeed * frame;
+            player.hitbox.y += player.speed * frame;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            playerHitbox.x -= playerSpeed * frame;
+            player.hitbox.x -= player.speed * frame;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            playerHitbox.y -= playerSpeed * frame;
+            player.hitbox.y -= player.speed * frame;
         }
         if (Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            playerHitbox.x += playerSpeed * frame;
+            player.hitbox.x += player.speed * frame;
         }
 
         //Keep player in bounds
-        if (playerHitbox.x - 5 < 0) {
-            playerHitbox.x = 5;
-        } else if (playerHitbox.x + playerHitbox.height + 5 > LEVEL_WIDTH) {
-            playerHitbox.x = LEVEL_WIDTH - playerHitbox.width - 5;
+        if (player.hitbox.x - 5 < 0) {
+            player.hitbox.x = 5;
+        } else if (player.hitbox.x + player.hitbox.height + 5 > LEVEL_WIDTH) {
+            player.hitbox.x = LEVEL_WIDTH - player.hitbox.width - 5;
         }
-        if (playerHitbox.y - 5 < 0) {
-            playerHitbox.y = 5;
-        } else if (playerHitbox.y + playerHitbox.height + 5 > LEVEL_HEIGHT) {
-            playerHitbox.y = LEVEL_HEIGHT - playerHitbox.height - 5;
+        if (player.hitbox.y - 5 < 0) {
+            player.hitbox.y = 5;
+        } else if (player.hitbox.y + player.hitbox.height + 5 > LEVEL_HEIGHT) {
+            player.hitbox.y = LEVEL_HEIGHT - player.hitbox.height - 5;
         }
     }
 
     public void playerCollisions() {
-        if (invincible > 0) {
-            invincible -= frame;
+        if (player.invincible > 0) {
+            player.invincible -= frame;
         }
 
         for (Projectile p: enemyBullets) {
-            if (invincible <= 0 && playerHitbox.overlaps(p.hitbox)) {
-                invincible = MAX_INVINCIBLE;
+            if (player.invincible <= 0 && player.hitbox.overlaps(p.hitbox)) {
+                player.invincible = player.MAX_INVINCIBLE;
             }
         }
 
         for (Enemy e: enemies) {
-            if (invincible <= 0 && e.collisionBox.contains(hitboxCenter)) {
-                invincible = MAX_INVINCIBLE;
+            if (player.invincible <= 0 && e.collisionBox.contains(player.hitboxCenter)) {
+                player.invincible = player.MAX_INVINCIBLE;
             }
         }
     }
@@ -289,10 +282,10 @@ public class BattleLevel implements Screen {
         //Press either shift to toggle slow movement
         if (Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_RIGHT)) {
             //Toggles the speed
-            if (playerSpeed == 200) {
-                playerSpeed = 150;
+            if (player.speed == 200) {
+                player.speed = 150;
             } else {
-                playerSpeed = 200;
+                player.speed = 200;
             }
         }
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
