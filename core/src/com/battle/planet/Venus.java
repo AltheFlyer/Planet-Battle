@@ -14,6 +14,7 @@ public class Venus extends Enemy {
     Phase 1: Summons an acid seeker cloud
     Phase 2: Not Used
     Phase 3: Summons an acid cloud from a random offscreen position, with velocity toward the level center
+    Phase 4: Not Used
     */
     float spawnCooldown;
     final float SPAWN_MAX_COOLDOWN = 3f;
@@ -24,6 +25,7 @@ public class Venus extends Enemy {
     Phase 1: Not Used
     Phase 2: Spawns acid clouds from offscreen to straight down toward the player.
     Phase 3: Not Used
+    Phase 4: Aims hearts towards the player.
      */
     float aimCooldown;
     final float AIM_MAX_COOLDOWN = 1f;
@@ -32,6 +34,7 @@ public class Venus extends Enemy {
     Phase 1: Not Used
     Phase 2: Used to periodically drop a bunch of acid clouds
     Phase 3: Controls a constant wave spread pattern
+    Phase 4: Controls constant acid rain
      */
     float mainCooldown;
     final float MAIN_MAX_COOLDOWN = 5f;
@@ -130,7 +133,27 @@ public class Venus extends Enemy {
         if (phase == 4) {
             mainCooldown -= frame;
             aimCooldown -= frame;
-            spawnCooldown -= frame;
+            //spawnCooldown -= frame;
+            //Constant acid rain
+            if (mainCooldown <= 0) {
+                mainCooldown = MAIN_MAX_COOLDOWN * 0.03f;
+                bullets.add(new BasicProjectile(MathUtils.random(100, 700), 700, -MathUtils.random(10, 70), -MathUtils.random(170, 200)));
+                //bullets.add(new BasicProjectile(MathUtils.random(100, 700), 700, -MathUtils.random(10, 70), -MathUtils.random(170, 200)));
+            }
+            //Hearts
+            if (aimCooldown <= 0) {
+                float angle = MathUtils.atan2(player.hitbox.y - hitbox.y, player.hitbox.x - hitbox.x);
+                createHeart(hitbox.x, hitbox.y, angle, 10, MathUtils.cos(angle) * 150, MathUtils.sin(angle) * 150);
+                aimCooldown = AIM_MAX_COOLDOWN * 2;
+            }
+        }
+        if (phase == 5) {
+            //Constant acid rain (still)
+            if (mainCooldown <= 0) {
+                mainCooldown = MAIN_MAX_COOLDOWN * 0.03f;
+                bullets.add(new BasicProjectile(MathUtils.random(100, 700), 700, -MathUtils.random(10, 70), -MathUtils.random(170, 200)));
+                //bullets.add(new BasicProjectile(MathUtils.random(100, 700), 700, -MathUtils.random(10, 70), -MathUtils.random(170, 200)));
+            }
         }
 
 
@@ -141,6 +164,9 @@ public class Venus extends Enemy {
                 bullets.add(new VenusRingProjectile(150,300 + 200 * MathUtils.cos(angle), 300 + 200 * MathUtils.sin(angle), 1.0f, 3.14f, this));
             }
             phase = 1;
+
+
+
         }
         if (phase == -1) {
             mainCooldown -= frame;
@@ -245,4 +271,35 @@ public class Venus extends Enemy {
         return projectiles;
     }
 
+    public void createHeart(float x, float y, float angle, float scale, float vx, float vy) {
+        float s = MathUtils.sin(angle + MathUtils.PI / 2);
+        float c = MathUtils.cos(angle + MathUtils.PI / 2);
+
+        //Top and bottom
+        bullets.add(new BasicProjectile(x + rotateX(0, 2 * scale, c, s), y + rotateY(0, 2 * scale, c, s), vx, vy));
+        bullets.add(new BasicProjectile(x + rotateX(0, -4 * scale, c, s), y + rotateY(0, -4 * scale, c, s), vx, vy));
+
+        //Heart halves, negative for left, positive for right.
+        for (int i = -1; i < 2; i += 2) {
+
+            bullets.add(new BasicProjectile(x + rotateX(1 * scale * i, 2.5f * scale, c, s), y + rotateY( 1 * scale * i, 2.5f * scale, c, s), vx, vy));
+            bullets.add(new BasicProjectile(x + rotateX(2 * scale * i, 3 * scale, c, s), y + rotateY(2 * scale * i, 3 * scale, c, s), vx, vy));
+            bullets.add(new BasicProjectile(x + rotateX(3 * scale * i, 2.5f * scale, c, s), y + rotateY(3 * scale * i, 2.5f * scale, c, s), vx, vy));
+            bullets.add(new BasicProjectile(x + rotateX(3.5f * scale * i, 2 * scale, c, s), y + rotateY(3.5f * scale * i, 2 * scale, c, s), vx, vy));
+            bullets.add(new BasicProjectile(x + rotateX(4 * scale * i, 1 * scale, c, s), y + rotateY(4 * scale * i, 1 * scale, c, s), vx, vy));
+
+            bullets.add(new BasicProjectile(x + rotateX(4 * scale * i, 0, c, s), y + rotateY(4 * scale * i, 0, c, s), vx, vy));
+            bullets.add(new BasicProjectile(x + rotateX(3 * scale * i,-1 * scale, c, s), y + rotateY(3 * scale * i, -1 * scale, c, s), vx, vy));
+            bullets.add(new BasicProjectile(x + rotateX(2 * scale * i,-2 * scale, c, s), y + rotateY(2 * scale * i, -2 * scale, c, s), vx, vy));
+            bullets.add(new BasicProjectile(x + rotateX(1 * scale * i,-3 * scale, c, s), y + rotateY(1 * scale * i, -3 * scale, c, s), vx, vy));
+        }
+    }
+
+    public float rotateX(float x, float y, float c, float s) {
+        return x * c - y * s;
+    }
+
+    public float rotateY(float x, float y, float c, float s) {
+        return y * c + x * s;
+    }
 }
