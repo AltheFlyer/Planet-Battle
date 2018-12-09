@@ -45,6 +45,7 @@ public class BattleLevel implements Screen {
 
     //Special controls
     boolean areHealthBarsVisible;
+    boolean autoShoot = true;
 
     public BattleLevel(final PlanetBattle g) {
         game = g;
@@ -167,7 +168,7 @@ public class BattleLevel implements Screen {
 
     public void playerShoot() {
         //Player shooting
-        if (/*Gdx.input.isTouched() && */player.cooldown <= 0) {
+        if ((Gdx.input.isTouched() ^ autoShoot) && player.cooldown <= 0) {
             float theta = MathUtils.atan2(mouse.y - player.hitbox.y, mouse.x - player.hitbox.x);
             float vx = MathUtils.cos(theta) * 400;
             float vy = MathUtils.sin(theta) * 400;
@@ -295,6 +296,11 @@ public class BattleLevel implements Screen {
             for (Enemy e: enemies) {
                 e.health -= 50;
             }
+        }
+
+        //Toggle autoshoot
+        if (Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
+            autoShoot = !autoShoot;
         }
     }
 

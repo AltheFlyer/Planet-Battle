@@ -10,15 +10,34 @@ public class Venus extends Enemy {
 
     int phase = 0;
 
+    /*Controls cooldown for all non-specific spawning abilities
+    Phase 1: Summons an acid seeker cloud
+    Phase 2: Not Used
+    Phase 3: Summons an acid cloud from a random offscreen position, with velocity toward the level center
+    */
     float spawnCooldown;
     final float SPAWN_MAX_COOLDOWN = 3f;
+    //Counts how many enemies are spawned (for shielding purposes)
     int spawned = 0;
 
+    /*For any aimed abilities.
+    Phase 1: Not Used
+    Phase 2: Spawns acid clouds from offscreen to straight down toward the player.
+    Phase 3: Not Used
+     */
     float aimCooldown;
     final float AIM_MAX_COOLDOWN = 1f;
 
+    /* Controls 'essential' attacks
+    Phase 1: Not Used
+    Phase 2: Used to periodically drop a bunch of acid clouds
+    Phase 3: Controls a constant wave spread pattern
+     */
     float mainCooldown;
     final float MAIN_MAX_COOLDOWN = 5f;
+
+    float aimDirection = 3 * MathUtils.PI / 2;
+    float aimChange = MathUtils.PI / 12;
 
     public Venus(float x, float y) {
         super(x, y, 70, 80, 500);
@@ -29,6 +48,8 @@ public class Venus extends Enemy {
 
         phaseMarkers.add(400);
         phaseMarkers.add(300);
+        phaseMarkers.add(200);
+        phaseMarkers.add(100);
     }
 
     @Override
@@ -79,6 +100,40 @@ public class Venus extends Enemy {
                 }
             }
         }
+        if (phase == 3) {
+            mainCooldown -= frame;
+            spawnCooldown -= frame;
+            if (spawnCooldown <= 0) {
+                //More frequent spawning based on health
+                //~50% cooldown at 201 health.
+                spawnCooldown = (SPAWN_MAX_COOLDOWN * ((health - 200) / 200) + 0.5f);
+                canSpawn = true;
+            }
+            //Creates spreads around an open area
+            if (mainCooldown <= 0) {
+                mainCooldown = MAIN_MAX_COOLDOWN * 0.03f;
+                createSpread(aimDirection + MathUtils.PI / 6, 15, MathUtils.PI / 6, 120);
+                createSpread(aimDirection - MathUtils.PI / 6, 15, MathUtils.PI / 6, 120);
+                //Side spread
+                createSpread(MathUtils.PI, 15, MathUtils.PI / 6, 120);
+                createSpread(0, 15, MathUtils.PI / 6, 120);
+            }
+            aimDirection += aimChange * frame;
+            if (aimDirection < 4 * MathUtils.PI / 3) {
+                aimDirection = 4 * MathUtils.PI / 3;
+                aimChange *= -1;
+            } else if (aimDirection > 5 * MathUtils.PI / 3) {
+                aimDirection = 5 * MathUtils.PI / 3;
+                aimChange *= -1;
+            }
+        }
+        if (phase == 4) {
+            mainCooldown -= frame;
+            aimCooldown -= frame;
+            spawnCooldown -= frame;
+        }
+
+
         if (phase == 0) {
             //Create orbital ring
             for (int i = 0; i < 72; ++i) {
@@ -98,10 +153,18 @@ public class Venus extends Enemy {
         //Phase transitions
         if (phase == 1 && health <= 400) {
             phase = -1;
-            mainCooldown = 1.5f;
+            mainCooldown = 0.7f;
         }
-        if (phase == 2 && health <= 300) {
+        if ((phase == 2 || phase == -1) && health <= 300) {
+            mainCooldown = MAIN_MAX_COOLDOWN / 10;
             phase = 3;
+        }
+        if (phase == 3 && health <= 200) {
+            phase = 4;
+            canSpawn = true;
+        }
+        if (phase == 4 && health <= 100) {
+            phase = 5;
         }
         return bullets;
     }
@@ -140,7 +203,21 @@ public class Venus extends Enemy {
                 canSpawn = false;
             }
         }
+        if (phase == 3) {
+            float angle = MathUtils.random(360) * MathUtils.degreesToRadians;
+            enemies.add(new AcidCloud(300 + MathUtils.cos(angle) * 400, 300 + MathUtils.sin(angle) * 400, -MathUtils.cos(angle) * 150, -MathUtils.sin(angle) * 150));
+            canSpawn = false;
+        }
+        if (phase == 4) {
+            enemies.add(new VenusReflector(this, hitbox.radius + 40, 100, 0, MathUtils.PI / 2, true));
+            enemies.add(new VenusReflector(this, hitbox.radius + 40, 100, MathUtils.PI / 12, MathUtils.PI / 2, true));
+            enemies.add(new VenusReflector(this, hitbox.radius + 40, 100, -MathUtils.PI / 12, MathUtils.PI / 2, true));
 
+            enemies.add(new VenusReflector(this, hitbox.radius + 40, 100, MathUtils.PI, MathUtils.PI / 2, true));
+            enemies.add(new VenusReflector(this, hitbox.radius + 40, 100, 11 * MathUtils.PI / 12, MathUtils.PI / 2, true));
+            enemies.add(new VenusReflector(this, hitbox.radius + 40, 100, 13 * MathUtils.PI / 12, MathUtils.PI / 2, true));
+            canSpawn = false;
+        }
         /*
         if (phase == -1) {
             for (int i = 0; i < 8; ++i) {

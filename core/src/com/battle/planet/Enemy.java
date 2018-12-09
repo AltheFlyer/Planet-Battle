@@ -91,6 +91,13 @@ abstract public class Enemy {
         }
     }
 
+    public void createSpread(float theta, int amount, float spread, float speed) {
+        for (int i = 0; i < amount; ++i) {
+            float angle = theta + ((float) i / amount) * spread - (spread / 2);;
+            bullets.add(new BasicProjectile(hitbox.x, hitbox.y, MathUtils.cos(angle) * speed, MathUtils.sin(angle) * speed));
+        }
+    }
+
     public void createWaveSpread(float theta, int amount, float spread, float mo) {
         for (int i = 0; i < amount; ++i) {
             float angle = theta + ((float) i / amount) * spread - (spread / 2);;
