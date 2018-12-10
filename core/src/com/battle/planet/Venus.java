@@ -148,11 +148,20 @@ public class Venus extends Enemy {
             }
         }
         if (phase == 5) {
+            mainCooldown -= frame;
+            aimCooldown -= frame;
+            spawnCooldown -= frame;
+
             //Constant acid rain (still)
             if (mainCooldown <= 0) {
-                mainCooldown = MAIN_MAX_COOLDOWN * 0.03f;
+                mainCooldown = MAIN_MAX_COOLDOWN * 0.06f;
                 bullets.add(new BasicProjectile(MathUtils.random(100, 700), 700, -MathUtils.random(10, 70), -MathUtils.random(170, 200)));
                 //bullets.add(new BasicProjectile(MathUtils.random(100, 700), 700, -MathUtils.random(10, 70), -MathUtils.random(170, 200)));
+            }
+
+            if (spawnCooldown <= 0) {
+                canSpawn = true;
+                spawnCooldown = SPAWN_MAX_COOLDOWN * 1.5f;
             }
         }
 
@@ -164,9 +173,6 @@ public class Venus extends Enemy {
                 bullets.add(new VenusRingProjectile(150,300 + 200 * MathUtils.cos(angle), 300 + 200 * MathUtils.sin(angle), 1.0f, 3.14f, this));
             }
             phase = 1;
-
-
-
         }
         if (phase == -1) {
             mainCooldown -= frame;
@@ -235,13 +241,27 @@ public class Venus extends Enemy {
             canSpawn = false;
         }
         if (phase == 4) {
-            enemies.add(new VenusReflector(this, hitbox.radius + 40, 100, 0, MathUtils.PI / 2, true));
-            enemies.add(new VenusReflector(this, hitbox.radius + 40, 100, MathUtils.PI / 12, MathUtils.PI / 2, true));
-            enemies.add(new VenusReflector(this, hitbox.radius + 40, 100, -MathUtils.PI / 12, MathUtils.PI / 2, true));
+            enemies.add(new VenusReflector(this, hitbox.radius + 40, 1000, 0, MathUtils.PI / 2, true));
+            enemies.add(new VenusReflector(this, hitbox.radius + 40, 1000, MathUtils.PI / 12, MathUtils.PI / 2, true));
+            enemies.add(new VenusReflector(this, hitbox.radius + 40, 1000, -MathUtils.PI / 12, MathUtils.PI / 2, true));
 
-            enemies.add(new VenusReflector(this, hitbox.radius + 40, 100, MathUtils.PI, MathUtils.PI / 2, true));
-            enemies.add(new VenusReflector(this, hitbox.radius + 40, 100, 11 * MathUtils.PI / 12, MathUtils.PI / 2, true));
-            enemies.add(new VenusReflector(this, hitbox.radius + 40, 100, 13 * MathUtils.PI / 12, MathUtils.PI / 2, true));
+            enemies.add(new VenusReflector(this, hitbox.radius + 40, 1000, MathUtils.PI, MathUtils.PI / 2, true));
+            enemies.add(new VenusReflector(this, hitbox.radius + 40, 1000, 11 * MathUtils.PI / 12, MathUtils.PI / 2, true));
+            enemies.add(new VenusReflector(this, hitbox.radius + 40, 1000, 13 * MathUtils.PI / 12, MathUtils.PI / 2, true));
+            canSpawn = false;
+        }
+        if (phase == 5) {
+            float angle = MathUtils.random(360) * MathUtils.degreesToRadians;
+            if (spawned <= 3) {
+                enemies.add(new AcidSeeker(300 + MathUtils.cos(angle) * 400, 300 + MathUtils.sin(angle) * 400, 100,this));
+                spawned += 1;
+            } else {
+                enemies.add(new AcidCloud(300 + MathUtils.cos(angle) * 400, 300 + MathUtils.sin(angle) * 400, -MathUtils.cos(angle) * 100, -MathUtils.sin(angle) * 100));
+            }
+            for (int i = 0; i < 3; ++i) {
+                angle += MathUtils.PI/2;
+                enemies.add(new AcidCloud(300 + MathUtils.cos(angle) * 400, 300 + MathUtils.sin(angle) * 400, -MathUtils.cos(angle) * 100, -MathUtils.sin(angle) * 100));
+            }
             canSpawn = false;
         }
         /*
@@ -260,7 +280,7 @@ public class Venus extends Enemy {
 
     @Override
     public Array<Projectile> collide(Array<Projectile> projectiles) {
-        if (spawned == 0 || phase != 1) {
+        if (spawned == 0) {
             for (Projectile p : projectiles) {
                 if (!p.isDestroyed && this.hitbox.contains(p.hitbox.x, p.hitbox.y)) {
                     p.isDestroyed = true;

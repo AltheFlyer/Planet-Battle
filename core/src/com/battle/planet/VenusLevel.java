@@ -8,4 +8,17 @@ public class VenusLevel extends BattleLevel {
         player.hitbox.setPosition(150, 300);
     }
 
+    @Override
+    public void checkWin() {
+        boolean win = true;
+        for (Enemy e: enemies) {
+            if (e.getClass() == Venus.class) {
+                win = false;
+            }
+        }
+        if (win) {
+            game.setScreen(new LevelSelectScreen(game));
+            dispose();
+        }
+    }
 }

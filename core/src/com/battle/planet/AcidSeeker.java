@@ -9,6 +9,7 @@ import jdk.nashorn.internal.ir.PropertyKey;
 public class AcidSeeker extends Enemy {
 
     final Venus venus;
+    float speed;
 
     //Small enemy, with a larger damage area
     //(Like an acid aura)
@@ -16,6 +17,13 @@ public class AcidSeeker extends Enemy {
     public AcidSeeker(float x, float y, Venus v) {
         super(x, y, 60, 12, 2);
         venus = v;
+        speed = 150;
+    }
+
+    public AcidSeeker(float x, float y, float s, Venus v) {
+        super(x, y, 60, 12, 2);
+        venus = v;
+        speed = s;
     }
 
     @Override
@@ -51,8 +59,8 @@ public class AcidSeeker extends Enemy {
         float x = player.hitboxCenter.x;
         float y = player.hitboxCenter.y;
         float angle = MathUtils.atan2(y - hitbox.y, x - hitbox.x);
-        hitbox.x += MathUtils.cos(angle) * 150 * frame;
-        hitbox.y += MathUtils.sin(angle) * 150 * frame;
+        hitbox.x += MathUtils.cos(angle) * speed * frame;
+        hitbox.y += MathUtils.sin(angle) * speed * frame;
         return bullets;
     }
 
