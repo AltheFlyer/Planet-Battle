@@ -15,13 +15,13 @@ public class AcidSeeker extends Enemy {
     //(Like an acid aura)
 
     public AcidSeeker(float x, float y, Venus v) {
-        super(x, y, 60, 12, 2);
+        super(x, y, 60, 20, 2);
         venus = v;
         speed = 150;
     }
 
     public AcidSeeker(float x, float y, float s, Venus v) {
-        super(x, y, 60, 12, 2);
+        super(x, y, 60, 20, 2);
         venus = v;
         speed = s;
     }
@@ -29,7 +29,7 @@ public class AcidSeeker extends Enemy {
     @Override
     public void drawBody(ShapeRenderer r) {
         r.setColor(Color.GRAY);
-        r.circle(hitbox.x, hitbox.y, hitbox.radius);
+        r.circle(hitbox.x, hitbox.y, hitbox.radius - 8);
         r.setColor(120, 120, 0, 0.4f);
         r.circle(hitbox.x, hitbox.y, collisionBox.radius);
     }

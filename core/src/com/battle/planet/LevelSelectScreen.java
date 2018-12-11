@@ -28,6 +28,10 @@ public class LevelSelectScreen implements Screen {
         buttons.add(new Rectangle(50, 500, 50, 50));
         buttons.add(new Rectangle(150, 500, 50, 50));
         buttons.add(new Rectangle(250, 500, 50, 50));
+
+        buttons.add(new Rectangle(50, 350, 50, 50));
+        buttons.add(new Rectangle(150, 350, 50, 50));
+        buttons.add(new Rectangle(250, 350, 50, 50));
     }
 
     @Override
@@ -44,25 +48,58 @@ public class LevelSelectScreen implements Screen {
         }
         game.render.end();
 
+
+        game.batch.begin();
+
+        //Level Titles
+        game.font.draw(game.batch, LevelText.MARS_TITLE, 50, 500);
+        game.font.draw(game.batch, LevelText.MERCURY_TITLE, 150, 500);
+        game.font.draw(game.batch, LevelText.VENUS_TITLE, 250, 500);
+
+        game.font.draw(game.batch, LevelText.SATURN_TITLE, 50, 350);
+        game.font.draw(game.batch, LevelText.URANUS_TITLE, 150, 350);
+        game.font.draw(game.batch, LevelText.NEPTUNE_TITLE, 250, 350);
+
         mouse = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
 
         //Check for button press to load levels
         for (int i=0; i < buttons.size; ++i) {
-            if (Gdx.input.isTouched() && buttons.get(i).contains(mouse.x, mouse.y)) {
-                switch(i) {
+            if (buttons.get(i).contains(mouse.x, mouse.y)) {
+                switch (i) {
                     case 0:
-                        game.setScreen(new MarsLevel(game));
+                        game.font.draw(game.batch, LevelText.MARS_TITLE, 400, 500, 190, 1, true);
+                        game.font.draw(game.batch, LevelText.MARS_SUBTITLE, 400, 470, 190, 1, true);
+                        game.font.draw(game.batch, LevelText.MARS_TEXT, 400, 400, 190, 1, true);
                         break;
                     case 1:
-                        game.setScreen(new MercuryLevel(game));
+                        game.font.draw(game.batch, LevelText.MERCURY_TITLE, 400, 500, 190, 1, true);
+                        game.font.draw(game.batch, LevelText.MERCURY_SUBTITLE, 400, 470, 190, 1, true);
+                        game.font.draw(game.batch, LevelText.MERCURY_TEXT, 400, 400, 190, 1, true);
                         break;
                     case 2:
-                        game.setScreen(new VenusLevel(game));
+                        game.font.draw(game.batch, LevelText.VENUS_TITLE, 400, 500, 190, 1, true);
+                        game.font.draw(game.batch, LevelText.VENUS_SUBTITLE, 400, 470, 190, 1, true);
+                        game.font.draw(game.batch, LevelText.VENUS_TEXT, 400, 400, 190, 1, true);
                         break;
                 }
-                dispose();
+                if (Gdx.input.isTouched()) {
+                    switch (i) {
+                        case 0:
+                            game.setScreen(new MarsLevel(game));
+                            break;
+                        case 1:
+                            game.setScreen(new MercuryLevel(game));
+                            break;
+                        case 2:
+                            game.setScreen(new VenusLevel(game));
+                            break;
+                    }
+                    dispose();
+                }
             }
         }
+
+        game.batch.end();
     }
 
     @Override
