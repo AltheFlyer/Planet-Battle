@@ -216,6 +216,20 @@ public class BattleLevel implements Screen {
         } else if (player.hitbox.y + player.hitbox.height + 5 > LEVEL_HEIGHT) {
             player.hitbox.y = LEVEL_HEIGHT - player.hitbox.height - 5;
         }
+
+        //Control camera
+        camera.position.x = player.hitbox.x;
+        camera.position.y = player.hitbox.y;
+        if (camera.position.x - camera.viewportWidth / 2 < 0) {
+            camera.position.x = camera.viewportWidth / 2;
+        } else if (camera.position.x + camera.viewportWidth / 2 + 5 > LEVEL_WIDTH) {
+            camera.position.x = LEVEL_WIDTH - camera.viewportWidth / 2;
+        }
+        if (camera.position.y - camera.viewportHeight / 2 < 0) {
+            camera.position.y = camera.viewportHeight / 2;
+        } else if (camera.position.y + camera.viewportHeight / 2 > LEVEL_HEIGHT) {
+            camera.position.y = LEVEL_HEIGHT - camera.viewportHeight / 2;
+        }
     }
 
     public void playerCollisions() {
@@ -241,7 +255,7 @@ public class BattleLevel implements Screen {
         Iterator<Projectile> iterE = enemyBullets.iterator();
         while (iterE.hasNext()) {
             Projectile p = iterE.next();
-            if (p.isDestroyed || p.hitbox.x < -150 || p.hitbox.x > SCREEN_WIDTH + 150 || p.hitbox.y < -150 || p.hitbox.y > SCREEN_HEIGHT + 150) {
+            if (p.isDestroyed || p.hitbox.x < -150 || p.hitbox.x > LEVEL_WIDTH + 150 || p.hitbox.y < -150 || p.hitbox.y > LEVEL_HEIGHT + 150) {
                 iterE.remove();
             }
         }
@@ -249,7 +263,7 @@ public class BattleLevel implements Screen {
         Iterator<Projectile> iterF = playerBullets.iterator();
         while (iterF.hasNext()) {
             Projectile p = iterF.next();
-            if (p.isDestroyed || p.hitbox.x < -150 || p.hitbox.x > SCREEN_WIDTH + 150 || p.hitbox.y < -150 || p.hitbox.y > SCREEN_HEIGHT + 150) {
+            if (p.isDestroyed || p.hitbox.x < -150 || p.hitbox.x > LEVEL_WIDTH + 150 || p.hitbox.y < -150 || p.hitbox.y > LEVEL_HEIGHT + 150) {
                 iterF.remove();
             }
         }

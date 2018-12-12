@@ -39,6 +39,9 @@ public class LevelSelectScreen implements Screen {
         Gdx.gl.glClearColor(0, 0, 0.2f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
+        game.render.setProjectionMatrix(camera.combined);
+        game.batch.setProjectionMatrix(camera.combined);
+
         game.render.begin();
         game.render.set(ShapeRenderer.ShapeType.Filled);
         game.render.setColor(Color.WHITE);
@@ -92,6 +95,9 @@ public class LevelSelectScreen implements Screen {
                             break;
                         case 2:
                             game.setScreen(new VenusLevel(game));
+                            break;
+                        case 4:
+                            game.setScreen(new UranusLevel(game));
                             break;
                     }
                     dispose();
