@@ -172,9 +172,9 @@ public class Mercury extends Enemy {
             if (aimCooldown <= 0) {
                 //Swap x and y velocities to make bullets perpendicular to Mercury's path
                 if (MathUtils.randomBoolean()) {
-                    bullets.add(new BasicProjectile(new Rectangle(hitbox.x, hitbox.y, 10, 10), new Vector2(velocity.y, velocity.x)));
+                    bullets.add(new BasicProjectile(new Rectangle(hitbox.x, hitbox.y, 8, 8), new Vector2(velocity.y, velocity.x)));
                 } else {
-                    bullets.add(new BasicProjectile(new Rectangle(hitbox.x, hitbox.y, 10, 10), new Vector2(-velocity.y, -velocity.x)));
+                    bullets.add(new BasicProjectile(new Rectangle(hitbox.x, hitbox.y, 8, 8), new Vector2(-velocity.y, -velocity.x)));
                 }
                 //Increases frequency of shots compared to phase 1
                 aimCooldown = AIM_MAX_COOLDOWN / 4;

@@ -154,7 +154,7 @@ public class Mars extends Enemy {
                     spearCooldown = SPEAR_MAX_COOLDOWN;
                     spearCount = 0;
                 } else {
-                    spearCooldown = MathUtils.random(0.4f, 0.7f);
+                    spearCooldown = MathUtils.random(0.6f, 0.8f);
                 }
             }
             hitbox.x += chargeVelocity.x * frame;
@@ -186,7 +186,7 @@ public class Mars extends Enemy {
             if (bounces >= 4) {
                 bounces = 0;
                 float angle = MathUtils.atan2(y - hitbox.y, x - hitbox.x);
-                chargeVelocity.set(MathUtils.cos(angle) * 300, MathUtils.sin(angle) * 300);
+                chargeVelocity.set(MathUtils.cos(angle) * 250, MathUtils.sin(angle) * 250);
             }
         }
         //Transition to 2nd phase
@@ -216,7 +216,7 @@ public class Mars extends Enemy {
             spearCooldown = SPEAR_MAX_COOLDOWN;
             chargeCooldown = CHARGE_MAX_COOLDOWN;
             float angle = MathUtils.atan2(y - hitbox.y, x - hitbox.x);
-            chargeVelocity.set(MathUtils.cos(angle) * 300, MathUtils.sin(angle) * 300);
+            chargeVelocity.set(MathUtils.cos(angle) * 250, MathUtils.sin(angle) * 250);
         }
         return bullets;
     }
