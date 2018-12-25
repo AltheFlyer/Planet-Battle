@@ -20,8 +20,8 @@ public class Phobos extends Enemy {
     //~90 degrees
     float angularVelocity = 1.5708f;
 
-    public Phobos(float x, float y, Mars m) {
-        super(x, y, 30, 50, 100);
+    public Phobos(float x, float y, Mars m, final Player p) {
+        super(x, y, 30, 50, 100, p);
         mars = m;
         boltCooldown = MAX_BOLT_COOLDOWN;
     }
@@ -32,7 +32,7 @@ public class Phobos extends Enemy {
     }
 
     @Override
-    public void drawObjects(final Player player, ShapeRenderer r) {
+    public void drawObjects(ShapeRenderer r) {
         float x = player.hitboxCenter.x;
         float y = player.hitboxCenter.y;
         r.setColor(Color.YELLOW);
@@ -42,7 +42,7 @@ public class Phobos extends Enemy {
     }
 
     @Override
-    public Array<Projectile> attack(final Player player, float frame) {
+    public Array<Projectile> attack(float frame) {
         float x = player.hitboxCenter.x;
         float y = player.hitboxCenter.y;
         bullets.clear();

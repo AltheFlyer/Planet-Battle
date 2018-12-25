@@ -131,7 +131,7 @@ public class BattleLevel implements Screen {
         //Draw all enemies
         for (Enemy e: enemies) {
             e.drawBody(render);
-            e.drawObjects(player, render);
+            e.drawObjects(render);
             if (areHealthBarsVisible) {
                 e.drawHealthBars(render);
             }
@@ -181,9 +181,9 @@ public class BattleLevel implements Screen {
     public void enemyActions() {
         //Enemy actions
         for (Enemy e: enemies) {
-            enemyBullets.addAll(e.attack(player, frame));
+            enemyBullets.addAll(e.attack(frame));
             if (e.canSpawn) {
-                enemies.addAll(e.spawn(player, frame));
+                enemies.addAll(e.spawn(frame));
             }
             e.move();
             e.collide(playerBullets);

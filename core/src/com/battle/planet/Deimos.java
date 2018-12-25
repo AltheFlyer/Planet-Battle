@@ -21,8 +21,8 @@ public class Deimos extends Enemy {
     //~50 degrees
     float angularVelocity = 0.872665f;
 
-    public Deimos(float x, float y, Mars m) {
-        super(x, y, 30, 40, 80);
+    public Deimos(float x, float y, Mars m, final Player p) {
+        super(x, y, 30, 40, 80, p);
         mars = m;
         boltCooldown = MAX_BOLT_COOLDOWN;
     }
@@ -33,7 +33,7 @@ public class Deimos extends Enemy {
     }
 
     @Override
-    public void drawObjects(final Player player, ShapeRenderer r) {
+    public void drawObjects(ShapeRenderer r) {
         float x = player.hitboxCenter.x;
         float y = player.hitboxCenter.y;
         r.setColor(Color.YELLOW);
@@ -43,7 +43,7 @@ public class Deimos extends Enemy {
     }
 
     @Override
-    public Array<Projectile> attack(final Player player, float frame) {
+    public Array<Projectile> attack(float frame) {
         float x = player.hitboxCenter.x;
         float y = player.hitboxCenter.y;
         bullets.clear();

@@ -18,6 +18,8 @@ abstract public class Enemy {
     //An array that is used to store bullets for the next attack.
     Array<Projectile> bullets;
 
+    final Player player;
+
     /**
      *
      * @param x The x coordinate to start at
@@ -25,7 +27,7 @@ abstract public class Enemy {
      * @param r0 The radius of the player-enemy hitbox
      * @param r1 The radius of the bullet-enemy hitbox
      */
-    public Enemy(float x, float y, float r0, float r1, float hp){
+    public Enemy(float x, float y, float r0, float r1, float hp, final Player p){
         collisionBox = new Circle(x, y, r0);
         hitbox = new Circle(x, y, r1);
         bullets = new Array<Projectile>();
@@ -33,6 +35,7 @@ abstract public class Enemy {
         MAX_HEALTH = hp;
         health = hp;
         phaseMarkers = new Array<Integer>();
+        player = p;
     }
 
     /**
@@ -45,27 +48,25 @@ abstract public class Enemy {
      * Draws other planet-based objects (warnings, alerts, animations)
      * @param r The shape renderer to draw with.
      */
-    public void drawObjects(final Player player, ShapeRenderer r) {
+    public void drawObjects(ShapeRenderer r) {
 
     }
 
     /**
      * Controls the attacks of the enemy, and returns an array of projectiles.
-     * @param player The targetted player
      * @param frame The amount of time that has passed in the last frame
      * @return An array of projectiles to be used in the level
      */
-    public Array<Projectile> attack(final Player player, float frame) {
+    public Array<Projectile> attack( float frame) {
         return bullets;
     }
 
     /**
      * Spawns additional enemies, should only be used when canSpawn is true.
-     * @param player The targetted player
      * @param frame The amount of time that has passed in the last frame
      * @return An array of enemies to be spawned
      */
-    public Array<Enemy> spawn(final Player player, float frame) {
+    public Array<Enemy> spawn(float frame) {
         return new Array<Enemy>();
     }
 

@@ -12,8 +12,8 @@ public class AcidCloud extends Enemy {
     //(Like an acid aura)
     Vector2 velocity;
 
-    public AcidCloud(float x, float y, float vx, float vy) {
-        super(x, y, 60, 20, 2);
+    public AcidCloud(float x, float y, float vx, float vy, final Player p) {
+        super(x, y, 60, 20, 2, p);
         velocity = new Vector2(vx, vy);
     }
 
@@ -26,7 +26,7 @@ public class AcidCloud extends Enemy {
     }
 
     @Override
-    public void drawObjects(final Player player, ShapeRenderer r) {
+    public void drawObjects(ShapeRenderer r) {
         r.setColor(Color.ORANGE);
         //Coming from left side
         if (hitbox.x < 10) {
@@ -44,7 +44,7 @@ public class AcidCloud extends Enemy {
     }
 
     @Override
-    public Array<Projectile> attack(final Player player, float frame) {
+    public Array<Projectile> attack( float frame) {
         hitbox.x += velocity.x * frame;
         hitbox.y += velocity.y * frame;
         //Destroy when too far offscreen

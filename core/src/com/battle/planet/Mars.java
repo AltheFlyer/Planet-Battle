@@ -44,8 +44,8 @@ public class Mars extends Enemy {
     boolean deimosDead = false;
     boolean phobosDead = false;
 
-    public Mars(float x, float y) {
-        super(x, y, 70, 80, 500);
+    public Mars(float x, float y, final Player p) {
+        super(x, y, 70, 80, 500, p);
         spearCooldown = SPEAR_MAX_COOLDOWN;
         chargeCooldown = CHARGE_MAX_COOLDOWN;
         burstCooldown = BURST_MAX_COOLDOWN;
@@ -64,7 +64,7 @@ public class Mars extends Enemy {
     }
 
     @Override
-    public void drawObjects(final Player player, ShapeRenderer r) {
+    public void drawObjects(ShapeRenderer r) {
         r.setColor(Color.YELLOW);
         if (inCharge) {
             r.rectLine(hitbox.x, hitbox.y, chargeDestination.x, chargeDestination.y, 5f);
@@ -72,7 +72,7 @@ public class Mars extends Enemy {
     }
 
     @Override
-    public Array<Projectile> attack(final Player player, float frame) {
+    public Array<Projectile> attack(float frame) {
         float x = player.hitboxCenter.x;
         float y = player.hitboxCenter.y;
         bullets.clear();
@@ -222,12 +222,12 @@ public class Mars extends Enemy {
     }
 
     @Override
-    public Array<Enemy> spawn(final Player player, float frame) {
+    public Array<Enemy> spawn(float frame) {
         float x = player.hitboxCenter.x;
         float y = player.hitboxCenter.y;
         Array<Enemy> e = new Array<Enemy>();
-        e.add(new Phobos(x, y, this));
-        e.add(new Deimos(x, y, this));
+        e.add(new Phobos(x, y, this, player));
+        e.add(new Deimos(x, y, this, player));
         canSpawn = false;
         return e;
     }

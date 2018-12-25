@@ -20,8 +20,8 @@ public class Uranus extends Enemy {
      * @param x  The x coordinate to start at
      * @param y  The y coordinate to start at
      */
-    public Uranus(float x, float y) {
-        super(x, y, 100, 120, 1500);
+    public Uranus(float x, float y, final Player p) {
+        super(x, y, 100, 120, 1500, p);
 
         teleportCooldown = TELE_MAX_COOLDOWN;
     }
@@ -33,14 +33,14 @@ public class Uranus extends Enemy {
     }
 
     @Override
-    public void drawObjects(final Player player, ShapeRenderer r) {
+    public void drawObjects(ShapeRenderer r) {
         r.setColor(Color.ORANGE);
         //TODO Make the offscreen indicator better
         r.rectLine(player.hitboxCenter.x, player.hitboxCenter.y, hitbox.x, hitbox.y, 2);
     }
 
     @Override
-    public Array<Projectile> attack(Player player, float frame) {
+    public Array<Projectile> attack(float frame) {
         bullets.clear();
         /*
         teleportCooldown -= frame;

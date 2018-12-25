@@ -13,14 +13,14 @@ public class AcidSeeker extends Enemy {
     //Small enemy, with a larger damage area
     //(Like an acid aura)
 
-    public AcidSeeker(float x, float y, Venus v) {
-        super(x, y, 60, 20, 2);
+    public AcidSeeker(float x, float y, Venus v, final Player p) {
+        super(x, y, 60, 20, 2, p);
         venus = v;
         speed = 150;
     }
 
-    public AcidSeeker(float x, float y, float s, Venus v) {
-        super(x, y, 60, 20, 2);
+    public AcidSeeker(float x, float y, float s, Venus v, final Player p) {
+        super(x, y, 60, 20, 2, p);
         venus = v;
         speed = s;
     }
@@ -34,7 +34,7 @@ public class AcidSeeker extends Enemy {
     }
 
     @Override
-    public void drawObjects(final Player player, ShapeRenderer r) {
+    public void drawObjects(ShapeRenderer r) {
         r.setColor(Color.ORANGE);
         //Coming from left side
         if (hitbox.x < 10) {
@@ -54,7 +54,7 @@ public class AcidSeeker extends Enemy {
     }
 
     @Override
-    public Array<Projectile> attack(final Player player, float frame) {
+    public Array<Projectile> attack(float frame) {
         float x = player.hitboxCenter.x;
         float y = player.hitboxCenter.y;
         float angle = MathUtils.atan2(y - hitbox.y, x - hitbox.x);

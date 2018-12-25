@@ -42,8 +42,8 @@ public class Venus extends Enemy {
     float aimDirection = 3 * MathUtils.PI / 2;
     float aimChange = MathUtils.PI / 12;
 
-    public Venus(float x, float y) {
-        super(x, y, 70, 80, 500);
+    public Venus(float x, float y, final Player p) {
+        super(x, y, 70, 80, 500, p);
 
         spawnCooldown = SPAWN_MAX_COOLDOWN;
         aimCooldown = AIM_MAX_COOLDOWN;
@@ -66,7 +66,7 @@ public class Venus extends Enemy {
     }
 
     @Override
-    public void drawObjects(final Player player, ShapeRenderer r) {
+    public void drawObjects(ShapeRenderer r) {
         float x = player.hitboxCenter.x;
         float y = player.hitboxCenter.y;
         if (phase == -1) {
@@ -76,7 +76,7 @@ public class Venus extends Enemy {
     }
 
     @Override
-    public Array<Projectile> attack(final Player player, float frame) {
+    public Array<Projectile> attack(float frame) {
         float x = player.hitboxCenter.x;
         float y = player.hitboxCenter.y;
         bullets.clear();
@@ -202,7 +202,7 @@ public class Venus extends Enemy {
     }
 
     @Override
-    public Array<Enemy> spawn(final Player player, float frame) {
+    public Array<Enemy> spawn(float frame) {
         float x = player.hitboxCenter.x;
         float y = player.hitboxCenter.y;
         Array<Enemy> enemies = new Array<Enemy>();
@@ -210,26 +210,26 @@ public class Venus extends Enemy {
             int rand = MathUtils.random(0, 3);
             //Spawn from random sides
             if (rand == 0) {
-                enemies.add(new AcidSeeker(MathUtils.random(0, 600), 670, this));
+                enemies.add(new AcidSeeker(MathUtils.random(0, 600), 670, this, player));
             } else if (rand == 1) {
-                enemies.add(new AcidSeeker(MathUtils.random(0, 600), -70, this));
+                enemies.add(new AcidSeeker(MathUtils.random(0, 600), -70, this, player));
             } else if (rand == 2) {
-                enemies.add(new AcidSeeker(670, MathUtils.random(0, 600), this));
+                enemies.add(new AcidSeeker(670, MathUtils.random(0, 600), this, player));
             } else if (rand == 3) {
-                enemies.add(new AcidSeeker(-70, MathUtils.random(0, 600), this));
+                enemies.add(new AcidSeeker(-70, MathUtils.random(0, 600), this, player));
             }
             canSpawn = false;
             spawned += 1;
         }
         if (phase == 2) {
             if (aimCooldown <= 0) {
-                enemies.add(new AcidCloud(x, 700, 0, -200));
+                enemies.add(new AcidCloud(x, 700, 0, -200, player));
                 aimCooldown = AIM_MAX_COOLDOWN;
                 canSpawn = false;
             }
             if (mainCooldown <= 0) {
                 for (int i = 0; i < 25; ++i) {
-                    enemies.add(new AcidCloud(MathUtils.random(20, 580), MathUtils.random(620, 749), 0, -MathUtils.random(175, 200)));
+                    enemies.add(new AcidCloud(MathUtils.random(20, 580), MathUtils.random(620, 749), 0, -MathUtils.random(175, 200), player));
                 }
                 mainCooldown = MAIN_MAX_COOLDOWN;
                 canSpawn = false;
@@ -237,24 +237,24 @@ public class Venus extends Enemy {
         }
         if (phase == 3) {
             float angle = MathUtils.random(360) * MathUtils.degreesToRadians;
-            enemies.add(new AcidCloud(300 + MathUtils.cos(angle) * 400, 300 + MathUtils.sin(angle) * 400, -MathUtils.cos(angle) * 150, -MathUtils.sin(angle) * 150));
+            enemies.add(new AcidCloud(300 + MathUtils.cos(angle) * 400, 300 + MathUtils.sin(angle) * 400, -MathUtils.cos(angle) * 150, -MathUtils.sin(angle) * 150, player));
             canSpawn = false;
         }
         if (phase == 4) {
-            enemies.add(new VenusReflector(this, hitbox.radius + 40, 1000, 0, MathUtils.PI / 2, true));
-            enemies.add(new VenusReflector(this, hitbox.radius + 40, 1000, MathUtils.PI / 12, MathUtils.PI / 2, true));
-            enemies.add(new VenusReflector(this, hitbox.radius + 40, 1000, -MathUtils.PI / 12, MathUtils.PI / 2, true));
+            enemies.add(new VenusReflector(player,this, hitbox.radius + 40, 1000, 0, MathUtils.PI / 2, true));
+            enemies.add(new VenusReflector(player,this, hitbox.radius + 40, 1000, MathUtils.PI / 12, MathUtils.PI / 2, true));
+            enemies.add(new VenusReflector(player,this, hitbox.radius + 40, 1000, -MathUtils.PI / 12, MathUtils.PI / 2, true));
 
-            enemies.add(new VenusReflector(this, hitbox.radius + 40, 1000, MathUtils.PI, MathUtils.PI / 2, true));
-            enemies.add(new VenusReflector(this, hitbox.radius + 40, 1000, 11 * MathUtils.PI / 12, MathUtils.PI / 2, true));
-            enemies.add(new VenusReflector(this, hitbox.radius + 40, 1000, 13 * MathUtils.PI / 12, MathUtils.PI / 2, true));
+            enemies.add(new VenusReflector(player, this, hitbox.radius + 40, 1000, MathUtils.PI, MathUtils.PI / 2, true));
+            enemies.add(new VenusReflector(player, this, hitbox.radius + 40, 1000, 11 * MathUtils.PI / 12, MathUtils.PI / 2, true));
+            enemies.add(new VenusReflector(player, this, hitbox.radius + 40, 1000, 13 * MathUtils.PI / 12, MathUtils.PI / 2, true));
             canSpawn = false;
         }
         if (phase == 5) {
             float angle = MathUtils.random(360) * MathUtils.degreesToRadians;
             for (int i = 0; i < 4; ++i) {
                 angle += MathUtils.PI/2;
-                enemies.add(new AcidCloud(300 + MathUtils.cos(angle) * 400, 300 + MathUtils.sin(angle) * 400, -MathUtils.cos(angle) * 100, -MathUtils.sin(angle) * 100));
+                enemies.add(new AcidCloud(300 + MathUtils.cos(angle) * 400, 300 + MathUtils.sin(angle) * 400, -MathUtils.cos(angle) * 100, -MathUtils.sin(angle) * 100, player));
             }
             canSpawn = false;
         }

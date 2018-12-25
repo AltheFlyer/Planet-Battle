@@ -19,8 +19,8 @@ public class VenusReflector extends Enemy {
      * @param dist
      * @param hp
      */
-    public VenusReflector(Venus v, float dist, float hp, float theta, float omega, boolean i) {
-        super(0, 0, 20, 20, hp);
+    public VenusReflector(final Player p, Venus v, float dist, float hp, float theta, float omega, boolean i) {
+        super(0, 0, 20, 20, hp, p);
         venus = v;
         distance = dist;
         angularPosition = theta;
@@ -37,7 +37,7 @@ public class VenusReflector extends Enemy {
     }
 
     @Override
-    public Array<Projectile> attack(Player player, float frame) {
+    public Array<Projectile> attack(float frame) {
         angularPosition += angularVelocity * frame;
         hitbox.x = venus.hitbox.x + MathUtils.cos(angularPosition) * distance;
         hitbox.y = venus.hitbox.y + MathUtils.sin(angularPosition) * distance;

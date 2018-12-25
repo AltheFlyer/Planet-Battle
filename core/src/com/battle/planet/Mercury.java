@@ -46,8 +46,8 @@ public class Mercury extends Enemy {
     //Trail for visual effects during chase mode
     Array<Vector2> trail;
 
-    public Mercury(float x, float y) {
-        super(x, y, 50, 60, 700);
+    public Mercury(float x, float y, final Player p) {
+        super(x, y, 50, 60, 700, p);
         velocity = new Vector2(200, 200);
         phase = 1;
 
@@ -68,7 +68,7 @@ public class Mercury extends Enemy {
     }
 
     @Override
-    public void drawObjects(final Player player, ShapeRenderer r) {
+    public void drawObjects(ShapeRenderer r) {
         float x = player.hitboxCenter.x;
         float y = player.hitboxCenter.y;
         //Indicators for where Mercury is charging from
@@ -97,7 +97,7 @@ public class Mercury extends Enemy {
     }
 
     @Override
-    public Array<Projectile> attack(final Player player, float frame) {
+    public Array<Projectile> attack(float frame) {
         float x = player.hitboxCenter.x;
         float y = player.hitboxCenter.y;
         bullets.clear();
