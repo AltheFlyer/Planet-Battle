@@ -56,7 +56,7 @@ public class Uranus extends Enemy {
         }
         */
         if (chosenAbility == 0 && abilityCooldown <= 0) {
-            chosenAbility = MathUtils.random(1, 3);
+            chosenAbility = MathUtils.random(1, 4);
             if (chosenAbility == 1) {
                 ability = new SwirlAbility(player, this);
             }
@@ -65,6 +65,9 @@ public class Uranus extends Enemy {
             }
             if (chosenAbility == 3) {
                 ability = new TelespamAbility(player, this);
+            }
+            if (chosenAbility == 4) {
+                ability = new LineWaveAbility(player, this);
             }
         }
 
@@ -223,5 +226,45 @@ public class Uranus extends Enemy {
 
     }
 
+    class LineWaveAbility extends Ability {
 
+        boolean leftSide = true;
+        final float DELAY = 0.8f;
+        float cooldown = 0;
+        float offset = 0;
+
+        public LineWaveAbility(Player p, Uranus u) {
+            super(p, u);
+            timer = 10;
+        }
+
+        @Override
+        public void run(float frame) {
+            cooldown -= frame;
+            if (cooldown <= 0 && timer > 2) {
+                cooldown = DELAY;
+                if (leftSide) {
+                    for (int i = 0; i < 150; i += 3) {
+                        bullets.add(new BasicProjectile(0, i, 180, 0));
+                        bullets.add(new BasicProjectile(0, 300 + i, 180, 0));
+                        bullets.add(new BasicProjectile(0, 600 + i, 180, 0));
+                        bullets.add(new BasicProjectile(0, 900 + i, 180, 0));
+                    }
+                } else {
+                    for (int i = 0; i < 150; i += 3) {
+                        bullets.add(new BasicProjectile(1200, 150 + i, -180, 0));
+                        bullets.add(new BasicProjectile(1200, 450 + i, -180, 0));
+                        bullets.add(new BasicProjectile(1200, 750 + i, -180, 0));
+                        bullets.add(new BasicProjectile(1200, 1050 + i, -180, 0));
+                    }
+                }
+                for (int i = 0; i < 18; ++i) {
+                    float angle = i * 20 * MathUtils.degreesToRadians + offset * MathUtils.degreesToRadians;
+                    bullets.add(new BasicProjectile(hitbox.x, hitbox.y, MathUtils.cos(angle) * 200, MathUtils.sin(angle) * 200));
+                }
+                offset += 6;
+                leftSide = !leftSide;
+            }
+        }
+    }
 }
