@@ -8,14 +8,22 @@ public class DelayProjectile extends Projectile {
 
     float delay;
     boolean moving = false;
+    float speed;
 
     public DelayProjectile(Rectangle r, float d) {
         super(r, new Vector2(0, 0));
         delay = d;
+        speed = 200;
+    }
+
+    public DelayProjectile(Rectangle r, float d, float v) {
+        super(r, new Vector2(0, 0));
+        delay = d;
+        speed = v;
     }
 
     public DelayProjectile(float x, float y, float d) {
-        this(new Rectangle(x, y, 5, 5), d);
+        this(new Rectangle(x, y, 5, 5), d, 200);
     }
 
     @Override
@@ -26,7 +34,7 @@ public class DelayProjectile extends Projectile {
         if (delay <= 0 && !moving) {
             moving = true;
             float angle = MathUtils.atan2(y - hitbox.y, x - hitbox.x);
-            velocity = new Vector2(MathUtils.cos(angle) * 200, MathUtils.sin(angle) * 200);
+            velocity = new Vector2(MathUtils.cos(angle) * speed, MathUtils.sin(angle) * speed);
         }
         if (moving) {
             super.move(frame);

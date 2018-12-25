@@ -3,6 +3,7 @@ package com.battle.planet;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.utils.Array;
 
 public class Uranus extends Enemy {
@@ -13,8 +14,8 @@ public class Uranus extends Enemy {
 
     Ability ability;
 
-    float teleportCooldown;
-    final float TELE_MAX_COOLDOWN = 1f;
+    float abilityCooldown;
+    final float ABILITY_MAX_COOLDOWN = 1f;
 
     /**
      * @param x  The x coordinate to start at
@@ -23,7 +24,7 @@ public class Uranus extends Enemy {
     public Uranus(float x, float y, final Player p) {
         super(x, y, 100, 120, 1500, p);
 
-        teleportCooldown = TELE_MAX_COOLDOWN;
+        abilityCooldown = ABILITY_MAX_COOLDOWN;
     }
 
     @Override
@@ -54,25 +55,30 @@ public class Uranus extends Enemy {
             bullets.add(new BasicProjectile(hitbox.x, hitbox.y, MathUtils.cos(angle) * 200, MathUtils.sin(angle) * 200));
         }
         */
-        if (chosenAbility == 0) {
-            chosenAbility = MathUtils.random(1, 2);
+        if (chosenAbility == 0 && abilityCooldown <= 0) {
+            chosenAbility = MathUtils.random(1, 3);
             if (chosenAbility == 1) {
                 ability = new SwirlAbility(player, this);
             }
             if (chosenAbility == 2) {
                 ability = new IndirectAbility(player, this);
             }
+            if (chosenAbility == 3) {
+                ability = new TelespamAbility(player, this);
+            }
         }
 
         if (chosenAbility != 0) {
             ability.run(frame);
             ability.timer -= frame;
+            if (ability.timer <= 0) {
+                chosenAbility = 0;
+                System.out.println("ENTERING ABILITY 0");
+                abilityCooldown = ABILITY_MAX_COOLDOWN;
+            }
         }
 
-        if (ability.timer <= 0) {
-            chosenAbility = 0;
-            System.out.println("ENTERING ABILITY 0");
-        }
+        abilityCooldown -= frame;
 
         return bullets;
     }
@@ -134,6 +140,8 @@ public class Uranus extends Enemy {
 
         float targetX, targetY, cooldown;
         final float MAX_COOLDOWN = 0.05f;
+        boolean angleUnset[] = {true, true, true, true};
+        float angle, nAngle, nAngle2;
 
         public IndirectAbility(final Player p, final Uranus u) {
             super(p, u);
@@ -158,32 +166,62 @@ public class Uranus extends Enemy {
             cooldown -= frame;
             if (cooldown <= 0) {
                 cooldown = MAX_COOLDOWN;
-                float angle = 0;
-                boolean canShoot = false;
-                if (timer > 3.0f) {
-                    angle = MathUtils.PI / 4.0f;
-                    canShoot = true;
-                } else if (timer > 2.0f) {
-                    angle = (3 * MathUtils.PI) / 4.0f;
-                    canShoot = true;
-                } else if (timer > 1.0f) {
-                    angle = (5 * MathUtils.PI) / 4.0f;
-                    canShoot = true;
-                } else if (timer > 0.0f) {
-                    angle = (7 * MathUtils.PI) / 4.0f;
-                    canShoot = true;
+                for (int i = 0; i < 4; ++i) {
+                    if (timer <= 4 - i && angleUnset[i]) {
+                        angle = MathUtils.random(0, 360) * MathUtils.degreesToRadians;
+                        nAngle = angle + MathUtils.PI / 2;
+                        nAngle2 = angle - MathUtils.PI / 2;
+                        angleUnset[i] = false;
+                    }
                 }
-                if (canShoot) {
-                    float nAngle = angle + MathUtils.PI / 2;
-                    float nAngle2 = angle - MathUtils.PI / 2;
-                    uranus.bullets.add(new BasicProjectile(targetX + 20 * MathUtils.cos(nAngle) + MathUtils.cos(angle) * 400, targetY + 20 * MathUtils.sin(nAngle) + MathUtils.sin(angle) * 400, -MathUtils.cos(angle) * 300, -MathUtils.sin(angle) * 300));
-                    uranus.bullets.add(new BasicProjectile(targetX + 20 * MathUtils.cos(nAngle2) + MathUtils.cos(angle) * 400, targetY + 20 * MathUtils.sin(nAngle2) + MathUtils.sin(angle) * 400, -MathUtils.cos(angle) * 300, -MathUtils.sin(angle) * 300));
-                }
+                uranus.bullets.add(new BasicProjectile(targetX + 25 * MathUtils.cos(nAngle) + MathUtils.cos(angle) * 400, targetY + 25 * MathUtils.sin(nAngle) + MathUtils.sin(angle) * 400, -MathUtils.cos(angle) * 300, -MathUtils.sin(angle) * 300));
+                uranus.bullets.add(new BasicProjectile(targetX + 25 * MathUtils.cos(nAngle2) + MathUtils.cos(angle) * 400, targetY + 25 * MathUtils.sin(nAngle2) + MathUtils.sin(angle) * 400, -MathUtils.cos(angle) * 300, -MathUtils.sin(angle) * 300));
             }
         }
     }
 
+    class TelespamAbility extends Ability {
 
+        int bursts;
+        float burstLeft = 2.0f;
+        float cooldown;
+        final float TP_DELAY = 0.4f;
+
+        public TelespamAbility(final Player p, final Uranus u) {
+            super(p, u);
+            timer = 9;
+            cooldown = 0;
+        }
+
+        @Override
+        public void run(float frame) {
+            if (burstLeft > 0) {
+                if (cooldown <= 0) {
+                    cooldown = TP_DELAY;
+                    float angle = MathUtils.random(0, 360) * MathUtils.degreesToRadians;
+                    hitbox.x = player.hitbox.x + MathUtils.cos(angle) * 300;
+                    hitbox.y = player.hitbox.y + MathUtils.sin(angle) * 300;
+
+                    bullets.add(new DelayProjectile(new Rectangle(hitbox.x, hitbox.y, 15, 15), burstLeft, 250));
+
+                    angle = MathUtils.atan2(player.hitboxCenter.y - hitbox.y, player.hitboxCenter.x - hitbox.x);
+                    for (int i = -30; i <= 30; i += 15) {
+                        bullets.add(new BasicProjectile(hitbox.x, hitbox.y, MathUtils.cos(angle + i * MathUtils.degreesToRadians) * 150, MathUtils.sin(angle + i * MathUtils.degreesToRadians) * 150));
+                    }
+                }
+                burstLeft -= frame;
+            } else {
+                burstLeft = 3.0f;
+                cooldown = 1.0f;
+                bursts += 1;
+            }
+            cooldown -= frame;
+            if (bursts >= 3) {
+                timer = 0;
+            }
+        }
+
+    }
 
 
 }
