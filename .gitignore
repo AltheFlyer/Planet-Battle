@@ -124,3 +124,4 @@ Thumbs.db
 !/ios-moe/xcode/*.xcodeproj/project.pbxproj
 /ios-moe/xcode/native/
 *.jar
+core/out/production/classes/META-INF/Planet-Battle.core.main.kotlin_module

@@ -56,7 +56,7 @@ public class Uranus extends Enemy {
         }
         */
         if (chosenAbility == 0 && abilityCooldown <= 0) {
-            chosenAbility = MathUtils.random(1, 4);
+            chosenAbility = MathUtils.random(1, 5);
             if (chosenAbility == 1) {
                 ability = new SwirlAbility(player, this);
             }
@@ -68,6 +68,9 @@ public class Uranus extends Enemy {
             }
             if (chosenAbility == 4) {
                 ability = new LineWaveAbility(player, this);
+            }
+            if (chosenAbility == 5) {
+                ability = new SwirlAbility2(player, this);
             }
         }
 
@@ -116,7 +119,7 @@ public class Uranus extends Enemy {
             System.out.println("ENTERING ABILITY 1");
             for (int i = 0; i < 360; ++i) {
                 float angle = MathUtils.degreesToRadians * i;
-                uranus.bullets.add(new TimeProjectile(targetX + MathUtils.cos(angle) * 400, targetY + MathUtils.sin(angle) * 400, 10));
+                uranus.bullets.add(new TimeProjectile(targetX + MathUtils.cos(angle) * 400, targetY + MathUtils.sin(angle) * 400, -MathUtils.cos(angle) * 20, -MathUtils.sin(angle) * 20, 10));
             }
             do {
                 float angle = MathUtils.random(0, 360) * MathUtils.degreesToRadians;
@@ -266,5 +269,57 @@ public class Uranus extends Enemy {
                 leftSide = !leftSide;
             }
         }
+    }
+
+    class SwirlAbility2 extends Ability {
+
+        float angle = 0;
+        float cooldown = 0;
+        final float MAX_COOLDOWN = 0.05f;
+
+        public SwirlAbility2(Player p, Uranus u) {
+            super(p, u);
+            timer = 16;
+            do {
+                float theta = MathUtils.random(0, 360) * MathUtils.degreesToRadians;
+                uranus.hitbox.x = player.hitboxCenter.x + MathUtils.cos(theta) * (150 + uranus.hitbox.radius);
+                uranus.hitbox.y = player.hitboxCenter.y + MathUtils.sin(theta) * (150 + uranus.hitbox.radius);
+            } while (uranus.hitbox.x > 1100 || uranus.hitbox.y > 1100 || uranus.hitbox.x < 100 || uranus.hitbox.y < 100);
+
+            for (int i = 0; i < 360; ++i) {
+                float theta = MathUtils.degreesToRadians * i;
+                uranus.bullets.add(new TimeProjectile(hitbox.x + MathUtils.cos(theta) * 400, hitbox.y + MathUtils.sin(theta) * 400, 10));
+            }
+        }
+
+        @Override
+        public void run(float frame) {
+            cooldown -= frame;
+            angle += MathUtils.PI * frame;
+            if (cooldown <= 0 && timer > 8) {
+                cooldown = MAX_COOLDOWN;
+                bullets.add(new AccelerateProjectile(hitbox.x, hitbox.y,
+                        MathUtils.cos(angle) * 200, MathUtils.sin(angle) * 200,
+                        -MathUtils.cos(angle) * 50, -MathUtils.sin(angle) * 50,
+                        400, 8));
+                if (timer < 12) {
+                    bullets.add(new AccelerateProjectile(hitbox.x, hitbox.y,
+                            MathUtils.cos(angle + MathUtils.PI) * 200, MathUtils.sin(angle + MathUtils.PI) * 200,
+                            -MathUtils.cos(angle + MathUtils.PI) * 50, -MathUtils.sin(angle + MathUtils.PI) * 50,
+                            400, 8));
+                }
+                if (timer < 10) {
+                    bullets.add(new AccelerateProjectile(hitbox.x, hitbox.y,
+                            MathUtils.cos(angle + MathUtils.PI / 2) * 200, MathUtils.sin(angle + MathUtils.PI / 2) * 200,
+                            -MathUtils.cos(angle + MathUtils.PI / 2) * 50, -MathUtils.sin(angle + MathUtils.PI / 2) * 50,
+                            400, 8));
+                    bullets.add(new AccelerateProjectile(hitbox.x, hitbox.y,
+                            MathUtils.cos(angle - MathUtils.PI / 2) * 200, MathUtils.sin(angle - MathUtils.PI / 2) * 200,
+                            -MathUtils.cos(angle - MathUtils.PI / 2) * 50, -MathUtils.sin(angle - MathUtils.PI / 2) * 50,
+                            400, 8));
+                }
+            }
+        }
+
     }
 }
