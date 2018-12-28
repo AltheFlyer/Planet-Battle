@@ -1,5 +1,7 @@
 package com.battle.planet;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -72,21 +74,24 @@ public class Mercury extends Enemy {
     public void drawObjects(ShapeRenderer r) {
         float x = player.hitboxCenter.x;
         float y = player.hitboxCenter.y;
+
         //Indicators for where Mercury is charging from
         if (phase == 2) {
-            r.setColor(Color.ORANGE);
+            r.setColor(255, 165, 0, 0.2f);
             //Coming from left side
-            if (hitbox.x < 100 && velocity.x > 0) {
-                r.triangle(0, hitbox.y + 50,0,hitbox.y - 50,50, hitbox.y);
-            //From the right
-            } else if (hitbox.x > 500 && velocity.x < 0) {
-                r.triangle(600, hitbox.y + 50,600,hitbox.y - 50,550, hitbox.y);
-            //From the bottom
-            } else if (hitbox.y < 100 && velocity.y > 0) {
-                r.triangle(hitbox.x + 50, 0,hitbox.x - 50, 0, hitbox.x, 50);
-            //From the top
-            } else if (hitbox.y > 500 && velocity.y < 0) {
-                r.triangle(hitbox.x + 50, 600,hitbox.x - 50, 600, hitbox.x, 550);
+            for (int i = 0; i < 600; i += 50) {
+                if (hitbox.x < 600 && velocity.x > 0) {
+                    r.triangle(i, hitbox.y + 50, i, hitbox.y - 50, i + 50, hitbox.y);
+                    //From the right
+                } else if (hitbox.x > 0 && velocity.x < 0) {
+                    r.triangle(600 - i, hitbox.y + 50, 600 - i, hitbox.y - 50, 550 - i, hitbox.y);
+                    //From the bottom
+                } else if (hitbox.y < 600 && velocity.y > 0) {
+                    r.triangle(hitbox.x + 50, i, hitbox.x - 50, i, hitbox.x, i + 50);
+                    //From the top
+                } else if (hitbox.y > 0 && velocity.y < 0) {
+                    r.triangle(hitbox.x + 50, 600 - i, hitbox.x - 50, 600 - i, hitbox.x, 550 - i);
+                }
             }
         //Tracer trail
         } else if (phase == 3) {
