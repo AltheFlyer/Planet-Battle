@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 
 public class Uranus extends Enemy {
@@ -57,7 +58,7 @@ public class Uranus extends Enemy {
         }
         */
         if (chosenAbility == 0 && abilityCooldown <= 0) {
-            chosenAbility = MathUtils.random(1, 5);
+            chosenAbility = 6;//MathUtils.random(1, 6);
             if (chosenAbility == 1) {
                 ability = new SwirlAbility(player, this);
             }
@@ -72,6 +73,9 @@ public class Uranus extends Enemy {
             }
             if (chosenAbility == 5) {
                 ability = new SwirlAbility2(player, this);
+            }
+            if (chosenAbility == 6) {
+                ability = new MeteorAbility(player, this);
             }
         }
 
@@ -324,5 +328,51 @@ public class Uranus extends Enemy {
             }
         }
 
+    }
+
+    class MeteorAbility extends Ability {
+
+        float cooldown = 0;
+        final float MAX_COOLDOWN = 0.5f;
+        boolean goingLeft = true;
+
+        public MeteorAbility(Player p, Uranus u) {
+            super(p, u);
+            timer = 10;
+        }
+
+        public void run(float frame) {
+            cooldown -= frame;
+            if (cooldown <= 0 && timer > 4) {
+                cooldown = MAX_COOLDOWN;
+                bullets.addAll(new BorderScatterProjectile(
+                                level,
+                                new Rectangle(MathUtils.random(0, level.LEVEL_WIDTH),
+                                        level.LEVEL_HEIGHT + 10,
+                                        20, 20),
+                                new Vector2(0, -200),
+                                5, 2),
+                        new BorderScatterProjectile(
+                                level,
+                                new Rectangle(MathUtils.random(0, level.LEVEL_WIDTH),
+                                        level.LEVEL_HEIGHT + 10,
+                                        20, 20),
+                                new Vector2(0, -200),
+                                5, 2)
+                );
+            }
+            if (goingLeft) {
+                hitbox.x -= 150* frame;
+            } else {
+                hitbox.x += 150 * frame;
+            }
+            if (hitbox.x < 0 + hitbox.radius) {
+                hitbox.x = hitbox.radius;
+                goingLeft = false;
+            } else if (hitbox.x > level.LEVEL_WIDTH - hitbox.radius) {
+                hitbox.x = level.LEVEL_WIDTH - hitbox.radius;
+                goingLeft = true;
+            }
+        }
     }
 }

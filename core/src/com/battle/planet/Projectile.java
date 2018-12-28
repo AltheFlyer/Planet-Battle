@@ -10,18 +10,21 @@ abstract public class Projectile {
     Vector2 velocity;
     float time;
     boolean isDestroyed;
+    final BattleLevel level;
 
     public Projectile(final BattleLevel lev, Rectangle r, Vector2 v) {
         hitbox = r;
         velocity = v;
         isDestroyed = false;
         time = 0f;
+        level = lev;
     }
 
     public Projectile(final BattleLevel lev, float x, float y, float vx, float vy) {
         hitbox = new Rectangle(x, y, 5, 5);
         velocity = new Vector2(vx, vy);
         isDestroyed = false;
+        level = lev;
     }
 
     /**
