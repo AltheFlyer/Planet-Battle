@@ -4,7 +4,7 @@ public class MercuryLevel extends BattleLevel {
 
     public MercuryLevel(final PlanetBattle g) {
         super(g);
-        enemies.add(new Mercury(300, 500, player));
+        enemies.add(new Mercury(this, 300, 500));
     }
 
 }

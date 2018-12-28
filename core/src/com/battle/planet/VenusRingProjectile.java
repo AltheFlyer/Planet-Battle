@@ -10,8 +10,8 @@ public class VenusRingProjectile extends OrbitalProjectile {
     boolean orbiting = true;
     float wait = 3.0f;
 
-    public VenusRingProjectile(float dst, float cx, float cy, float omega, float angle, Venus v) {
-        super(dst, cx, cy, omega, angle);
+    public VenusRingProjectile(final BattleLevel lev, float dst, float cx, float cy, float omega, float angle, Venus v) {
+        super(lev, dst, cx, cy, omega, angle);
         center = new Vector2(cx, cy);
         angularVelocity = omega;
         angularPosition = angle;

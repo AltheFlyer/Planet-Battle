@@ -6,12 +6,12 @@ import com.badlogic.gdx.math.Vector2;
 
 public class BasicProjectile extends Projectile {
 
-    public BasicProjectile(Rectangle r, Vector2 v) {
-        super(r, v);
+    public BasicProjectile(final BattleLevel lev, Rectangle r, Vector2 v) {
+        super(lev, r, v);
     }
 
-    public BasicProjectile(float x, float y, float vx, float vy) {
-        this(new Rectangle(x, y, 5, 5), new Vector2(vx, vy));
+    public BasicProjectile(final BattleLevel lev, float x, float y, float vx, float vy) {
+        this(lev, new Rectangle(x, y, 5, 5), new Vector2(vx, vy));
     }
 
     public void move(float frame) {

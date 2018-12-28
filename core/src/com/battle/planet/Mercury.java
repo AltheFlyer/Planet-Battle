@@ -1,6 +1,7 @@
 package com.battle.planet;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
@@ -46,8 +47,8 @@ public class Mercury extends Enemy {
     //Trail for visual effects during chase mode
     Array<Vector2> trail;
 
-    public Mercury(float x, float y, final Player p) {
-        super(x, y, 50, 60, 700, p);
+    public Mercury(final BattleLevel lev, float x, float y) {
+        super(lev, x, y, 50, 60, 700);
         velocity = new Vector2(200, 200);
         phase = 1;
 
@@ -107,6 +108,7 @@ public class Mercury extends Enemy {
             //Leave behind trail of static bullets
             if (passiveCooldown <= 0) {
                 bullets.add(new TimeProjectile(
+                        level,
                         hitbox.x + MathUtils.random(0, hitbox.radius) * MathUtils.cos(MathUtils.random(0, MathUtils.PI * 2)),
                         hitbox.y + MathUtils.random(0, hitbox.radius) * MathUtils.sin(MathUtils.random(0, MathUtils.PI * 2)),
                         2.0f));
@@ -120,12 +122,12 @@ public class Mercury extends Enemy {
                 if (MathUtils.random(0, 2) == 2) {
                     for (int i = 0; i < 2; ++i) {
                         angle = MathUtils.random(0, MathUtils.PI * 2);
-                        bullets.add(new WaveProjectile(hitbox.x, hitbox.y, MathUtils.cos(angle) * 300, MathUtils.sin(angle) * 300, 20));
+                        bullets.add(new WaveProjectile(level, hitbox.x, hitbox.y, MathUtils.cos(angle) * 300, MathUtils.sin(angle) * 300, 20));
                     }
                 }
                 angle = MathUtils.atan2(y - hitbox.y, x - hitbox.x);
 
-                bullets.add(new WaveProjectile(hitbox.x, hitbox.y, MathUtils.cos(angle) * 300, MathUtils.sin(angle) * 300, 20));
+                bullets.add(new WaveProjectile(level, hitbox.x, hitbox.y, MathUtils.cos(angle) * 300, MathUtils.sin(angle) * 300, 20));
                 aimCooldown = AIM_MAX_COOLDOWN;
             }
 
@@ -160,6 +162,7 @@ public class Mercury extends Enemy {
             if (passiveCooldown <= 0) {
                 float angle = MathUtils.random(0, MathUtils.PI * 2);
                 bullets.add(new TimeProjectile(
+                        level,
                         hitbox.x,
                         hitbox.y,
                         MathUtils.cos(angle) * 200,
@@ -172,9 +175,9 @@ public class Mercury extends Enemy {
             if (aimCooldown <= 0) {
                 //Swap x and y velocities to make bullets perpendicular to Mercury's path
                 if (MathUtils.randomBoolean()) {
-                    bullets.add(new BasicProjectile(new Rectangle(hitbox.x, hitbox.y, 8, 8), new Vector2(velocity.y, velocity.x)));
+                    bullets.add(new BasicProjectile(level, new Rectangle(hitbox.x, hitbox.y, 8, 8), new Vector2(velocity.y, velocity.x)));
                 } else {
-                    bullets.add(new BasicProjectile(new Rectangle(hitbox.x, hitbox.y, 8, 8), new Vector2(-velocity.y, -velocity.x)));
+                    bullets.add(new BasicProjectile(level, new Rectangle(hitbox.x, hitbox.y, 8, 8), new Vector2(-velocity.y, -velocity.x)));
                 }
                 //Increases frequency of shots compared to phase 1
                 aimCooldown = AIM_MAX_COOLDOWN / 4;
@@ -234,7 +237,7 @@ public class Mercury extends Enemy {
                 }
                 //Constantly shoot delay projectiles
                 if (aimCooldown <= 0) {
-                    bullets.add(new DelayProjectile(new Rectangle(hitbox.x, hitbox.y, 10, 10), 1));
+                    bullets.add(new DelayProjectile(level, new Rectangle(hitbox.x, hitbox.y, 10, 10), 1));
                     aimCooldown = AIM_MAX_COOLDOWN;
                 }
             } else {
@@ -261,17 +264,19 @@ public class Mercury extends Enemy {
                 //Shoots Caduceus-like projectiles
                 if (aimCooldown <= 0) {
                     bullets.add(new WaveProjectile(
+                            level,
                             new Rectangle(hitbox.x, hitbox.y, 5, 5),
                             new Vector2(MathUtils.cos(angle) * 300, MathUtils.sin(angle) * 300),
                             30,
                             true));
                     bullets.add(new WaveProjectile(
+                            level,
                             new Rectangle(hitbox.x, hitbox.y, 5, 5),
                             new Vector2(MathUtils.cos(angle) * 300, MathUtils.sin(angle) * 300),
                             30,
                             false));
                     for (int i = -20; i <= 20; i+=5) {
-                        bullets.add(new BasicProjectile(hitbox.x + i * MathUtils.cos(angle), hitbox.y + i * MathUtils.sin(angle), 300 * MathUtils.cos(angle), 300 * MathUtils.sin(angle)));
+                        bullets.add(new BasicProjectile(level, hitbox.x + i * MathUtils.cos(angle), hitbox.y + i * MathUtils.sin(angle), 300 * MathUtils.cos(angle), 300 * MathUtils.sin(angle)));
                     }
                     aimCooldown = AIM_MAX_COOLDOWN;
                 }

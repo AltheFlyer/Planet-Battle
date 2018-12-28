@@ -1,6 +1,7 @@
 package com.battle.planet;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
@@ -18,6 +19,7 @@ abstract public class Enemy {
     //An array that is used to store bullets for the next attack.
     Array<Projectile> bullets;
 
+    final BattleLevel level;
     final Player player;
 
     /**
@@ -27,7 +29,7 @@ abstract public class Enemy {
      * @param r0 The radius of the player-enemy hitbox
      * @param r1 The radius of the bullet-enemy hitbox
      */
-    public Enemy(float x, float y, float r0, float r1, float hp, final Player p){
+    public Enemy(final BattleLevel lev, float x, float y, float r0, float r1, float hp){
         collisionBox = new Circle(x, y, r0);
         hitbox = new Circle(x, y, r1);
         bullets = new Array<Projectile>();
@@ -35,7 +37,8 @@ abstract public class Enemy {
         MAX_HEALTH = hp;
         health = hp;
         phaseMarkers = new Array<Integer>();
-        player = p;
+        level = lev;
+        player = lev.player;
     }
 
     /**
@@ -88,21 +91,21 @@ abstract public class Enemy {
     public void createSpread(float theta, int amount, float spread) {
         for (int i = 0; i < amount; ++i) {
             float angle = theta + ((float) i / amount) * spread - (spread / 2);;
-            bullets.add(new BasicProjectile(hitbox.x, hitbox.y, MathUtils.cos(angle) * 180, MathUtils.sin(angle) * 180));
+            bullets.add(new BasicProjectile(level, hitbox.x, hitbox.y, MathUtils.cos(angle) * 180, MathUtils.sin(angle) * 180));
         }
     }
 
     public void createSpread(float theta, int amount, float spread, float speed) {
         for (int i = 0; i < amount; ++i) {
             float angle = theta + ((float) i / amount) * spread - (spread / 2);;
-            bullets.add(new BasicProjectile(hitbox.x, hitbox.y, MathUtils.cos(angle) * speed, MathUtils.sin(angle) * speed));
+            bullets.add(new BasicProjectile(level, hitbox.x, hitbox.y, MathUtils.cos(angle) * speed, MathUtils.sin(angle) * speed));
         }
     }
 
     public void createWaveSpread(float theta, int amount, float spread, float mo) {
         for (int i = 0; i < amount; ++i) {
             float angle = theta + ((float) i / amount) * spread - (spread / 2);;
-            bullets.add(new WaveProjectile(hitbox.x, hitbox.y, MathUtils.cos(angle) * 180, MathUtils.sin(angle) * 180, mo));
+            bullets.add(new WaveProjectile(level, hitbox.x, hitbox.y, MathUtils.cos(angle) * 180, MathUtils.sin(angle) * 180, mo));
         }
     }
 

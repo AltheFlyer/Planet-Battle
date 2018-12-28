@@ -1,6 +1,7 @@
 package com.battle.planet;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
@@ -21,8 +22,8 @@ public class Uranus extends Enemy {
      * @param x  The x coordinate to start at
      * @param y  The y coordinate to start at
      */
-    public Uranus(float x, float y, final Player p) {
-        super(x, y, 100, 120, 1500, p);
+    public Uranus(final BattleLevel lev, float x, float y) {
+        super(lev, x, y, 100, 120, 1500);
 
         abilityCooldown = ABILITY_MAX_COOLDOWN;
     }
@@ -120,7 +121,7 @@ public class Uranus extends Enemy {
             System.out.println("ENTERING ABILITY 1");
             for (int i = 0; i < 360; ++i) {
                 float angle = MathUtils.degreesToRadians * i;
-                uranus.bullets.add(new TimeProjectile(targetX + MathUtils.cos(angle) * 400, targetY + MathUtils.sin(angle) * 400, -MathUtils.cos(angle) * 20, -MathUtils.sin(angle) * 20, 10));
+                uranus.bullets.add(new TimeProjectile(level, targetX + MathUtils.cos(angle) * 400, targetY + MathUtils.sin(angle) * 400, -MathUtils.cos(angle) * 20, -MathUtils.sin(angle) * 20, 10));
             }
             do {
                 float angle = MathUtils.random(0, 360) * MathUtils.degreesToRadians;
@@ -137,7 +138,7 @@ public class Uranus extends Enemy {
                 cooldown = MAX_COOLDOWN;
                 for (int i = 0; i < 12; ++i) {
                     float angle = (i / 12.0f) * MathUtils.PI2 + modifier;
-                    uranus.bullets.add(new BasicProjectile(targetX + MathUtils.cos(angle) * dist, targetY + MathUtils.sin(angle) * dist, -MathUtils.cos(angle) * 150, -MathUtils.sin(angle) * 150));
+                    uranus.bullets.add(new BasicProjectile(level, targetX + MathUtils.cos(angle) * dist, targetY + MathUtils.sin(angle) * dist, -MathUtils.cos(angle) * 150, -MathUtils.sin(angle) * 150));
                 }
                 modifier += MathUtils.PI / 48;
             }
@@ -160,7 +161,7 @@ public class Uranus extends Enemy {
             System.out.println("ENTERING ABILITY 2");
             for (int i = 0; i < 360; ++i) {
                 float angle = MathUtils.degreesToRadians * i;
-                uranus.bullets.add(new TimeProjectile(targetX + MathUtils.cos(angle) * 400, targetY + MathUtils.sin(angle) * 400, 4));
+                uranus.bullets.add(new TimeProjectile(level, targetX + MathUtils.cos(angle) * 400, targetY + MathUtils.sin(angle) * 400, 4));
             }
             do {
                 float angle = MathUtils.random(0, 360) * MathUtils.degreesToRadians;
@@ -182,8 +183,8 @@ public class Uranus extends Enemy {
                         angleUnset[i] = false;
                     }
                 }
-                uranus.bullets.add(new BasicProjectile(targetX + 25 * MathUtils.cos(nAngle) + MathUtils.cos(angle) * 400, targetY + 25 * MathUtils.sin(nAngle) + MathUtils.sin(angle) * 400, -MathUtils.cos(angle) * 300, -MathUtils.sin(angle) * 300));
-                uranus.bullets.add(new BasicProjectile(targetX + 25 * MathUtils.cos(nAngle2) + MathUtils.cos(angle) * 400, targetY + 25 * MathUtils.sin(nAngle2) + MathUtils.sin(angle) * 400, -MathUtils.cos(angle) * 300, -MathUtils.sin(angle) * 300));
+                uranus.bullets.add(new BasicProjectile(level, targetX + 25 * MathUtils.cos(nAngle) + MathUtils.cos(angle) * 400, targetY + 25 * MathUtils.sin(nAngle) + MathUtils.sin(angle) * 400, -MathUtils.cos(angle) * 300, -MathUtils.sin(angle) * 300));
+                uranus.bullets.add(new BasicProjectile(level, targetX + 25 * MathUtils.cos(nAngle2) + MathUtils.cos(angle) * 400, targetY + 25 * MathUtils.sin(nAngle2) + MathUtils.sin(angle) * 400, -MathUtils.cos(angle) * 300, -MathUtils.sin(angle) * 300));
             }
         }
     }
@@ -210,11 +211,11 @@ public class Uranus extends Enemy {
                     hitbox.x = player.hitbox.x + MathUtils.cos(angle) * 300;
                     hitbox.y = player.hitbox.y + MathUtils.sin(angle) * 300;
 
-                    bullets.add(new DelayProjectile(new Rectangle(hitbox.x, hitbox.y, 15, 15), burstLeft, 250));
+                    bullets.add(new DelayProjectile(level, new Rectangle(hitbox.x, hitbox.y, 15, 15), burstLeft, 250));
 
                     angle = MathUtils.atan2(player.hitboxCenter.y - hitbox.y, player.hitboxCenter.x - hitbox.x);
                     for (int i = -30; i <= 30; i += 15) {
-                        bullets.add(new BasicProjectile(hitbox.x, hitbox.y, MathUtils.cos(angle + i * MathUtils.degreesToRadians) * 150, MathUtils.sin(angle + i * MathUtils.degreesToRadians) * 150));
+                        bullets.add(new BasicProjectile(level, hitbox.x, hitbox.y, MathUtils.cos(angle + i * MathUtils.degreesToRadians) * 150, MathUtils.sin(angle + i * MathUtils.degreesToRadians) * 150));
                     }
                 }
                 burstLeft -= frame;
@@ -250,22 +251,22 @@ public class Uranus extends Enemy {
                 cooldown = DELAY;
                 if (leftSide) {
                     for (int i = 0; i < 150; i += 3) {
-                        bullets.add(new BasicProjectile(0, i, 180, 0));
-                        bullets.add(new BasicProjectile(0, 300 + i, 180, 0));
-                        bullets.add(new BasicProjectile(0, 600 + i, 180, 0));
-                        bullets.add(new BasicProjectile(0, 900 + i, 180, 0));
+                        bullets.add(new BasicProjectile(level, 0, i, 180, 0));
+                        bullets.add(new BasicProjectile(level, 0, 300 + i, 180, 0));
+                        bullets.add(new BasicProjectile(level, 0, 600 + i, 180, 0));
+                        bullets.add(new BasicProjectile(level, 0, 900 + i, 180, 0));
                     }
                 } else {
                     for (int i = 0; i < 150; i += 3) {
-                        bullets.add(new BasicProjectile(1200, 150 + i, -180, 0));
-                        bullets.add(new BasicProjectile(1200, 450 + i, -180, 0));
-                        bullets.add(new BasicProjectile(1200, 750 + i, -180, 0));
-                        bullets.add(new BasicProjectile(1200, 1050 + i, -180, 0));
+                        bullets.add(new BasicProjectile(level, 1200, 150 + i, -180, 0));
+                        bullets.add(new BasicProjectile(level, 1200, 450 + i, -180, 0));
+                        bullets.add(new BasicProjectile(level, 1200, 750 + i, -180, 0));
+                        bullets.add(new BasicProjectile(level, 1200, 1050 + i, -180, 0));
                     }
                 }
                 for (int i = 0; i < 18; ++i) {
                     float angle = i * 20 * MathUtils.degreesToRadians + offset * MathUtils.degreesToRadians;
-                    bullets.add(new BasicProjectile(hitbox.x, hitbox.y, MathUtils.cos(angle) * 200, MathUtils.sin(angle) * 200));
+                    bullets.add(new BasicProjectile(level, hitbox.x, hitbox.y, MathUtils.cos(angle) * 200, MathUtils.sin(angle) * 200));
                 }
                 offset += 6;
                 leftSide = !leftSide;
@@ -290,7 +291,7 @@ public class Uranus extends Enemy {
 
             for (int i = 0; i < 360; ++i) {
                 float theta = MathUtils.degreesToRadians * i;
-                uranus.bullets.add(new TimeProjectile(hitbox.x + MathUtils.cos(theta) * 400, hitbox.y + MathUtils.sin(theta) * 400, 10));
+                uranus.bullets.add(new TimeProjectile(level, hitbox.x + MathUtils.cos(theta) * 400, hitbox.y + MathUtils.sin(theta) * 400, 10));
             }
         }
 
@@ -300,22 +301,22 @@ public class Uranus extends Enemy {
             angle += MathUtils.PI * frame;
             if (cooldown <= 0 && timer > 8) {
                 cooldown = MAX_COOLDOWN;
-                bullets.add(new AccelerateProjectile(hitbox.x, hitbox.y,
+                bullets.add(new AccelerateProjectile(level, hitbox.x, hitbox.y,
                         MathUtils.cos(angle) * 200, MathUtils.sin(angle) * 200,
                         -MathUtils.cos(angle) * 50, -MathUtils.sin(angle) * 50,
                         400, 8));
                 if (timer < 12) {
-                    bullets.add(new AccelerateProjectile(hitbox.x, hitbox.y,
+                    bullets.add(new AccelerateProjectile(level, hitbox.x, hitbox.y,
                             MathUtils.cos(angle + MathUtils.PI) * 200, MathUtils.sin(angle + MathUtils.PI) * 200,
                             -MathUtils.cos(angle + MathUtils.PI) * 50, -MathUtils.sin(angle + MathUtils.PI) * 50,
                             400, 8));
                 }
                 if (timer < 10) {
-                    bullets.add(new AccelerateProjectile(hitbox.x, hitbox.y,
+                    bullets.add(new AccelerateProjectile(level, hitbox.x, hitbox.y,
                             MathUtils.cos(angle + MathUtils.PI / 2) * 200, MathUtils.sin(angle + MathUtils.PI / 2) * 200,
                             -MathUtils.cos(angle + MathUtils.PI / 2) * 50, -MathUtils.sin(angle + MathUtils.PI / 2) * 50,
                             400, 8));
-                    bullets.add(new AccelerateProjectile(hitbox.x, hitbox.y,
+                    bullets.add(new AccelerateProjectile(level, hitbox.x, hitbox.y,
                             MathUtils.cos(angle - MathUtils.PI / 2) * 200, MathUtils.sin(angle - MathUtils.PI / 2) * 200,
                             -MathUtils.cos(angle - MathUtils.PI / 2) * 50, -MathUtils.sin(angle - MathUtils.PI / 2) * 50,
                             400, 8));

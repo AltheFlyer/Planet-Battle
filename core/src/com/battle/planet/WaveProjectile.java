@@ -19,12 +19,12 @@ public class WaveProjectile extends Projectile {
 
     Array<Vector2> path = new Array<Vector2>();
 
-    public WaveProjectile(float x, float y, float vx, float vy, float mo) {
-        this(new Rectangle(x, y, 5, 5), new Vector2(vx, vy), mo);
+    public WaveProjectile(final BattleLevel lev, float x, float y, float vx, float vy, float mo) {
+        this(lev, new Rectangle(x, y, 5, 5), new Vector2(vx, vy), mo);
     }
 
-    public WaveProjectile(Rectangle r, Vector2 v, float mo) {
-        super(r, v);
+    public WaveProjectile(final BattleLevel lev, Rectangle r, Vector2 v, float mo) {
+        super(lev, r, v);
         direction = MathUtils.atan2(v.y, v.x);
         //Kinematics
         maxOffset = mo;
@@ -36,8 +36,8 @@ public class WaveProjectile extends Projectile {
     }
 
     //For special wave effects (since direction usually won't matter
-    public WaveProjectile(Rectangle r, Vector2 v, float mo, boolean startPositive) {
-        super(r, v);
+    public WaveProjectile(final BattleLevel lev, Rectangle r, Vector2 v, float mo, boolean startPositive) {
+        super(lev, r, v);
         direction = MathUtils.atan2(v.y, v.x);
         //Kinematics
         maxOffset = mo;

@@ -11,14 +11,14 @@ abstract public class Projectile {
     float time;
     boolean isDestroyed;
 
-    public Projectile(Rectangle r, Vector2 v) {
+    public Projectile(final BattleLevel lev, Rectangle r, Vector2 v) {
         hitbox = r;
         velocity = v;
         isDestroyed = false;
         time = 0f;
     }
 
-    public Projectile(float x, float y, float vx, float vy) {
+    public Projectile(final BattleLevel lev, float x, float y, float vx, float vy) {
         hitbox = new Rectangle(x, y, 5, 5);
         velocity = new Vector2(vx, vy);
         isDestroyed = false;

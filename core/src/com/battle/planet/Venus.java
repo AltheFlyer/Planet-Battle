@@ -1,6 +1,7 @@
 package com.battle.planet;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -42,8 +43,8 @@ public class Venus extends Enemy {
     float aimDirection = 3 * MathUtils.PI / 2;
     float aimChange = MathUtils.PI / 12;
 
-    public Venus(float x, float y, final Player p) {
-        super(x, y, 70, 80, 500, p);
+    public Venus(final BattleLevel lev, float x, float y) {
+        super(lev, x, y, 70, 80, 500);
 
         spawnCooldown = SPAWN_MAX_COOLDOWN;
         aimCooldown = AIM_MAX_COOLDOWN;
@@ -137,7 +138,7 @@ public class Venus extends Enemy {
             //Constant acid rain
             if (mainCooldown <= 0) {
                 mainCooldown = MAIN_MAX_COOLDOWN * 0.03f;
-                bullets.add(new BasicProjectile(MathUtils.random(100, 700), 700, -MathUtils.random(10, 70), -MathUtils.random(170, 200)));
+                bullets.add(new BasicProjectile(level, MathUtils.random(100, 700), 700, -MathUtils.random(10, 70), -MathUtils.random(170, 200)));
                 //bullets.add(new BasicProjectile(MathUtils.random(100, 700), 700, -MathUtils.random(10, 70), -MathUtils.random(170, 200)));
             }
             //Hearts
@@ -155,7 +156,7 @@ public class Venus extends Enemy {
             //Constant acid rain (still)
             if (mainCooldown <= 0) {
                 mainCooldown = MAIN_MAX_COOLDOWN * 0.06f;
-                bullets.add(new BasicProjectile(MathUtils.random(100, 700), 700, -MathUtils.random(10, 70), -MathUtils.random(170, 200)));
+                bullets.add(new BasicProjectile(level, MathUtils.random(100, 700), 700, -MathUtils.random(10, 70), -MathUtils.random(170, 200)));
                 //bullets.add(new BasicProjectile(MathUtils.random(100, 700), 700, -MathUtils.random(10, 70), -MathUtils.random(170, 200)));
             }
 
@@ -170,7 +171,7 @@ public class Venus extends Enemy {
             //Create orbital ring
             for (int i = 0; i < 72; ++i) {
                 float angle = (float) (i/72.0) * 6.28f;
-                bullets.add(new VenusRingProjectile(150,300 + 200 * MathUtils.cos(angle), 300 + 200 * MathUtils.sin(angle), 1.0f, 3.14f, this));
+                bullets.add(new VenusRingProjectile(level, 150,300 + 200 * MathUtils.cos(angle), 300 + 200 * MathUtils.sin(angle), 1.0f, 3.14f, this));
             }
             phase = 1;
         }
@@ -210,26 +211,26 @@ public class Venus extends Enemy {
             int rand = MathUtils.random(0, 3);
             //Spawn from random sides
             if (rand == 0) {
-                enemies.add(new AcidSeeker(MathUtils.random(0, 600), 670, this, player));
+                enemies.add(new AcidSeeker(level, this, MathUtils.random(0, 600), 670));
             } else if (rand == 1) {
-                enemies.add(new AcidSeeker(MathUtils.random(0, 600), -70, this, player));
+                enemies.add(new AcidSeeker(level, this, MathUtils.random(0, 600), -70));
             } else if (rand == 2) {
-                enemies.add(new AcidSeeker(670, MathUtils.random(0, 600), this, player));
+                enemies.add(new AcidSeeker(level, this, 670, MathUtils.random(0, 600)));
             } else if (rand == 3) {
-                enemies.add(new AcidSeeker(-70, MathUtils.random(0, 600), this, player));
+                enemies.add(new AcidSeeker(level, this, -70, MathUtils.random(0, 600)));
             }
             canSpawn = false;
             spawned += 1;
         }
         if (phase == 2) {
             if (aimCooldown <= 0) {
-                enemies.add(new AcidCloud(x, 700, 0, -200, player));
+                enemies.add(new AcidCloud(level, x, 700, 0, -200));
                 aimCooldown = AIM_MAX_COOLDOWN;
                 canSpawn = false;
             }
             if (mainCooldown <= 0) {
                 for (int i = 0; i < 25; ++i) {
-                    enemies.add(new AcidCloud(MathUtils.random(20, 580), MathUtils.random(620, 749), 0, -MathUtils.random(175, 200), player));
+                    enemies.add(new AcidCloud(level, MathUtils.random(20, 580), MathUtils.random(620, 749), 0, -MathUtils.random(175, 200)));
                 }
                 mainCooldown = MAIN_MAX_COOLDOWN;
                 canSpawn = false;
@@ -237,24 +238,24 @@ public class Venus extends Enemy {
         }
         if (phase == 3) {
             float angle = MathUtils.random(360) * MathUtils.degreesToRadians;
-            enemies.add(new AcidCloud(300 + MathUtils.cos(angle) * 400, 300 + MathUtils.sin(angle) * 400, -MathUtils.cos(angle) * 150, -MathUtils.sin(angle) * 150, player));
+            enemies.add(new AcidCloud(level, 300 + MathUtils.cos(angle) * 400, 300 + MathUtils.sin(angle) * 400, -MathUtils.cos(angle) * 150, -MathUtils.sin(angle) * 150));
             canSpawn = false;
         }
         if (phase == 4) {
-            enemies.add(new VenusReflector(player,this, hitbox.radius + 40, 1000, 0, MathUtils.PI / 2, true));
-            enemies.add(new VenusReflector(player,this, hitbox.radius + 40, 1000, MathUtils.PI / 12, MathUtils.PI / 2, true));
-            enemies.add(new VenusReflector(player,this, hitbox.radius + 40, 1000, -MathUtils.PI / 12, MathUtils.PI / 2, true));
+            enemies.add(new VenusReflector(level, this, hitbox.radius + 40, 1000, 0, MathUtils.PI / 2, true));
+            enemies.add(new VenusReflector(level, this, hitbox.radius + 40, 1000, MathUtils.PI / 12, MathUtils.PI / 2, true));
+            enemies.add(new VenusReflector(level, this, hitbox.radius + 40, 1000, -MathUtils.PI / 12, MathUtils.PI / 2, true));
 
-            enemies.add(new VenusReflector(player, this, hitbox.radius + 40, 1000, MathUtils.PI, MathUtils.PI / 2, true));
-            enemies.add(new VenusReflector(player, this, hitbox.radius + 40, 1000, 11 * MathUtils.PI / 12, MathUtils.PI / 2, true));
-            enemies.add(new VenusReflector(player, this, hitbox.radius + 40, 1000, 13 * MathUtils.PI / 12, MathUtils.PI / 2, true));
+            enemies.add(new VenusReflector(level,  this, hitbox.radius + 40, 1000, MathUtils.PI, MathUtils.PI / 2, true));
+            enemies.add(new VenusReflector(level,  this, hitbox.radius + 40, 1000, 11 * MathUtils.PI / 12, MathUtils.PI / 2, true));
+            enemies.add(new VenusReflector(level,  this, hitbox.radius + 40, 1000, 13 * MathUtils.PI / 12, MathUtils.PI / 2, true));
             canSpawn = false;
         }
         if (phase == 5) {
             float angle = MathUtils.random(360) * MathUtils.degreesToRadians;
             for (int i = 0; i < 4; ++i) {
                 angle += MathUtils.PI/2;
-                enemies.add(new AcidCloud(300 + MathUtils.cos(angle) * 400, 300 + MathUtils.sin(angle) * 400, -MathUtils.cos(angle) * 100, -MathUtils.sin(angle) * 100, player));
+                enemies.add(new AcidCloud(level, 300 + MathUtils.cos(angle) * 400, 300 + MathUtils.sin(angle) * 400, -MathUtils.cos(angle) * 100, -MathUtils.sin(angle) * 100));
             }
             canSpawn = false;
         }
@@ -290,22 +291,22 @@ public class Venus extends Enemy {
         float c = MathUtils.cos(angle + MathUtils.PI / 2);
 
         //Top and bottom
-        bullets.add(new BasicProjectile(x + rotateX(0, 2 * scale, c, s), y + rotateY(0, 2 * scale, c, s), vx, vy));
-        bullets.add(new BasicProjectile(x + rotateX(0, -4 * scale, c, s), y + rotateY(0, -4 * scale, c, s), vx, vy));
+        bullets.add(new BasicProjectile(level, x + rotateX(0, 2 * scale, c, s), y + rotateY(0, 2 * scale, c, s), vx, vy));
+        bullets.add(new BasicProjectile(level, x + rotateX(0, -4 * scale, c, s), y + rotateY(0, -4 * scale, c, s), vx, vy));
 
         //Heart halves, negative for left, positive for right.
         for (int i = -1; i < 2; i += 2) {
 
-            bullets.add(new BasicProjectile(x + rotateX(1 * scale * i, 2.5f * scale, c, s), y + rotateY( 1 * scale * i, 2.5f * scale, c, s), vx, vy));
-            bullets.add(new BasicProjectile(x + rotateX(2 * scale * i, 3 * scale, c, s), y + rotateY(2 * scale * i, 3 * scale, c, s), vx, vy));
-            bullets.add(new BasicProjectile(x + rotateX(3 * scale * i, 2.5f * scale, c, s), y + rotateY(3 * scale * i, 2.5f * scale, c, s), vx, vy));
-            bullets.add(new BasicProjectile(x + rotateX(3.5f * scale * i, 2 * scale, c, s), y + rotateY(3.5f * scale * i, 2 * scale, c, s), vx, vy));
-            bullets.add(new BasicProjectile(x + rotateX(4 * scale * i, 1 * scale, c, s), y + rotateY(4 * scale * i, 1 * scale, c, s), vx, vy));
+            bullets.add(new BasicProjectile(level, x + rotateX(1 * scale * i, 2.5f * scale, c, s), y + rotateY( 1 * scale * i, 2.5f * scale, c, s), vx, vy));
+            bullets.add(new BasicProjectile(level, x + rotateX(2 * scale * i, 3 * scale, c, s), y + rotateY(2 * scale * i, 3 * scale, c, s), vx, vy));
+            bullets.add(new BasicProjectile(level, x + rotateX(3 * scale * i, 2.5f * scale, c, s), y + rotateY(3 * scale * i, 2.5f * scale, c, s), vx, vy));
+            bullets.add(new BasicProjectile(level, x + rotateX(3.5f * scale * i, 2 * scale, c, s), y + rotateY(3.5f * scale * i, 2 * scale, c, s), vx, vy));
+            bullets.add(new BasicProjectile(level, x + rotateX(4 * scale * i, 1 * scale, c, s), y + rotateY(4 * scale * i, 1 * scale, c, s), vx, vy));
 
-            bullets.add(new BasicProjectile(x + rotateX(4 * scale * i, 0, c, s), y + rotateY(4 * scale * i, 0, c, s), vx, vy));
-            bullets.add(new BasicProjectile(x + rotateX(3 * scale * i,-1 * scale, c, s), y + rotateY(3 * scale * i, -1 * scale, c, s), vx, vy));
-            bullets.add(new BasicProjectile(x + rotateX(2 * scale * i,-2 * scale, c, s), y + rotateY(2 * scale * i, -2 * scale, c, s), vx, vy));
-            bullets.add(new BasicProjectile(x + rotateX(1 * scale * i,-3 * scale, c, s), y + rotateY(1 * scale * i, -3 * scale, c, s), vx, vy));
+            bullets.add(new BasicProjectile(level, x + rotateX(4 * scale * i, 0, c, s), y + rotateY(4 * scale * i, 0, c, s), vx, vy));
+            bullets.add(new BasicProjectile(level, x + rotateX(3 * scale * i,-1 * scale, c, s), y + rotateY(3 * scale * i, -1 * scale, c, s), vx, vy));
+            bullets.add(new BasicProjectile(level, x + rotateX(2 * scale * i,-2 * scale, c, s), y + rotateY(2 * scale * i, -2 * scale, c, s), vx, vy));
+            bullets.add(new BasicProjectile(level, x + rotateX(1 * scale * i,-3 * scale, c, s), y + rotateY(1 * scale * i, -3 * scale, c, s), vx, vy));
         }
     }
 

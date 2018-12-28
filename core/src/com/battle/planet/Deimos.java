@@ -1,6 +1,7 @@
 package com.battle.planet;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
@@ -21,8 +22,8 @@ public class Deimos extends Enemy {
     //~50 degrees
     float angularVelocity = 0.872665f;
 
-    public Deimos(float x, float y, Mars m, final Player p) {
-        super(x, y, 30, 40, 80, p);
+    public Deimos(final BattleLevel lev, Mars m, float x, float y) {
+        super(lev, x, y, 30, 40, 80);
         mars = m;
         boltCooldown = MAX_BOLT_COOLDOWN;
     }
@@ -50,7 +51,7 @@ public class Deimos extends Enemy {
         boltCooldown -= frame;
         for (int i = 0; i < boltSet.length; ++i) {
             if (boltCooldown <= boltSet[i]) {
-                bullets.add(new DelayProjectile(new Rectangle(hitbox.x, hitbox.y, 15, 15), boltSet[i]));
+                bullets.add(new DelayProjectile(level, new Rectangle(hitbox.x, hitbox.y, 15, 15), boltSet[i]));
                 boltSet[i] = -1.0f;
             }
         }

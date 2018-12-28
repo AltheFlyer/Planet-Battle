@@ -1,6 +1,7 @@
 package com.battle.planet;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
@@ -44,8 +45,8 @@ public class Mars extends Enemy {
     boolean deimosDead = false;
     boolean phobosDead = false;
 
-    public Mars(float x, float y, final Player p) {
-        super(x, y, 70, 80, 500, p);
+    public Mars(final BattleLevel lev, float x, float y) {
+        super(lev, x, y, 70, 80, 500);
         spearCooldown = SPEAR_MAX_COOLDOWN;
         chargeCooldown = CHARGE_MAX_COOLDOWN;
         burstCooldown = BURST_MAX_COOLDOWN;
@@ -54,6 +55,7 @@ public class Mars extends Enemy {
         chargeVelocity = new Vector2(0, 0);
     }
 
+    @Override
     public void drawBody(ShapeRenderer r) {
         if (phase == 2 || phase == -1) {
             r.setColor(Color.valueOf("6C1F1EFF"));
@@ -226,8 +228,8 @@ public class Mars extends Enemy {
         float x = player.hitboxCenter.x;
         float y = player.hitboxCenter.y;
         Array<Enemy> e = new Array<Enemy>();
-        e.add(new Phobos(x, y, this, player));
-        e.add(new Deimos(x, y, this, player));
+        e.add(new Phobos(level, this, x, y));
+        e.add(new Deimos(level, this, x, y));
         canSpawn = false;
         return e;
     }
@@ -235,26 +237,26 @@ public class Mars extends Enemy {
     public void createSpear(float theta) {
         //Shaft
         for (int i = 0; i <= 80; i+=5) {
-            bullets.add(new BasicProjectile(hitbox.x + i * MathUtils.cos(theta), hitbox.y + i * MathUtils.sin(theta), 180 * MathUtils.cos(theta), 180 * MathUtils.sin(theta)));
+            bullets.add(new BasicProjectile(level, hitbox.x + i * MathUtils.cos(theta), hitbox.y + i * MathUtils.sin(theta), 180 * MathUtils.cos(theta), 180 * MathUtils.sin(theta)));
         }
 
         //Sides
         for (int i = 5; i <= 25; i+=5) {
-            bullets.add(new BasicProjectile(hitbox.x + (80 - i) * MathUtils.cos(theta + i * 0.0174533f), hitbox.y + (80 - i) * MathUtils.sin(theta + i * 0.0174533f), 180 * MathUtils.cos(theta), 180 * MathUtils.sin(theta)));
-            bullets.add(new BasicProjectile(hitbox.x + (80 - i) * MathUtils.cos(theta - i * 0.0174533f), hitbox.y + (80 - i) * MathUtils.sin(theta - i * 0.0174533f), 180 * MathUtils.cos(theta), 180 * MathUtils.sin(theta)));
+            bullets.add(new BasicProjectile(level, hitbox.x + (80 - i) * MathUtils.cos(theta + i * 0.0174533f), hitbox.y + (80 - i) * MathUtils.sin(theta + i * 0.0174533f), 180 * MathUtils.cos(theta), 180 * MathUtils.sin(theta)));
+            bullets.add(new BasicProjectile(level, hitbox.x + (80 - i) * MathUtils.cos(theta - i * 0.0174533f), hitbox.y + (80 - i) * MathUtils.sin(theta - i * 0.0174533f), 180 * MathUtils.cos(theta), 180 * MathUtils.sin(theta)));
         }
     }
 
     public void createSpear(float theta, float speed) {
         //Shaft
         for (int i = 0; i <= 80; i+=5) {
-            bullets.add(new BasicProjectile(hitbox.x + i * MathUtils.cos(theta), hitbox.y + i * MathUtils.sin(theta), speed * MathUtils.cos(theta), speed * MathUtils.sin(theta)));
+            bullets.add(new BasicProjectile(level, hitbox.x + i * MathUtils.cos(theta), hitbox.y + i * MathUtils.sin(theta), speed * MathUtils.cos(theta), speed * MathUtils.sin(theta)));
         }
 
         //Sides
         for (int i = 5; i <= 25; i+=5) {
-            bullets.add(new BasicProjectile(hitbox.x + (80 - i) * MathUtils.cos(theta + i * 0.0174533f), hitbox.y + (80 - i) * MathUtils.sin(theta + i * 0.0174533f), speed * MathUtils.cos(theta), speed * MathUtils.sin(theta)));
-            bullets.add(new BasicProjectile(hitbox.x + (80 - i) * MathUtils.cos(theta - i * 0.0174533f), hitbox.y + (80 - i) * MathUtils.sin(theta - i * 0.0174533f), speed * MathUtils.cos(theta), speed * MathUtils.sin(theta)));
+            bullets.add(new BasicProjectile(level, hitbox.x + (80 - i) * MathUtils.cos(theta + i * 0.0174533f), hitbox.y + (80 - i) * MathUtils.sin(theta + i * 0.0174533f), speed * MathUtils.cos(theta), speed * MathUtils.sin(theta)));
+            bullets.add(new BasicProjectile(level, hitbox.x + (80 - i) * MathUtils.cos(theta - i * 0.0174533f), hitbox.y + (80 - i) * MathUtils.sin(theta - i * 0.0174533f), speed * MathUtils.cos(theta), speed * MathUtils.sin(theta)));
         }
     }
 

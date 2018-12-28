@@ -1,6 +1,7 @@
 package com.battle.planet;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
@@ -19,8 +20,8 @@ public class VenusReflector extends Enemy {
      * @param dist
      * @param hp
      */
-    public VenusReflector(final Player p, Venus v, float dist, float hp, float theta, float omega, boolean i) {
-        super(0, 0, 20, 20, hp, p);
+    public VenusReflector(final BattleLevel lev, Venus v, float dist, float hp, float theta, float omega, boolean i) {
+        super(lev, 0, 0, 20, 20, hp);
         venus = v;
         distance = dist;
         angularPosition = theta;
@@ -54,7 +55,7 @@ public class VenusReflector extends Enemy {
                 if (!immune) {
                     this.health -= 1;
                 }
-                bullets.add(new BasicProjectile(p.hitbox.x, p.hitbox.y, -p.velocity.x, -p.velocity.y));
+                bullets.add(new BasicProjectile(level, p.hitbox.x, p.hitbox.y, -p.velocity.x, -p.velocity.y));
             }
         }
         return projectiles;
