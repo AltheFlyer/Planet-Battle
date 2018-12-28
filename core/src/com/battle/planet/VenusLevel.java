@@ -4,7 +4,7 @@ public class VenusLevel extends BattleLevel {
 
     public VenusLevel(PlanetBattle g) {
         super(g);
-        enemies.add(new Venus(300, 300, player));
+        enemies.add(new Venus(this, 300, 300));
         player.hitbox.setPosition(150, 300);
     }
 

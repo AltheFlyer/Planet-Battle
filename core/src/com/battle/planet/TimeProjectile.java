@@ -7,23 +7,23 @@ public class TimeProjectile extends Projectile {
 
     float lifespan;
 
-    public TimeProjectile(Rectangle r, float life) {
-        super(r, new Vector2(0, 0));
+    public TimeProjectile(final BattleLevel lev, Rectangle r, float life) {
+        super(lev, r, new Vector2(0, 0));
         lifespan = life;
     }
 
-    public TimeProjectile(float x, float y, float life) {
-        super(x, y, 0, 0);
+    public TimeProjectile(final BattleLevel lev, float x, float y, float life) {
+        super(lev, x, y, 0, 0);
         lifespan = life;
     }
 
-    public TimeProjectile(Rectangle r, Vector2 v, float life) {
-        super(r, v);
+    public TimeProjectile(final BattleLevel lev, Rectangle r, Vector2 v, float life) {
+        super(lev, r, v);
         lifespan = life;
     }
 
-    public TimeProjectile(float x, float y, float vx, float vy, float life) {
-        super(x, y, vx, vy);
+    public TimeProjectile(final BattleLevel lev, float x, float y, float vx, float vy, float life) {
+        super(lev, x, y, vx, vy);
         lifespan = life;
     }
 

@@ -10,26 +10,34 @@ public class DelayProjectile extends Projectile {
     boolean moving = false;
     float speed;
 
-    public DelayProjectile(Rectangle r, float d) {
-        super(r, new Vector2(0, 0));
+    public DelayProjectile(final BattleLevel lev, Rectangle r, float d) {
+        super(lev, r, new Vector2(0, 0));
         delay = d;
         speed = 200;
     }
 
-    public DelayProjectile(Rectangle r, float d, float v) {
-        super(r, new Vector2(0, 0));
+    public DelayProjectile(final BattleLevel lev, Rectangle r, float d, float v) {
+        super(lev, r, new Vector2(0, 0));
         delay = d;
         speed = v;
     }
 
-    public DelayProjectile(float x, float y, float d) {
-        this(new Rectangle(x, y, 5, 5), d, 200);
+    public DelayProjectile(final BattleLevel lev, float x, float y, float d) {
+        this(lev, new Rectangle(x, y, 5, 5), d, 200);
+    }
+
+    public DelayProjectile(final BattleLevel lev, Rectangle r, float vx, float vy, float d, float v) {
+        super(lev, r, new Vector2(vx, vy));
+        delay = d;
+        speed = v;
     }
 
     @Override
     public void move(float x, float y, float frame) {
         if (delay > 0) {
             delay -= frame;
+            hitbox.x += velocity.x * frame;
+            hitbox.y += velocity.y * frame;
         }
         if (delay <= 0 && !moving) {
             moving = true;

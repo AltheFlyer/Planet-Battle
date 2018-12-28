@@ -36,6 +36,8 @@ public class BattleLevel implements Screen {
     //Arena values
     float LEVEL_WIDTH = 600;
     float LEVEL_HEIGHT = 600;
+
+    //Camera values
     float SCREEN_WIDTH = 600;
     float SCREEN_HEIGHT = 600;
 
@@ -124,6 +126,7 @@ public class BattleLevel implements Screen {
 
         Gdx.gl.glEnable(GL20.GL_BLEND);
         Gdx.gl.glBlendFunc(GL20.GL_SRC_ALPHA, GL20.GL_ONE_MINUS_SRC_ALPHA);
+
         render.begin();
         render.set(ShapeRenderer.ShapeType.Filled);
         render.setColor(Color.RED);
@@ -173,7 +176,7 @@ public class BattleLevel implements Screen {
             float vx = MathUtils.cos(theta) * 400;
             float vy = MathUtils.sin(theta) * 400;
 
-            playerBullets.add(new BasicProjectile(player.hitboxCenter.x, player.hitboxCenter.y, vx, vy));
+            playerBullets.add(new BasicProjectile(this, player.hitboxCenter.x, player.hitboxCenter.y, vx, vy));
             player.cooldown = player.PRIMARY_COOLDOWN;
         }
     }

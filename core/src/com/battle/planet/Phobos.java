@@ -1,6 +1,7 @@
 package com.battle.planet;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
@@ -20,12 +21,13 @@ public class Phobos extends Enemy {
     //~90 degrees
     float angularVelocity = 1.5708f;
 
-    public Phobos(float x, float y, Mars m, final Player p) {
-        super(x, y, 30, 50, 100, p);
+    public Phobos(final BattleLevel lev, Mars m, float x, float y) {
+        super(lev, x, y, 30, 50, 100);
         mars = m;
         boltCooldown = MAX_BOLT_COOLDOWN;
     }
 
+    @Override
     public void drawBody(ShapeRenderer r) {
         r.setColor(Color.GRAY);
         r.circle(hitbox.x, hitbox.y, hitbox.radius);
@@ -48,7 +50,7 @@ public class Phobos extends Enemy {
         bullets.clear();
         boltCooldown -= frame;
         if (boltCooldown <= 0) {
-            bullets.add(new DelayProjectile(new Rectangle(hitbox.x, hitbox.y, 15, 15), 2f));
+            bullets.add(new DelayProjectile(level, new Rectangle(hitbox.x, hitbox.y, 15, 15), 2f));
             boltCooldown = MAX_BOLT_COOLDOWN;
         }
         //Movement

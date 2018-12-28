@@ -8,8 +8,8 @@ public class AccelerateProjectile extends Projectile {
     float maximum;
     float lifespan;
 
-    public AccelerateProjectile(float x, float y, float vx, float vy, float ax, float ay, float maxMag, float maxDuration) {
-        super(x, y, vx, vy);
+    public AccelerateProjectile(final BattleLevel lev, float x, float y, float vx, float vy, float ax, float ay, float maxMag, float maxDuration) {
+        super(lev, x, y, vx, vy);
         acceleration = new Vector2(ax, ay);
         maximum = maxMag;
         lifespan = maxDuration;

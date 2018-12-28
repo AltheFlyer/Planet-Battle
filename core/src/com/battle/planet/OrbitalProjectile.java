@@ -10,16 +10,16 @@ public class OrbitalProjectile extends Projectile {
     float angularVelocity;
     float distance;
 
-    public OrbitalProjectile(float dst, float cx, float cy, float omega, float angle) {
-        super(0, 0, 0, 0);
+    public OrbitalProjectile(final BattleLevel lev, float dst, float cx, float cy, float omega, float angle) {
+        super(lev, 0, 0, 0, 0);
         center = new Vector2(cx, cy);
         angularVelocity = omega;
         angularPosition = angle;
         distance = dst;
     }
 
-    public OrbitalProjectile(float x, float y, float cx, float cy, float omega, float angle) {
-        super(x, y, 0, 0);
+    public OrbitalProjectile(final BattleLevel lev, float x, float y, float cx, float cy, float omega, float angle) {
+        super(lev, x, y, 0, 0);
         center = new Vector2(cx, cy);
         angularVelocity = omega;
         angularPosition = angle;

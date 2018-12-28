@@ -1,6 +1,7 @@
 package com.battle.planet;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
@@ -12,8 +13,8 @@ public class AcidCloud extends Enemy {
     //(Like an acid aura)
     Vector2 velocity;
 
-    public AcidCloud(float x, float y, float vx, float vy, final Player p) {
-        super(x, y, 60, 20, 2, p);
+    public AcidCloud(final BattleLevel lev, float x, float y, float vx, float vy) {
+        super(lev, x, y, 60, 20, 2);
         velocity = new Vector2(vx, vy);
     }
 

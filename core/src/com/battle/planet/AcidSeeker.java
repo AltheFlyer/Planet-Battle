@@ -1,6 +1,7 @@
 package com.battle.planet;
 
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
@@ -13,14 +14,14 @@ public class AcidSeeker extends Enemy {
     //Small enemy, with a larger damage area
     //(Like an acid aura)
 
-    public AcidSeeker(float x, float y, Venus v, final Player p) {
-        super(x, y, 60, 20, 2, p);
+    public AcidSeeker(final BattleLevel lev, Venus v, float x, float y) {
+        super(lev, x, y, 60, 20, 2);
         venus = v;
         speed = 150;
     }
 
-    public AcidSeeker(float x, float y, float s, Venus v, final Player p) {
-        super(x, y, 60, 20, 2, p);
+    public AcidSeeker(final BattleLevel lev, Venus v, float x, float y, float s) {
+        super(lev, x, y, 60, 20, 2);
         venus = v;
         speed = s;
     }

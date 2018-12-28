@@ -4,7 +4,7 @@ public class MarsLevel extends BattleLevel {
 
 	public MarsLevel(final PlanetBattle g) {
 		super(g);
-		enemies.add(new Mars(300, 300, player));
+		enemies.add(new Mars(this, 300, 300));
 	}
 
 	@Override
