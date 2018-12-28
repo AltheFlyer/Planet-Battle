@@ -109,6 +109,7 @@ public class Uranus extends Enemy {
         float targetX, targetY, modifier;
         float cooldown;
         final float MAX_COOLDOWN = 0.5f;
+        float dist = 400;
 
         public SwirlAbility(final Player p, final Uranus u) {
             super(p, u);
@@ -131,11 +132,12 @@ public class Uranus extends Enemy {
         @Override
         public void run(float frame) {
             cooldown -= frame;
+            dist -= 20 * frame;
             if (cooldown <= 0 && timer > 3) {
                 cooldown = MAX_COOLDOWN;
                 for (int i = 0; i < 12; ++i) {
                     float angle = (i / 12.0f) * MathUtils.PI2 + modifier;
-                    uranus.bullets.add(new BasicProjectile(targetX + MathUtils.cos(angle) * 400, targetY + MathUtils.sin(angle) * 400, -MathUtils.cos(angle) * 150, -MathUtils.sin(angle) * 150));
+                    uranus.bullets.add(new BasicProjectile(targetX + MathUtils.cos(angle) * dist, targetY + MathUtils.sin(angle) * dist, -MathUtils.cos(angle) * 150, -MathUtils.sin(angle) * 150));
                 }
                 modifier += MathUtils.PI / 48;
             }
