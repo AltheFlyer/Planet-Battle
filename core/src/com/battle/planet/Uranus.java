@@ -45,20 +45,9 @@ public class Uranus extends Enemy {
     @Override
     public Array<Projectile> attack(float frame) {
         bullets.clear();
-        /*
-        teleportCooldown -= frame;
-        if (teleportCooldown <= 0) {
-            teleportCooldown = TELE_MAX_COOLDOWN;
-            float angle = MathUtils.random(0, 360) * MathUtils.degreesToRadians;
-            hitbox.x = player.hitbox.x + MathUtils.cos(angle) * 300;
-            hitbox.y = player.hitbox.y + MathUtils.sin(angle) * 300;
 
-            angle = MathUtils.atan2(player.hitbox.y - hitbox.y, player.hitbox.x - hitbox.x);
-            bullets.add(new BasicProjectile(hitbox.x, hitbox.y, MathUtils.cos(angle) * 200, MathUtils.sin(angle) * 200));
-        }
-        */
         if (chosenAbility == 0 && abilityCooldown <= 0) {
-            chosenAbility = 6;//MathUtils.random(1, 6);
+            chosenAbility = MathUtils.random(1, 7);
             if (chosenAbility == 1) {
                 ability = new SwirlAbility(player, this);
             }
@@ -76,6 +65,9 @@ public class Uranus extends Enemy {
             }
             if (chosenAbility == 6) {
                 ability = new MeteorAbility(player, this);
+            }
+            if (chosenAbility == 7) {
+                ability = new SeekerAbility(player, this);
             }
         }
 
@@ -375,4 +367,55 @@ public class Uranus extends Enemy {
             }
         }
     }
+
+    class SeekerAbility extends Ability {
+
+        float cooldown = 0;
+        final float MAX_COOLDOWN = 1;
+        boolean goingLeft = true;
+
+        public SeekerAbility(Player p, Uranus u) {
+            super(p, u);
+            timer = 10;
+        }
+
+        public void run(float frame) {
+            cooldown -= frame;
+            if (cooldown <= 0) {
+                cooldown = MAX_COOLDOWN;
+                for (int i = 0; i < 7; ++i) {
+                    float size = MathUtils.random(10, 25);
+                    bullets.add(new DelayProjectile(
+                                    level,
+                                    new Rectangle(hitbox.x, hitbox.y, size, size),
+                                    0, MathUtils.random(110, 500),
+                                    1, 300
+                            )
+                    );
+                    size = MathUtils.random(10, 25);
+                    bullets.add(new DelayProjectile(
+                                    level,
+                                    new Rectangle(hitbox.x, hitbox.y, size, size),
+                                    0, -MathUtils.random(110, 500),
+                                    1, 300
+                            )
+                    );
+                }
+            }
+            if (goingLeft) {
+                hitbox.x -= 150* frame;
+            } else {
+                hitbox.x += 150 * frame;
+            }
+            if (hitbox.x < 0 + hitbox.radius) {
+                hitbox.x = hitbox.radius;
+                goingLeft = false;
+            } else if (hitbox.x > level.LEVEL_WIDTH - hitbox.radius) {
+                hitbox.x = level.LEVEL_WIDTH - hitbox.radius;
+                goingLeft = true;
+            }
+        }
+    }
+
+
 }
