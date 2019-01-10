@@ -16,14 +16,16 @@ public class OrbitalProjectile extends Projectile {
         angularVelocity = omega;
         angularPosition = angle;
         distance = dst;
+        time = 1000;
     }
 
-    public OrbitalProjectile(final BattleLevel lev, float x, float y, float cx, float cy, float omega, float angle) {
-        super(lev, x, y, 0, 0);
+    public OrbitalProjectile(final BattleLevel lev, float dst, float cx, float cy, float omega, float angle, float life) {
+        super(lev, 0, 0, 0, 0);
         center = new Vector2(cx, cy);
         angularVelocity = omega;
         angularPosition = angle;
-        distance = center.dst(x, y);
+        distance = dst;
+        time = life;
     }
 
     @Override
@@ -31,6 +33,10 @@ public class OrbitalProjectile extends Projectile {
         angularPosition += angularVelocity;
         hitbox.x = center.x + MathUtils.cos(angularPosition) * distance;
         hitbox.y = center.y + MathUtils.sin(angularPosition) * distance;
+        if (time < 0) {
+            isDestroyed = true;
+        }
+        time -= frame;
     }
 
 }

@@ -96,6 +96,9 @@ public class LevelSelectScreen implements Screen {
                         case 2:
                             game.setScreen(new VenusLevel(game));
                             break;
+                        case 3:
+                            game.setScreen(new SaturnLevel(game));
+                            break;
                         case 4:
                             game.setScreen(new UranusLevel(game));
                             break;
