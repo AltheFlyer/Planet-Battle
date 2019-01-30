@@ -60,7 +60,7 @@ public class BattleLevel implements Screen {
         camera.setToOrtho(false, SCREEN_WIDTH, SCREEN_HEIGHT);
 
         //Initialize player
-        player = new Player(0, 0);
+        player = new Player(this, 0, 0,2);
         playerBullets = new Array<Projectile>();
 
         //Initialize enemies
@@ -147,10 +147,32 @@ public class BattleLevel implements Screen {
             render.setColor(Color.RED);
         }
         drawRectangle(new Rectangle(player.hitbox.x - 5, player.hitbox.y - 5, 20, 20));
+        //Draw secondary recharge
+        render.setColor(Color.GRAY);
+        render.rect(
+                player.hitboxCenter.x - 20,
+                player.hitboxCenter.y - 20,
+                40,
+                10
+        );
+        render.setColor(Color.YELLOW);
+        render.rect(
+                player.hitboxCenter.x - 20,
+                player.hitboxCenter.y - 20,
+                40 * (1 - (player.secondCooldown / player.SECONDARY_COOLDOWN)),
+                10
+        );
+        //Draw teleport range
+        if (player.specialValue == 2) {
+            render.set(ShapeRenderer.ShapeType.Line);
+            render.setColor(Color.YELLOW);
+            render.circle(player.hitboxCenter.x, player.hitboxCenter.y, 100);
+        }
         //render.setColor(Color.GREEN);
         //drawRectangle(playerHitbox);
 
         //Draw player bullets, then enemy bullets
+        render.set(ShapeRenderer.ShapeType.Filled);
         render.setColor(Color.YELLOW);
         for (Projectile p: playerBullets) {
             p.move(player.hitboxCenter.x, player.hitboxCenter.y, frame);
@@ -171,13 +193,16 @@ public class BattleLevel implements Screen {
 
     public void playerShoot() {
         //Player shooting
-        if ((Gdx.input.isTouched() ^ autoShoot) && player.cooldown <= 0) {
+        if ((Gdx.input.isButtonPressed(Input.Buttons.LEFT) ^ autoShoot) && player.cooldown <= 0) {
             float theta = MathUtils.atan2(mouse.y - player.hitbox.y, mouse.x - player.hitbox.x);
             float vx = MathUtils.cos(theta) * 400;
             float vy = MathUtils.sin(theta) * 400;
 
             playerBullets.add(new BasicProjectile(this, player.hitboxCenter.x, player.hitboxCenter.y, vx, vy));
             player.cooldown = player.PRIMARY_COOLDOWN;
+        }
+        if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT) && player.secondCooldown <= 0) {
+            player.special(mouse.x, mouse.y);
         }
     }
 

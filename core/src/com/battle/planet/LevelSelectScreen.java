@@ -17,6 +17,8 @@ public class LevelSelectScreen implements Screen {
     OrthographicCamera camera;
     Vector3 mouse;
 
+    int abilitySelection;
+
     public LevelSelectScreen(final PlanetBattle g) {
         game = g;
 
