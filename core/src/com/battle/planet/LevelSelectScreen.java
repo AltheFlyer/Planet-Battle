@@ -14,10 +14,28 @@ public class LevelSelectScreen implements Screen {
 
     final PlanetBattle game;
     Array<Rectangle> buttons;
+
     OrthographicCamera camera;
     Vector3 mouse;
 
-    int abilitySelection;
+    //The list of secondary abilities
+    Array<Rectangle> secondaries;
+    //The selected secondary
+    int abilitySelection = 0;
+
+    String[] abilityTitles = {
+        "Shotgun",
+        "Mars' Spear",
+        "Mercurial Dash",
+        "Peace of Mind"
+    };
+
+    String[] abilityText = {
+            "Creates a short range burst of projectiles.",
+            "Creates a slow, but powerful spear.",
+            "Do a short range teleport.",
+            "Slows down time."
+    };
 
     public LevelSelectScreen(final PlanetBattle g) {
         game = g;
@@ -34,6 +52,13 @@ public class LevelSelectScreen implements Screen {
         buttons.add(new Rectangle(50, 350, 50, 50));
         buttons.add(new Rectangle(150, 350, 50, 50));
         buttons.add(new Rectangle(250, 350, 50, 50));
+
+        secondaries = new Array<Rectangle>();
+
+        secondaries.add(new Rectangle(50, 50, 50, 50));
+        secondaries.add(new Rectangle(150, 50, 50, 50));
+        secondaries.add(new Rectangle(250, 50, 50, 50));
+        secondaries.add(new Rectangle(350, 50, 50, 50));
     }
 
     @Override
@@ -51,6 +76,11 @@ public class LevelSelectScreen implements Screen {
         for (Rectangle button: buttons) {
             game.render.rect(button.x, button.y, button.width, button.height);
         }
+
+        for (int i = 0; i < secondaries.size; ++i) {
+            game.render.rect(secondaries.get(i).x, secondaries.get(i).y, secondaries.get(i).width, secondaries.get(i).height);
+        }
+
         game.render.end();
 
 
@@ -70,6 +100,7 @@ public class LevelSelectScreen implements Screen {
         //Check for button press to load levels
         for (int i=0; i < buttons.size; ++i) {
             if (buttons.get(i).contains(mouse.x, mouse.y)) {
+                //Level selection info/text display
                 switch (i) {
                     case 0:
                         game.font.draw(game.batch, LevelText.MARS_TITLE, 400, 500, 190, 1, true);
@@ -87,28 +118,43 @@ public class LevelSelectScreen implements Screen {
                         game.font.draw(game.batch, LevelText.VENUS_TEXT, 400, 400, 190, 1, true);
                         break;
                 }
+                //Level selection
                 if (Gdx.input.isTouched()) {
                     switch (i) {
                         case 0:
-                            game.setScreen(new MarsLevel(game));
+                            game.setScreen(new MarsLevel(game, abilitySelection));
                             break;
                         case 1:
-                            game.setScreen(new MercuryLevel(game));
+                            game.setScreen(new MercuryLevel(game, abilitySelection));
                             break;
                         case 2:
-                            game.setScreen(new VenusLevel(game));
+                            game.setScreen(new VenusLevel(game, abilitySelection));
                             break;
                         case 3:
-                            game.setScreen(new SaturnLevel(game));
+                            game.setScreen(new SaturnLevel(game, abilitySelection));
                             break;
                         case 4:
-                            game.setScreen(new UranusLevel(game));
+                            game.setScreen(new UranusLevel(game, abilitySelection));
                             break;
                     }
                     dispose();
                 }
             }
         }
+
+        //Check for button press for player secondaries
+        for (int i = 0; i < secondaries.size; ++i) {
+            if (secondaries.get(i).contains(mouse.x, mouse.y)) {
+                game.font.draw(game.batch, abilityTitles[i], 400, 500, 190, 1, true);
+                game.font.draw(game.batch, abilityText[i], 400, 400, 190, 1, true);
+                if (Gdx.input.isTouched()) {
+                    abilitySelection = i;
+                }
+            }
+        }
+
+        //Display selected secondary
+        game.font.draw(game.batch, abilityTitles[abilitySelection], 100, 200, 400, -1, true);
 
         game.batch.end();
     }

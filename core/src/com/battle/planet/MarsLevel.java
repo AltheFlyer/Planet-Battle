@@ -2,8 +2,8 @@ package com.battle.planet;
 
 public class MarsLevel extends BattleLevel {
 
-	public MarsLevel(final PlanetBattle g) {
-		super(g);
+	public MarsLevel(final PlanetBattle g, int abilitySelection) {
+		super(g, abilitySelection);
 		enemies.add(new Mars(this, 300, 300));
 	}
 

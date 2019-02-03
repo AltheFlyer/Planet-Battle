@@ -49,7 +49,7 @@ public class BattleLevel implements Screen {
     boolean areHealthBarsVisible;
     boolean autoShoot = true;
 
-    public BattleLevel(final PlanetBattle g) {
+    public BattleLevel(final PlanetBattle g, int abilitySelection) {
         game = g;
 
         render = game.render;
@@ -60,7 +60,7 @@ public class BattleLevel implements Screen {
         camera.setToOrtho(false, SCREEN_WIDTH, SCREEN_HEIGHT);
 
         //Initialize player
-        player = new Player(this, 0, 0,2);
+        player = new Player(this, 0, 0,abilitySelection);
         playerBullets = new Array<Projectile>();
 
         //Initialize enemies
@@ -82,13 +82,13 @@ public class BattleLevel implements Screen {
 
         prepareValues();
 
-        draw();
+        playerShoot();
 
         movePlayer();
 
-        playerShoot();
-
         enemyActions();
+
+        moveBullets();
 
         playerCollisions();
 
@@ -99,6 +99,8 @@ public class BattleLevel implements Screen {
         checkWin();
 
         specialControls();
+
+        draw();
 
         player.tick(frame);
     }
@@ -111,6 +113,9 @@ public class BattleLevel implements Screen {
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
     }
 
+    /**
+     * Initialize frame delta, mouse, and player hitbox center
+     */
     public void prepareValues() {
         frame = Gdx.graphics.getDeltaTime();
         if (frame > 0.2f) {
@@ -148,6 +153,7 @@ public class BattleLevel implements Screen {
         }
         drawRectangle(new Rectangle(player.hitbox.x - 5, player.hitbox.y - 5, 20, 20));
         //Draw secondary recharge
+        //Back bar
         render.setColor(Color.GRAY);
         render.rect(
                 player.hitboxCenter.x - 20,
@@ -155,6 +161,7 @@ public class BattleLevel implements Screen {
                 40,
                 10
         );
+        //Charge amount
         render.setColor(Color.YELLOW);
         render.rect(
                 player.hitboxCenter.x - 20,
@@ -162,6 +169,7 @@ public class BattleLevel implements Screen {
                 40 * (1 - (player.secondCooldown / player.SECONDARY_COOLDOWN)),
                 10
         );
+
         //Draw teleport range
         if (player.specialValue == 2) {
             render.set(ShapeRenderer.ShapeType.Line);
@@ -175,14 +183,12 @@ public class BattleLevel implements Screen {
         render.set(ShapeRenderer.ShapeType.Filled);
         render.setColor(Color.YELLOW);
         for (Projectile p: playerBullets) {
-            p.move(player.hitboxCenter.x, player.hitboxCenter.y, frame);
             drawRectangle(p.hitbox);
             p.drawSpecial(render);
         }
 
         for (Projectile p: enemyBullets) {
             render.setColor(Color.RED);
-            p.move(player.hitboxCenter.x, player.hitboxCenter.y, frame);
             drawRectangle(p.hitbox);
             p.drawSpecial(render);
         }
@@ -191,6 +197,10 @@ public class BattleLevel implements Screen {
 
     }
 
+    /**
+     * This is where mouse clicks (left, right) are checked to allow for
+     * player primary and secondary fire/abilities
+     */
     public void playerShoot() {
         //Player shooting
         if ((Gdx.input.isButtonPressed(Input.Buttons.LEFT) ^ autoShoot) && player.cooldown <= 0) {
@@ -201,9 +211,7 @@ public class BattleLevel implements Screen {
             playerBullets.add(new BasicProjectile(this, player.hitboxCenter.x, player.hitboxCenter.y, vx, vy));
             player.cooldown = player.PRIMARY_COOLDOWN;
         }
-        if (Gdx.input.isButtonPressed(Input.Buttons.RIGHT) && player.secondCooldown <= 0) {
-            player.special(mouse.x, mouse.y);
-        }
+        player.special(mouse.x, mouse.y);
     }
 
     public void enemyActions() {
@@ -215,6 +223,16 @@ public class BattleLevel implements Screen {
             }
             e.move();
             e.collide(playerBullets);
+        }
+    }
+
+    public void moveBullets() {
+        for (Projectile p: playerBullets) {
+            p.move(player.hitboxCenter.x, player.hitboxCenter.y, frame);
+        }
+
+        for (Projectile p: enemyBullets) {
+            p.move(player.hitboxCenter.x, player.hitboxCenter.y, frame);
         }
     }
 
@@ -258,6 +276,8 @@ public class BattleLevel implements Screen {
         } else if (camera.position.y + camera.viewportHeight / 2 > LEVEL_HEIGHT) {
             camera.position.y = LEVEL_HEIGHT - camera.viewportHeight / 2;
         }
+        //Keep hitbox center consistent
+        player.hitbox.getCenter(player.hitboxCenter);
     }
 
     public void playerCollisions() {

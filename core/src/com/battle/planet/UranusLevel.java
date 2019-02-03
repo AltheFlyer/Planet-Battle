@@ -2,8 +2,8 @@ package com.battle.planet;
 
 public class UranusLevel extends BattleLevel {
 
-    public UranusLevel(PlanetBattle g) {
-        super(g);
+    public UranusLevel(PlanetBattle g, int abilitySelection) {
+        super(g, abilitySelection);
         LEVEL_HEIGHT = 1200;
         LEVEL_WIDTH = 1200;
         enemies.add(new Uranus(this, 600, 800));
