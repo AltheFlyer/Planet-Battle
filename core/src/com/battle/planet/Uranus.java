@@ -47,7 +47,7 @@ public class Uranus extends Enemy {
         bullets.clear();
 
         if (chosenAbility == 0 && abilityCooldown <= 0) {
-            chosenAbility = MathUtils.random(1, 7);
+            chosenAbility = 8;//MathUtils.random(1, 7);
             if (chosenAbility == 1) {
                 ability = new SwirlAbility(player, this);
             }
@@ -68,6 +68,9 @@ public class Uranus extends Enemy {
             }
             if (chosenAbility == 7) {
                 ability = new SeekerAbility(player, this);
+            }
+            if (chosenAbility == 8) {
+                ability = new MethaneAbility(player,this);
             }
         }
 
@@ -417,5 +420,57 @@ public class Uranus extends Enemy {
         }
     }
 
+    class MethaneAbility extends Ability {
 
+        float cooldown;
+        final float MAX_COOLDOWN = 1.0f;
+        float speed = 200;
+
+        public MethaneAbility(Player p, Uranus u) {
+            super(p, u);
+            timer = 20;
+        }
+
+        @Override
+        public void run(float frame) {
+            cooldown -= frame;
+            //Increase projectile speed over time.
+            speed += frame * 10;
+            if (cooldown <= 0) {
+                float angle = MathUtils.atan2(player.hitboxCenter.y - hitbox.y, player.hitboxCenter.x - hitbox.x);
+                cooldown = MAX_COOLDOWN - 0.025f * (20 - timer);
+                bullets.add(
+                        new BasicProjectile(level, new Rectangle(hitbox.x - 15, hitbox.y - 15, 30, 30), new Vector2(MathUtils.cos(angle) * speed, MathUtils.sin(angle) * speed))
+                );
+                bullets.add(
+                        new OrbitalProjectile(level, 50, hitbox.x, hitbox.y, MathUtils.cos(angle) * speed, MathUtils.sin(angle) * speed, MathUtils.PI, 0)
+                );
+                bullets.add(
+                        new OrbitalProjectile(level, 50, hitbox.x, hitbox.y, MathUtils.cos(angle) * speed, MathUtils.sin(angle) * speed, MathUtils.PI, (2 * MathUtils.PI) / 3)
+                );
+                bullets.add(
+                        new OrbitalProjectile(level, 50, hitbox.x, hitbox.y, MathUtils.cos(angle) * speed, MathUtils.sin(angle) * speed, MathUtils.PI, (4 * MathUtils.PI) / 3)
+                );
+                if (timer < 10) {
+                    for (int i = 0; i < 3; ++i) {
+                        float offset = MathUtils.random(0, 2 * MathUtils.PI);
+                        float sOffset = MathUtils.random(-50, 50);
+                        bullets.add(
+                                new BasicProjectile(level, new Rectangle(hitbox.x - 15, hitbox.y - 15, 30, 30), new Vector2(MathUtils.cos(angle + offset) * (speed + sOffset), MathUtils.sin(angle + offset) * (speed + sOffset)))
+                        );
+                        bullets.add(
+                                new OrbitalProjectile(level, 50, hitbox.x, hitbox.y, MathUtils.cos(angle + offset) * (speed + sOffset), MathUtils.sin(angle + offset) * (speed + sOffset), MathUtils.PI, 0)
+                        );
+                        bullets.add(
+                                new OrbitalProjectile(level, 50, hitbox.x, hitbox.y, MathUtils.cos(angle + offset) * (speed + sOffset), MathUtils.sin(angle + offset) * (speed + sOffset), MathUtils.PI, (2 * MathUtils.PI) / 3)
+                        );
+                        bullets.add(
+                                new OrbitalProjectile(level, 50, hitbox.x, hitbox.y, MathUtils.cos(angle + offset) * (speed + sOffset), MathUtils.sin(angle + offset) * (speed + sOffset), MathUtils.PI, (4 * MathUtils.PI) / 3)
+                        );
+                    }
+                }
+            }
+        }
+
+    }
 }
