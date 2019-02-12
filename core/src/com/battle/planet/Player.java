@@ -29,9 +29,9 @@ public class Player {
         hitboxCenter = new Vector2(0, 0);
         float cd = 0;
         if (special == 0) {
-            cd = 3.0f;
+            cd = 2.0f;
         } else if (special == 1) {
-            cd = 5.0f;
+            cd = 6.0f;
         } else if (special == 2) {
             cd = 5.0f;
         } else if (special == 3) {

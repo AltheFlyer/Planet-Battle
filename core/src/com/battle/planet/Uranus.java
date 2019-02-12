@@ -47,7 +47,7 @@ public class Uranus extends Enemy {
         bullets.clear();
 
         if (chosenAbility == 0 && abilityCooldown <= 0) {
-            chosenAbility = 8;//MathUtils.random(1, 7);
+            chosenAbility = MathUtils.random(1, 8);
             if (chosenAbility == 1) {
                 ability = new SwirlAbility(player, this);
             }
