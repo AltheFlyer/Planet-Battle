@@ -1,14 +1,15 @@
-package com.battle.planet;
+package com.battle.planet.projectiles;
 
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.battle.planet.BattleLevel;
+import com.battle.planet.Venus;
 
 public class VenusRingProjectile extends OrbitalProjectile {
 
-    final Venus venus;
-    boolean orbiting = true;
-    float wait = 3.0f;
+    public final Venus venus;
+    public boolean orbiting = true;
+    public float wait = 3.0f;
 
     public VenusRingProjectile(final BattleLevel lev, float dst, float cx, float cy, float omega, float angle, Venus v) {
         super(lev, dst, cx, cy, omega, angle);

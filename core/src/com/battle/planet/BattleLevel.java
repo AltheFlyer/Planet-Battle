@@ -10,9 +10,10 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.battle.planet.projectiles.BasicProjectile;
+import com.battle.planet.projectiles.Projectile;
 
 import java.util.Iterator;
 
@@ -29,17 +30,17 @@ public class BattleLevel implements Screen {
     Player player;
 
     //Other level things
-    Array<Projectile> playerBullets;
-    Array<Projectile> enemyBullets;
+    public Array<Projectile> playerBullets;
+    public Array<Projectile> enemyBullets;
     Array<Enemy> enemies;
 
     //Arena values
-    float LEVEL_WIDTH = 600;
-    float LEVEL_HEIGHT = 600;
+    public float LEVEL_WIDTH = 600;
+    public float LEVEL_HEIGHT = 600;
 
     //Camera values
-    float SCREEN_WIDTH = 600;
-    float SCREEN_HEIGHT = 600;
+    public float SCREEN_WIDTH = 600;
+    public float SCREEN_HEIGHT = 600;
 
     //Render function things
     float frame;

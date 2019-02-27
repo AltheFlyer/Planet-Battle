@@ -1,18 +1,19 @@
-package com.battle.planet;
+package com.battle.planet.projectiles;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.battle.planet.BattleLevel;
 
 public class BorderScatterProjectile extends Projectile {
 
     //Amount of projectiles to scatter into
-    int amount;
+    public int amount;
     //Which border to check impact with:
-    int impact;
+    public int impact;
 
     //In radians
-    float angle = 120 * MathUtils.degreesToRadians;
+    public float angle = 120 * MathUtils.degreesToRadians;
 
     /**
      * A Projectile that move and scatters into Basic Projectiles on impact with a screen edge

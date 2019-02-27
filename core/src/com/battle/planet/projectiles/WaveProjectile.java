@@ -1,4 +1,4 @@
-package com.battle.planet;
+package com.battle.planet.projectiles;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
@@ -6,16 +6,17 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.battle.planet.BattleLevel;
 
 public class WaveProjectile extends Projectile {
 
-    float maxOffset;
-    float offset;
-    float direction;
-    float offsetVel;
-    float offsetAccel;
-    float period = 0.2f;
-    Vector2 normalPosition;
+    public float maxOffset;
+    public float offset;
+    public float direction;
+    public float offsetVel;
+    public float offsetAccel;
+    public float period = 0.2f;
+    public Vector2 normalPosition;
 
     Array<Vector2> path = new Array<Vector2>();
 

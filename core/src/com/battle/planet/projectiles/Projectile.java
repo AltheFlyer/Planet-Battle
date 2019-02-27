@@ -1,16 +1,17 @@
-package com.battle.planet;
+package com.battle.planet.projectiles;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.battle.planet.BattleLevel;
 
 abstract public class Projectile {
 
-    Rectangle hitbox;
-    Vector2 velocity;
-    float time;
-    boolean isDestroyed;
-    final BattleLevel level;
+    public Rectangle hitbox;
+    public Vector2 velocity;
+    public float time;
+    public boolean isDestroyed;
+    public final BattleLevel level;
 
     public Projectile(final BattleLevel lev, Rectangle r, Vector2 v) {
         hitbox = r;

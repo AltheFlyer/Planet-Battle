@@ -1,15 +1,16 @@
 package com.battle.planet;
 
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.battle.planet.projectiles.BasicProjectile;
+import com.battle.planet.projectiles.Projectile;
+import com.battle.planet.projectiles.VenusRingProjectile;
 
 public class Venus extends Enemy {
 
-    int phase = 0;
+    public int phase = 0;
 
     /*Controls cooldown for all non-specific spawning abilities
     Phase 1: Summons an acid seeker cloud

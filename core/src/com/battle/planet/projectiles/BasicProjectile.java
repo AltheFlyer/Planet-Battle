@@ -1,8 +1,9 @@
-package com.battle.planet;
+package com.battle.planet.projectiles;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.battle.planet.BattleLevel;
 
 public class BasicProjectile extends Projectile {
 

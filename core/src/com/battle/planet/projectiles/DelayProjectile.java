@@ -1,14 +1,15 @@
-package com.battle.planet;
+package com.battle.planet.projectiles;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.battle.planet.BattleLevel;
 
 public class DelayProjectile extends Projectile {
 
-    float delay;
-    boolean moving = false;
-    float speed;
+    public float delay;
+    public boolean moving = false;
+    public float speed;
 
     public DelayProjectile(final BattleLevel lev, Rectangle r, float d) {
         super(lev, r, new Vector2(0, 0));

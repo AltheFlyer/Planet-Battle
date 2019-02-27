@@ -1,12 +1,13 @@
-package com.battle.planet;
+package com.battle.planet.projectiles;
 
 import com.badlogic.gdx.math.Vector2;
+import com.battle.planet.BattleLevel;
 
 public class AccelerateProjectile extends Projectile {
 
-    Vector2 acceleration;
-    float maximum;
-    float lifespan;
+    public Vector2 acceleration;
+    public float maximum;
+    public float lifespan;
 
     public AccelerateProjectile(final BattleLevel lev, float x, float y, float vx, float vy, float ax, float ay, float maxMag, float maxDuration) {
         super(lev, x, y, vx, vy);

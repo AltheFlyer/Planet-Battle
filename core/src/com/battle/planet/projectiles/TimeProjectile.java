@@ -1,11 +1,12 @@
-package com.battle.planet;
+package com.battle.planet.projectiles;
 
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.battle.planet.BattleLevel;
 
 public class TimeProjectile extends Projectile {
 
-    float lifespan;
+    public float lifespan;
 
     public TimeProjectile(final BattleLevel lev, Rectangle r, float life) {
         super(lev, r, new Vector2(0, 0));

@@ -1,15 +1,16 @@
-package com.battle.planet;
+package com.battle.planet.projectiles;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.battle.planet.BattleLevel;
 
 public class OrbitalProjectile extends Projectile {
 
-    Vector2 center;
-    Vector2 velocity;
-    float angularPosition;
-    float angularVelocity;
-    float distance;
+    public Vector2 center;
+    public Vector2 velocity;
+    public float angularPosition;
+    public float angularVelocity;
+    public float distance;
 
     public OrbitalProjectile(final BattleLevel lev, float dst, float cx, float cy, float omega, float angle) {
         super(lev, 0, 0, 0, 0);
