@@ -5,6 +5,7 @@ import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
 import com.battle.planet.PlanetBattle;
 
 public class DesktopLauncher {
+	//If this file dies, re-download jdk (looking at you kevin)
 	public static void main (String[] arg) {
 		LwjglApplicationConfiguration config = new LwjglApplicationConfiguration();
 		config.width = 600;
