@@ -105,12 +105,12 @@ public class Mars extends Enemy {
                 //Charge forward normally, unless it would move Mars past the target destination
                 //The charge velocities are modified to account for trigonometric extremes
                 if (Math.abs(chargeDestination.x - hitbox.x) >= (Math.abs(chargeVelocity.x) - 1f) * frame && Math.abs(chargeDestination.y - hitbox.y) >= (Math.abs(chargeVelocity.y) - 1f) * frame) {
-                    hitbox.x += chargeVelocity.x * frame;
-                    hitbox.y += chargeVelocity.y * frame;
+                    hitbox.x += chargeVelocity.x * frame*1.3;
+                    hitbox.y += chargeVelocity.y * frame*1.3;
                 } else {
                     hitbox.x = chargeDestination.x;
                     hitbox.y = chargeDestination.y;
-                    chargeCooldown = CHARGE_MAX_COOLDOWN;
+                    chargeCooldown = CHARGE_MAX_COOLDOWN/4;
                     inCharge = false;
                 }
             }

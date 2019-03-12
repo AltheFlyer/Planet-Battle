@@ -50,6 +50,7 @@ public class Deimos extends Enemy {
         float y = player.hitboxCenter.y;
         bullets.clear();
         boltCooldown -= frame;
+        /*
         for (int i = 0; i < boltSet.length; ++i) {
             if (boltCooldown <= boltSet[i]) {
                 bullets.add(new DelayProjectile(level, new Rectangle(hitbox.x, hitbox.y, 15, 15), boltSet[i]));
@@ -65,6 +66,12 @@ public class Deimos extends Enemy {
             }
             boltCooldown = MAX_BOLT_COOLDOWN;
         }
+        */
+        if (boltCooldown <= 0) {
+            createSpread(MathUtils.atan2(y - hitbox.y, x - hitbox.x), 16, 360 * MathUtils.degreesToRadians);
+            boltCooldown = MAX_BOLT_COOLDOWN/2;
+        }
+
         //Movement
         hitbox.x = x + MathUtils.cos(angularPosition) * 280;
         hitbox.y = y + MathUtils.sin(angularPosition) * 280;

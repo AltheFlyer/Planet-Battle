@@ -225,8 +225,8 @@ public class Venus extends Enemy {
         }
         if (phase == 2) {
             if (aimCooldown <= 0) {
-                enemies.add(new AcidCloud(level, x, 700, 0, -200));
-                aimCooldown = AIM_MAX_COOLDOWN;
+                enemies.add(new AcidCloud(level, MathUtils.random(x-150, x+150), 700, 0, -200));
+                aimCooldown = AIM_MAX_COOLDOWN/2;
                 canSpawn = false;
             }
             if (mainCooldown <= 0) {
@@ -254,8 +254,8 @@ public class Venus extends Enemy {
         }
         if (phase == 5) {
             float angle = MathUtils.random(360) * MathUtils.degreesToRadians;
-            for (int i = 0; i < 4; ++i) {
-                angle += MathUtils.PI/2;
+            for (int i = 0; i < 6; ++i) {
+                angle += MathUtils.PI/3;
                 enemies.add(new AcidCloud(level, 300 + MathUtils.cos(angle) * 400, 300 + MathUtils.sin(angle) * 400, -MathUtils.cos(angle) * 100, -MathUtils.sin(angle) * 100));
             }
             canSpawn = false;

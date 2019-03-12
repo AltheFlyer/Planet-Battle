@@ -115,16 +115,16 @@ public class Mercury extends Enemy {
                         hitbox.x + MathUtils.random(0, hitbox.radius) * MathUtils.cos(MathUtils.random(0, MathUtils.PI * 2)),
                         hitbox.y + MathUtils.random(0, hitbox.radius) * MathUtils.sin(MathUtils.random(0, MathUtils.PI * 2)),
                         2.0f));
-                passiveCooldown = PASSIVE_MAX_COOLDOWN;
+                passiveCooldown = PASSIVE_MAX_COOLDOWN * 2;
             }
             //Launch wave projectiles
             if (aimCooldown <= 0) {
                 float angle;
                 //Normally shoot at player,
-                //Occasionally create 2 extra random projectiles
-                if (MathUtils.random(0, 2) == 2) {
-                    for (int i = 0; i < 2; ++i) {
-                        angle = MathUtils.random(0, MathUtils.PI * 2);
+                //Occasionally create 10 extra random projectiles
+                if (MathUtils.random(0, 7) == 7) {
+                    for (int i = 0; i < 10; ++i) {
+                        angle = i;
                         bullets.add(new WaveProjectile(level, hitbox.x, hitbox.y, MathUtils.cos(angle) * 300, MathUtils.sin(angle) * 300, 20));
                     }
                 }
@@ -177,13 +177,11 @@ public class Mercury extends Enemy {
             //Create trail of perpendicular projectiles
             if (aimCooldown <= 0) {
                 //Swap x and y velocities to make bullets perpendicular to Mercury's path
-                if (MathUtils.randomBoolean()) {
-                    bullets.add(new BasicProjectile(level, new Rectangle(hitbox.x, hitbox.y, 8, 8), new Vector2(velocity.y, velocity.x)));
-                } else {
-                    bullets.add(new BasicProjectile(level, new Rectangle(hitbox.x, hitbox.y, 8, 8), new Vector2(-velocity.y, -velocity.x)));
-                }
+                bullets.add(new BasicProjectile(level, new Rectangle(hitbox.x, hitbox.y, 10, 10), new Vector2(velocity.y, velocity.x)));
+                bullets.add(new BasicProjectile(level, new Rectangle(hitbox.x, hitbox.y, 10, 10), new Vector2(-velocity.y, -velocity.x)));
+
                 //Increases frequency of shots compared to phase 1
-                aimCooldown = AIM_MAX_COOLDOWN / 4;
+                aimCooldown = AIM_MAX_COOLDOWN / 2;
             }
             //Movement
             //Speed scales based on missing health
@@ -224,7 +222,7 @@ public class Mercury extends Enemy {
                 }
 
                 //Takes knockback!
-                if (bulletHits == bulletHitsNeeded) {
+                if (bulletHits >= bulletHitsNeeded) {
                     bulletHitsNeeded += 10;
                     //Reverse velocity
                     velocity.x = MathUtils.cos(angle + 3.14159f) * chaseSpeed * 0.5f;
