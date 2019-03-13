@@ -60,7 +60,7 @@ public class Player {
         boolean isPrepared = Gdx.input.isButtonPressed(Input.Buttons.RIGHT) && secondCooldown <= 0;
         if (specialValue == 0 && isPrepared) {
             Array<Projectile> bullets = new Array<Projectile>();
-            for (int i = 0; i < 8; ++i) {
+            for (int i = 0; i < 10; ++i) {
                 float theta = MathUtils.atan2(y - hitboxCenter.y, x - hitboxCenter.x) + MathUtils.random(-0.5f, 0.5f);
                 bullets.add(
                         new TimeProjectile(
