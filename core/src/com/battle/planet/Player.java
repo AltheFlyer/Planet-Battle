@@ -36,10 +36,10 @@ public class Player {
         } else if (special == 1) {
             cd = 6.0f;
         } else if (special == 2) {
-            cd = 5.0f;
+            cd = 4.0f;
         } else if (special == 3) {
             //This works differently from the others.
-            cd = 5.0f;
+            cd = 6.0f;
         }
         SECONDARY_COOLDOWN = secondCooldown = cd;
         specialValue = special;
@@ -60,7 +60,7 @@ public class Player {
         boolean isPrepared = Gdx.input.isButtonPressed(Input.Buttons.RIGHT) && secondCooldown <= 0;
         if (specialValue == 0 && isPrepared) {
             Array<Projectile> bullets = new Array<Projectile>();
-            for (int i = 0; i < 10; ++i) {
+            for (int i = 0; i < 9; ++i) {
                 float theta = MathUtils.atan2(y - hitboxCenter.y, x - hitboxCenter.x) + MathUtils.random(-0.5f, 0.5f);
                 bullets.add(
                         new TimeProjectile(
