@@ -287,6 +287,19 @@ public class Venus extends Enemy {
         return projectiles;
     }
 
+    @Override
+    public void drawHealthBars(ShapeRenderer r) {
+        //Invincibility gets different colored healthbar
+        if (spawned > 0) {
+            r.setColor(Color.DARK_GRAY);
+            r.rect(hitbox.x - hitbox.radius, hitbox.y - hitbox.radius, hitbox.radius * 2, 10);
+            r.setColor(Color.valueOf("#68d9ff"));
+            r.rect(hitbox.x - hitbox.radius, hitbox.y - hitbox.radius, hitbox.radius * 2 * (health / MAX_HEALTH), 10);
+        } else {
+            super.drawHealthBars(r);
+        }
+    }
+
     public void createHeart(float x, float y, float angle, float scale, float vx, float vy) {
         float s = MathUtils.sin(angle + MathUtils.PI / 2);
         float c = MathUtils.cos(angle + MathUtils.PI / 2);

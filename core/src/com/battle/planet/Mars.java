@@ -233,6 +233,19 @@ public class Mars extends Enemy {
         return e;
     }
 
+    @Override
+    public void drawHealthBars(ShapeRenderer r) {
+        //Invincibility gets different colored healthbar
+        if (phase == 2 || phase == -1) {
+            r.setColor(Color.DARK_GRAY);
+            r.rect(hitbox.x - hitbox.radius, hitbox.y - hitbox.radius, hitbox.radius * 2, 10);
+            r.setColor(Color.valueOf("#68d9ff"));
+            r.rect(hitbox.x - hitbox.radius, hitbox.y - hitbox.radius, hitbox.radius * 2 * (health / MAX_HEALTH), 10);
+        } else {
+            super.drawHealthBars(r);
+        }
+    }
+
     public void createSpear(float theta) {
         //Shaft
         for (int i = 0; i <= 80; i+=5) {
