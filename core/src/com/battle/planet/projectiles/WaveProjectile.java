@@ -119,6 +119,9 @@ public class WaveProjectile extends Projectile {
         hitbox.y += offset * MathUtils.cos(direction);
 
         path.add(new Vector2(hitbox.x, hitbox.y));
+        if (path.size > 10) {
+            path.removeIndex(0);
+        }
     }
 
     public void drawSpecial(ShapeRenderer r) {
