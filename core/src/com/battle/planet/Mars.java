@@ -58,6 +58,12 @@ public class Mars extends Enemy {
     public void drawBody(ShapeRenderer r) {
         if (phase == 2 || phase == -1) {
             r.setColor(Color.valueOf("6C1F1EFF"));
+        } else if (bounces == 2) {
+            r.setColor(Color.valueOf("FF4D00"));
+        } else if (bounces == 3) {
+            r.setColor(Color.valueOf("FF7700"));
+        } else if (bounces == 4) {
+            r.setColor(Color.ORANGE);
         } else {
             r.setColor(Color.RED);
         }
@@ -105,8 +111,8 @@ public class Mars extends Enemy {
                 //Charge forward normally, unless it would move Mars past the target destination
                 //The charge velocities are modified to account for trigonometric extremes
                 if (Math.abs(chargeDestination.x - hitbox.x) >= (Math.abs(chargeVelocity.x) - 1f) * frame && Math.abs(chargeDestination.y - hitbox.y) >= (Math.abs(chargeVelocity.y) - 1f) * frame) {
-                    hitbox.x += chargeVelocity.x * frame*1.3;
-                    hitbox.y += chargeVelocity.y * frame*1.3;
+                    hitbox.x += chargeVelocity.x * frame*1.2;
+                    hitbox.y += chargeVelocity.y * frame*1.2;
                 } else {
                     hitbox.x = chargeDestination.x;
                     hitbox.y = chargeDestination.y;
@@ -158,36 +164,42 @@ public class Mars extends Enemy {
                     spearCooldown = MathUtils.random(0.6f, 0.8f);
                 }
             }
-            hitbox.x += chargeVelocity.x * frame;
-            hitbox.y += chargeVelocity.y * frame;
+            hitbox.x += chargeVelocity.x * frame*0.9;
+            hitbox.y += chargeVelocity.y * frame*0.9;
             if (hitbox.x < 0) {
                 hitbox.x = 1;
-                chargeVelocity.x *= -1;
+                chargeVelocity.x *= -1.2;
+                chargeVelocity.y *= 1.2;
                 bounces += 1;
-                createSpread(0, 20, 200 * MathUtils.degreesToRadians);
+                createSpread(0, 30, 360 * MathUtils.degreesToRadians);
             }
             if (hitbox.x > 600) {
                 hitbox.x = 599;
-                chargeVelocity.x *= -1;
+                chargeVelocity.x *= -1.2;
+                chargeVelocity.y *= 1.2;
                 bounces += 1;
-                createSpread(3.14159f, 20, 200 * MathUtils.degreesToRadians);
+                createSpread(3.14159f, 30, 360 * MathUtils.degreesToRadians);
             }
             if (hitbox.y < 0) {
                 hitbox.y = 1;
-                chargeVelocity.y *= -1;
+                chargeVelocity.x *= 1.2;
+                chargeVelocity.y *= -1.2;
                 bounces += 1;
-                createSpread(1.5708f, 20, 200 * MathUtils.degreesToRadians);
+                createSpread(1.5708f, 30, 360 * MathUtils.degreesToRadians);
             }
             if (hitbox.y > 600) {
                 hitbox.y = 599;
-                chargeVelocity.y *= -1;
+                chargeVelocity.x *= 1.2;
+                chargeVelocity.y *= -1.2;
                 bounces += 1;
-                createSpread(4.71239f, 20, 200 * MathUtils.degreesToRadians);
+                createSpread(4.71239f, 30, 360 * MathUtils.degreesToRadians);
             }
-            if (bounces >= 4) {
+            if (bounces >= 5) {
                 bounces = 0;
                 float angle = MathUtils.atan2(y - hitbox.y, x - hitbox.x);
                 chargeVelocity.set(MathUtils.cos(angle) * 250, MathUtils.sin(angle) * 250);
+                createSpread(4.71239f, 25, 360 * MathUtils.degreesToRadians, 210);
+                createSpread(4.71239f, 35, 360 * MathUtils.degreesToRadians, 150);
             }
         }
         //Transition to 2nd phase
