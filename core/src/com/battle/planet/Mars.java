@@ -168,29 +168,29 @@ public class Mars extends Enemy {
             hitbox.y += chargeVelocity.y * frame*0.9;
             if (hitbox.x < 0) {
                 hitbox.x = 1;
-                chargeVelocity.x *= -1.2;
-                chargeVelocity.y *= 1.2;
+                chargeVelocity.x *= -1.15;
+                chargeVelocity.y *= 1.15;
                 bounces += 1;
                 createSpread(0, 30, 360 * MathUtils.degreesToRadians);
             }
             if (hitbox.x > 600) {
                 hitbox.x = 599;
-                chargeVelocity.x *= -1.2;
-                chargeVelocity.y *= 1.2;
+                chargeVelocity.x *= -1.15;
+                chargeVelocity.y *= 1.15;
                 bounces += 1;
                 createSpread(3.14159f, 30, 360 * MathUtils.degreesToRadians);
             }
             if (hitbox.y < 0) {
                 hitbox.y = 1;
-                chargeVelocity.x *= 1.2;
-                chargeVelocity.y *= -1.2;
+                chargeVelocity.x *= 1.15;
+                chargeVelocity.y *= -1.15;
                 bounces += 1;
                 createSpread(1.5708f, 30, 360 * MathUtils.degreesToRadians);
             }
             if (hitbox.y > 600) {
                 hitbox.y = 599;
-                chargeVelocity.x *= 1.2;
-                chargeVelocity.y *= -1.2;
+                chargeVelocity.x *= 1.15;
+                chargeVelocity.y *= -1.15;
                 bounces += 1;
                 createSpread(4.71239f, 30, 360 * MathUtils.degreesToRadians);
             }
