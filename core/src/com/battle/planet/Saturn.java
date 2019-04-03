@@ -148,7 +148,7 @@ public class Saturn extends Enemy {
             }
 
             //Move
-            bounceMove(frame);
+            spinMove(frame, 480, 0.6f);
             return this.bullets;
         }
     }
@@ -188,7 +188,7 @@ public class Saturn extends Enemy {
             }
 
             //Move
-            bounceMove(frame);
+            spinMove(frame,240,0.6f);
             return this.bullets;
         }
     }
@@ -218,7 +218,7 @@ public class Saturn extends Enemy {
                          frame * 2));
              }
 
-             bounceMove(frame);
+             spinMove(frame, 240, 0.9f);
              return this.bullets;
         }
     }
@@ -227,6 +227,8 @@ public class Saturn extends Enemy {
 
         public final Saturn saturn;
         public Vector2 velocity;
+        //Position is based on the player
+        float angularPosition = 0f;
 
         public SaturnMoon(Saturn s, BattleLevel lev, float x, float y, float r0, float r1, int hp) {
             super(lev, x, y, r0, r1, hp);
@@ -236,14 +238,21 @@ public class Saturn extends Enemy {
 
         @Override
         public void drawBody(ShapeRenderer r) {
-
         }
+
 
         public void setVelocity(float x, float y) {
             velocity.set(x, y);
         }
 
-        public void bounceMove(float frame) {
+        public void spinMove(float frame, float distance, float angularVelocity) {
+            float x = saturn.hitbox.x;
+            float y = saturn.hitbox.y;
+            hitbox.x = x + MathUtils.cos(angularPosition) * distance;
+            hitbox.y = y + MathUtils.sin(angularPosition) * distance;
+            angularPosition += angularVelocity * frame;
+
+            /*
             this.hitbox.x += this.velocity.x * frame;
             this.hitbox.y += this.velocity.y * frame;
             if (this.hitbox.x - this.hitbox.radius < 0) {
@@ -262,6 +271,7 @@ public class Saturn extends Enemy {
                 this.hitbox.y = level.LEVEL_HEIGHT - this.hitbox.radius;
                 this.velocity.y *= -1;
             }
+            */
         }
     }
 }
