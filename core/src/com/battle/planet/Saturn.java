@@ -6,12 +6,28 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.battle.planet.projectiles.BasicProjectile;
+import com.battle.planet.projectiles.ControlledAccelerateProjectile;
 import com.battle.planet.projectiles.Projectile;
+import com.battle.planet.projectiles.TimeProjectile;
 
 public class Saturn extends Enemy {
 
     int moonsLeft = 53;//or 62 including unnamed.
     int phase = 0;
+
+    //float ringCooldown = 0;
+    //float RING_MAX_COOLDOWN = 10;
+
+
+    final float BEAM_MAX_COOLDOWN = 2f;
+    float beamCooldown = BEAM_MAX_COOLDOWN * 2;
+
+    float ringAngle = 0;
+
+    float timeDelta;
+    float timeMultiplier = 1;
+
+    float clockTimer = 0;
 
     public Saturn(BattleLevel lev, float x, float y) {
         super(lev, x, y, 100, 120, 2500);
@@ -25,10 +41,63 @@ public class Saturn extends Enemy {
 
     @Override
     public Array<Projectile> attack(float frame) {
+        bullets.clear();
+        timeDelta = frame * timeMultiplier;
+        clockTimer -= frame;
+        if (clockTimer <= 0) {
+            if (timeMultiplier == 2) {
+                timeMultiplier = 1;
+                clockTimer = 10;
+            } else {
+                timeMultiplier = 2;
+                clockTimer = 3;
+            }
+
+        }
+
+        //Start of battle initializer
         if (phase == 0) {
             canSpawn = true;
+            //Outer rings
+            for (int k = 0; k < 240; k += 20) {
+                for (int i = 0; i < 360; ++i) {
+                    float theta = i * MathUtils.degreesToRadians;
+                    bullets.add(new BasicProjectile(level, 600 + (600 + k) * MathUtils.cos(theta), 600 + (600 + k) * MathUtils.sin(theta), 0, 0));
+                }
+            }
         }
+
         if (phase == 1) {
+            //Rotating rings
+            ringAngle += frame * 0.4;
+            for (int i = 0; i < 24; ++i) {
+                float theta = i * 15 * MathUtils.degreesToRadians;
+
+                bullets.add(new TimeProjectile(level, hitbox.x + 360 * MathUtils.cos(ringAngle) + 240 * MathUtils.cos(theta), hitbox.y + 360 * MathUtils.sin(ringAngle) + 240 * MathUtils.sin(theta), 0.07f));
+                bullets.add(new TimeProjectile(level, hitbox.x + 360 * MathUtils.cos(ringAngle + (2/3.0f) * MathUtils.PI) + 240 * MathUtils.cos(theta), hitbox.y + 360 * MathUtils.sin(ringAngle + (2/3.0f) * MathUtils.PI) + 240 * MathUtils.sin(theta), 0.07f));
+                bullets.add(new TimeProjectile(level, hitbox.x + 360 * MathUtils.cos(ringAngle + (4/3.0f) * MathUtils.PI) + 240 * MathUtils.cos(theta), hitbox.y + 360 * MathUtils.sin(ringAngle + (4/3.0f) * MathUtils.PI) + 240 * MathUtils.sin(theta), 0.07f));
+            }
+
+            beamCooldown -= frame;
+            //Pre beam shot cue:
+            if (beamCooldown <= 0.4f) {
+                for (int i = 0; i < 10; ++i) {
+                    bullets.add(new TimeProjectile(level, hitbox.x + MathUtils.random(-30, 30), hitbox.y + MathUtils.random(-30, 30), 0.07f));
+                }
+            }
+            //Creates a 'beam' - projectiles that slow down to form a line with openings
+            if (beamCooldown <= 0) {
+                float theta = MathUtils.atan2(player.hitboxCenter.y - hitbox.y, player.hitboxCenter.x - hitbox.x);
+                beamCooldown = BEAM_MAX_COOLDOWN;
+                //Creates enough projectiles for difficult openings to form
+                for (int i = 0; i < 7; ++i) {
+                    bullets.add(new ControlledAccelerateProjectile(level,
+                            hitbox.x, hitbox.y,
+                            (300 + i * 45) * MathUtils.cos(theta), (300 + i * 45) * MathUtils.sin(theta),
+                            -300,
+                            0, 10));
+                }
+            }
 
         }
 
@@ -39,8 +108,10 @@ public class Saturn extends Enemy {
     public Array<Enemy> spawn(float frame) {
         Array<Enemy> enemies = new Array<Enemy>();
         if (phase == 0) {
-            enemies.add(new SaturnMoonA(level, hitbox.x, hitbox.y + 300));
-            enemies.add(new SaturnMoonB(level, hitbox.x, hitbox.y + 300));
+            enemies.add(new SaturnMoonA(this, level, hitbox.x, hitbox.y + 300));
+            enemies.add(new SaturnMoonB(this, level, hitbox.x, hitbox.y + 300));
+            enemies.add(new RingMoon(this, level, hitbox.x, hitbox.y));
+
             canSpawn = false;
             phase = 1;
         }
@@ -48,15 +119,14 @@ public class Saturn extends Enemy {
     }
 
 
-    public class SaturnMoonA extends Enemy {
+    public class SaturnMoonA extends SaturnMoon {
 
         float cooldown = 0;
         float MAX_COOLDOWN = 1.0f;
-        Vector2 velocity;
 
-        public SaturnMoonA(BattleLevel lev, float x, float y) {
-            super(lev, x, y, 50, 60, 100);
-            velocity = new Vector2(120, 120);
+        public SaturnMoonA(Saturn s, BattleLevel lev, float x, float y) {
+            super(s, lev, x, y, 50, 60, 100);
+            setVelocity(120, 120);
         }
 
         @Override
@@ -67,6 +137,7 @@ public class Saturn extends Enemy {
 
         @Override
         public Array<Projectile> attack(float frame) {
+            frame = saturn.timeDelta;
             this.bullets.clear();
             //Shoot
             cooldown -= frame;
@@ -77,40 +148,21 @@ public class Saturn extends Enemy {
             }
 
             //Move
-            this.hitbox.x += this.velocity.x * frame;
-            this.hitbox.y += this.velocity.y * frame;
-            if (this.hitbox.x - this.hitbox.radius < 0) {
-                this.hitbox.x = this.hitbox.radius;
-                this.velocity.x *= -1;
-            }
-            if (this.hitbox.x + this.hitbox.radius > level.LEVEL_WIDTH) {
-                this.hitbox.x = level.LEVEL_WIDTH - this.hitbox.radius;
-                this.velocity.x *= -1;
-            }
-            if (this.hitbox.y - this.hitbox.radius < 0) {
-                this.hitbox.y = this.hitbox.radius;
-                this.velocity.y *= -1;
-            }
-            if (this.hitbox.y + this.hitbox.radius > level.LEVEL_HEIGHT) {
-                this.hitbox.y = level.LEVEL_HEIGHT - this.hitbox.radius;
-                this.velocity.y *= -1;
-            }
+            bounceMove(frame);
             return this.bullets;
         }
     }
 
-    public class SaturnMoonB extends Enemy {
+    public class SaturnMoonB extends SaturnMoon {
 
         float cooldown = 0.25f;
         float MINI_COOLDOWN = 0.25f;
         float MAX_COOLDOWN = 1.0f;
         float shots = 4;
 
-        Vector2 velocity;
-
-        public SaturnMoonB(BattleLevel lev, float x, float y) {
-            super(lev, x, y, 50, 60, 100);
-            velocity = new Vector2(-120, 120);
+        public SaturnMoonB(Saturn s, BattleLevel lev, float x, float y) {
+            super(s, lev, x, y, 50, 60, 100);
+            setVelocity(-120, 120);
         }
 
         @Override
@@ -136,6 +188,62 @@ public class Saturn extends Enemy {
             }
 
             //Move
+            bounceMove(frame);
+            return this.bullets;
+        }
+    }
+
+    public class RingMoon extends SaturnMoon {
+
+        public RingMoon(Saturn s, BattleLevel lev, float x, float y) {
+            super(s, lev, x, y, 50, 60, 100);
+            setVelocity(100, -100);
+        }
+
+        @Override
+        public void drawBody(ShapeRenderer r) {
+            r.setColor(Color.GRAY);
+            r.circle(this.hitbox.x, this.hitbox.y, this.hitbox.radius);
+        }
+
+        @Override
+        public Array<Projectile> attack(float frame) {
+             this.bullets.clear();
+
+             for (int i = 0; i < 36; ++i) {
+                 float theta = i * 10 * MathUtils.degreesToRadians;
+                 this.bullets.add(new TimeProjectile(level,
+                         this.hitbox.x + 90 * MathUtils.cos(theta),
+                         this.hitbox.y + 90 * MathUtils.sin(theta),
+                         frame * 2));
+             }
+
+             bounceMove(frame);
+             return this.bullets;
+        }
+    }
+
+    public class SaturnMoon extends Enemy {
+
+        public final Saturn saturn;
+        public Vector2 velocity;
+
+        public SaturnMoon(Saturn s, BattleLevel lev, float x, float y, float r0, float r1, int hp) {
+            super(lev, x, y, r0, r1, hp);
+            saturn = s;
+            velocity = new Vector2();
+        }
+
+        @Override
+        public void drawBody(ShapeRenderer r) {
+
+        }
+
+        public void setVelocity(float x, float y) {
+            velocity.set(x, y);
+        }
+
+        public void bounceMove(float frame) {
             this.hitbox.x += this.velocity.x * frame;
             this.hitbox.y += this.velocity.y * frame;
             if (this.hitbox.x - this.hitbox.radius < 0) {
@@ -154,8 +262,6 @@ public class Saturn extends Enemy {
                 this.hitbox.y = level.LEVEL_HEIGHT - this.hitbox.radius;
                 this.velocity.y *= -1;
             }
-            return this.bullets;
         }
     }
-
 }
