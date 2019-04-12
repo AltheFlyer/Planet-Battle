@@ -111,7 +111,7 @@ public class Saturn extends Enemy {
             enemies.add(new SaturnMoonA(this, level, hitbox.x, hitbox.y + 300));
             enemies.add(new SaturnMoonB(this, level, hitbox.x, hitbox.y + 300));
             enemies.add(new RingMoon(this, level, hitbox.x, hitbox.y));
-
+            enemies.add(new SeekerMoon(this, level, hitbox.x, hitbox.y));
             canSpawn = false;
             phase = 1;
         }
@@ -223,6 +223,74 @@ public class Saturn extends Enemy {
         }
     }
 
+    public class SeekerMoon extends SaturnMoon {
+
+        boolean inCharge;
+        float acceleration;
+        float absVelocity;
+        float chargeAngle;
+        boolean chargeShot = false;
+
+        final float START_VELOCITY = 300;
+
+        float chargeCooldown;
+        final float MAX_CHARGE_COOLDOWN = 3.0f;
+
+        public SeekerMoon(Saturn s, BattleLevel lev, float x, float y) {
+            super(s, lev, x, y, 50, 60, 40);
+            inCharge = false;
+        }
+
+        @Override
+        public Array<Projectile> attack(float frame) {
+            bullets.clear();
+
+            if (chargeCooldown <= 0) {
+                float dst2 = (hitbox.x - player.hitboxCenter.x) * (hitbox.x - player.hitboxCenter.x) +
+                        (hitbox.y - player.hitboxCenter.y) * (hitbox.y - player.hitboxCenter.y);
+                if (dst2 > 10000) {
+                    dst2 = (float) Math.sqrt(dst2) - 100;
+                    float t = dst2 / 100;
+
+                    chargeCooldown = MAX_CHARGE_COOLDOWN;
+                    inCharge = true;
+                    absVelocity = START_VELOCITY;
+
+                    acceleration = (START_VELOCITY) / t;
+
+                    float theta = MathUtils.atan2(player.hitboxCenter.y - hitbox.y, player.hitboxCenter.x - hitbox.x);
+                    velocity.x = MathUtils.cos(theta);
+                    velocity.y = MathUtils.sin(theta);
+                    chargeAngle = theta;
+                    chargeShot = true;
+                }
+            }
+
+            if (inCharge) {
+                absVelocity -= acceleration * frame;
+
+                hitbox.x += velocity.x * absVelocity * frame;
+                hitbox.y += velocity.y * absVelocity * frame;
+
+                if (chargeShot && absVelocity < 50) {
+                    for (int i = -10; i <= 10; i += 5) {
+                        float ang = i * MathUtils.degreesToRadians + chargeAngle;
+                        bullets.add(new BasicProjectile(level, hitbox.x, hitbox.y, MathUtils.cos(ang) * 200, MathUtils.sin(ang) * 200));
+                    }
+                    chargeShot = false;
+                }
+
+                if (absVelocity < 0) {
+                    inCharge = false;
+                }
+            } else {
+                chargeCooldown -= frame;
+            }
+
+            return bullets;
+        }
+    }
+
     public class SaturnMoon extends Enemy {
 
         public final Saturn saturn;
@@ -238,6 +306,8 @@ public class Saturn extends Enemy {
 
         @Override
         public void drawBody(ShapeRenderer r) {
+            r.setColor(Color.GRAY);
+            r.circle(this.hitbox.x, this.hitbox.y, this.hitbox.radius);
         }
 
 
@@ -274,4 +344,5 @@ public class Saturn extends Enemy {
             */
         }
     }
+
 }
