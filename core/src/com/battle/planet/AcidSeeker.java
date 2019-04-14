@@ -56,8 +56,8 @@ public class AcidSeeker extends Enemy {
 
     @Override
     public Array<Projectile> attack(float frame) {
-        float x = player.hitboxCenter.x;
-        float y = player.hitboxCenter.y;
+        float x = player.getX();
+        float y = player.getY();
         float angle = MathUtils.atan2(y - hitbox.y, x - hitbox.x);
         hitbox.x += MathUtils.cos(angle) * speed * frame;
         hitbox.y += MathUtils.sin(angle) * speed * frame;

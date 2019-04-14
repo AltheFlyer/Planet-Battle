@@ -39,7 +39,7 @@ public class Uranus extends Enemy {
     public void drawObjects(ShapeRenderer r) {
         r.setColor(Color.ORANGE);
         //TODO Make the offscreen indicator better
-        r.rectLine(player.hitboxCenter.x, player.hitboxCenter.y, hitbox.x, hitbox.y, 2);
+        r.rectLine(player.getX(), player.getY(), hitbox.x, hitbox.y, 2);
     }
 
     @Override
@@ -114,8 +114,8 @@ public class Uranus extends Enemy {
         public SwirlAbility(final Player p, final Uranus u) {
             super(p, u);
             timer = 10;
-            targetX = p.hitboxCenter.x;
-            targetY = p.hitboxCenter.y;
+            targetX = p.getX();
+            targetY = p.getY();
             modifier = 0;
             System.out.println("ENTERING ABILITY 1");
             for (int i = 0; i < 360; ++i) {
@@ -155,8 +155,8 @@ public class Uranus extends Enemy {
             super(p, u);
             timer = 4;
             cooldown = 0;
-            targetX = player.hitboxCenter.x;
-            targetY = player.hitboxCenter.y;
+            targetX = p.getX();
+            targetY = p.getY();
             System.out.println("ENTERING ABILITY 2");
             for (int i = 0; i < 360; ++i) {
                 float angle = MathUtils.degreesToRadians * i;
@@ -212,7 +212,7 @@ public class Uranus extends Enemy {
 
                     bullets.add(new DelayProjectile(level, new Rectangle(hitbox.x, hitbox.y, 15, 15), burstLeft, 250));
 
-                    angle = MathUtils.atan2(player.hitboxCenter.y - hitbox.y, player.hitboxCenter.x - hitbox.x);
+                    angle = MathUtils.atan2(player.getY() - hitbox.y, player.getX() - hitbox.x);
                     for (int i = -30; i <= 30; i += 15) {
                         bullets.add(new BasicProjectile(level, hitbox.x, hitbox.y, MathUtils.cos(angle + i * MathUtils.degreesToRadians) * 150, MathUtils.sin(angle + i * MathUtils.degreesToRadians) * 150));
                     }
@@ -284,8 +284,8 @@ public class Uranus extends Enemy {
             timer = 16;
             do {
                 float theta = MathUtils.random(0, 360) * MathUtils.degreesToRadians;
-                uranus.hitbox.x = player.hitboxCenter.x + MathUtils.cos(theta) * (150 + uranus.hitbox.radius);
-                uranus.hitbox.y = player.hitboxCenter.y + MathUtils.sin(theta) * (150 + uranus.hitbox.radius);
+                uranus.hitbox.x = player.getX() + MathUtils.cos(theta) * (150 + uranus.hitbox.radius);
+                uranus.hitbox.y = player.getY() + MathUtils.sin(theta) * (150 + uranus.hitbox.radius);
             } while (uranus.hitbox.x > 1100 || uranus.hitbox.y > 1100 || uranus.hitbox.x < 100 || uranus.hitbox.y < 100);
 
             for (int i = 0; i < 360; ++i) {
@@ -437,7 +437,7 @@ public class Uranus extends Enemy {
             //Increase projectile speed over time.
             speed += frame * 10;
             if (cooldown <= 0) {
-                float angle = MathUtils.atan2(player.hitboxCenter.y - hitbox.y, player.hitboxCenter.x - hitbox.x);
+                float angle = MathUtils.atan2(player.getY() - hitbox.y, player.getX() - hitbox.x);
                 cooldown = MAX_COOLDOWN - 0.025f * (20 - timer);
                 bullets.add(
                         new BasicProjectile(level, new Rectangle(hitbox.x - 15, hitbox.y - 15, 30, 30), new Vector2(MathUtils.cos(angle) * speed, MathUtils.sin(angle) * speed))

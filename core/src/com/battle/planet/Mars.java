@@ -74,8 +74,8 @@ public class Mars extends Enemy {
 
     @Override
     public Array<Projectile> attack(float frame) {
-        float x = player.hitboxCenter.x;
-        float y = player.hitboxCenter.y;
+        float x = player.getX();
+        float y = player.getY();
         bullets.clear();
         if (phase == 1) {
             spearCooldown -= frame;
@@ -224,8 +224,8 @@ public class Mars extends Enemy {
 
     @Override
     public Array<Enemy> spawn(float frame) {
-        float x = player.hitboxCenter.x;
-        float y = player.hitboxCenter.y;
+        float x = player.getX();
+        float y = player.getY();
         Array<Enemy> e = new Array<Enemy>();
         e.add(new Phobos(level, this, x, y));
         e.add(new Deimos(level, this, x, y));

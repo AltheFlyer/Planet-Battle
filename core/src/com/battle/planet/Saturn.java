@@ -41,6 +41,9 @@ public class Saturn extends Enemy {
 
     @Override
     public Array<Projectile> attack(float frame) {
+        float x = player.getX();
+        float y = player.getY();
+
         bullets.clear();
         timeDelta = frame * timeMultiplier;
         clockTimer -= frame;
@@ -87,7 +90,7 @@ public class Saturn extends Enemy {
             }
             //Creates a 'beam' - projectiles that slow down to form a line with openings
             if (beamCooldown <= 0) {
-                float theta = MathUtils.atan2(player.hitboxCenter.y - hitbox.y, player.hitboxCenter.x - hitbox.x);
+                float theta = MathUtils.atan2(y - hitbox.y, x - hitbox.x);
                 beamCooldown = BEAM_MAX_COOLDOWN;
                 //Creates enough projectiles for difficult openings to form
                 for (int i = 0; i < 7; ++i) {
@@ -178,7 +181,7 @@ public class Saturn extends Enemy {
             cooldown -= frame;
 
             if (cooldown <= 0 && shots > 0) {
-                float angle = MathUtils.atan2(player.hitboxCenter.y - this.hitbox.y, player.hitboxCenter.x - this.hitbox.x);
+                float angle = MathUtils.atan2(player.getY() - this.hitbox.y, player.getX() - this.hitbox.x);
                 this.bullets.add(new BasicProjectile(level, hitbox.x, hitbox.y, MathUtils.cos(angle) * 260, MathUtils.sin(angle) * 260));
                 cooldown = MINI_COOLDOWN;
                 --shots;
@@ -246,8 +249,8 @@ public class Saturn extends Enemy {
             bullets.clear();
 
             if (chargeCooldown <= 0) {
-                float dst2 = (hitbox.x - player.hitboxCenter.x) * (hitbox.x - player.hitboxCenter.x) +
-                        (hitbox.y - player.hitboxCenter.y) * (hitbox.y - player.hitboxCenter.y);
+                float dst2 = (hitbox.x - player.getX()) * (hitbox.x - player.getX()) +
+                        (hitbox.y - player.getY()) * (hitbox.y - player.getY());
                 if (dst2 > 10000) {
                     dst2 = (float) Math.sqrt(dst2) - 100;
                     float t = dst2 / 100;
@@ -258,7 +261,7 @@ public class Saturn extends Enemy {
 
                     acceleration = (START_VELOCITY) / t;
 
-                    float theta = MathUtils.atan2(player.hitboxCenter.y - hitbox.y, player.hitboxCenter.x - hitbox.x);
+                    float theta = MathUtils.atan2(player.getY() - hitbox.y, player.getX() - hitbox.x);
                     velocity.x = MathUtils.cos(theta);
                     velocity.y = MathUtils.sin(theta);
                     chargeAngle = theta;

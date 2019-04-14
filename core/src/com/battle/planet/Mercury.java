@@ -70,8 +70,8 @@ public class Mercury extends Enemy {
 
     @Override
     public void drawObjects(ShapeRenderer r) {
-        float x = player.hitboxCenter.x;
-        float y = player.hitboxCenter.y;
+        float x = player.getX();
+        float y = player.getY();
 
         //Indicators for where Mercury is charging from
         if (phase == 2) {
@@ -102,8 +102,8 @@ public class Mercury extends Enemy {
 
     @Override
     public Array<Projectile> attack(float frame) {
-        float x = player.hitboxCenter.x;
-        float y = player.hitboxCenter.y;
+        float x = player.getX();
+        float y = player.getY();
         bullets.clear();
         if (phase == 1) {
             passiveCooldown -= frame;
