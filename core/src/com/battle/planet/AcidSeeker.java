@@ -56,12 +56,12 @@ public class AcidSeeker extends Enemy {
 
     @Override
     public Array<Projectile> attack(float frame) {
-        float x = player.getX();
-        float y = player.getY();
+        float x = getPlayer().getCenterX();
+        float y = getPlayer().getCenterY();
         float angle = MathUtils.atan2(y - hitbox.y, x - hitbox.x);
         hitbox.x += MathUtils.cos(angle) * speed * frame;
         hitbox.y += MathUtils.sin(angle) * speed * frame;
-        return bullets;
+        return getBullets();
     }
 
     @Override
@@ -69,11 +69,11 @@ public class AcidSeeker extends Enemy {
         for (Projectile p: projectiles) {
             if (!p.isDestroyed && this.hitbox.contains(p.hitbox.x, p.hitbox.y)) {
                 p.isDestroyed = true;
-                this.health -= 1;
+                modHealth(-1);
             }
         }
-        if (health <= 0) {
-            venus.spawned -= 1;
+        if (getHealth() <= 0) {
+            venus.reduceSpawned();
         }
         return projectiles;
     }

@@ -123,7 +123,8 @@ public class BattleLevel implements Screen {
             frame = 0.2f;
         }
         mouse = camera.unproject(new Vector3(Gdx.input.getX(), Gdx.input.getY(), 0));
-        player.hitbox.getCenter(player.hitboxCenter);
+
+        player.updatePosition();
     }
 
     public void draw() {
@@ -147,35 +148,35 @@ public class BattleLevel implements Screen {
         }
 
         //Draw player
-        if (player.invincible <= 0) {
+        if (player.getInvincible() <= 0) {
             render.setColor(Color.BLUE);
         } else {
             render.setColor(Color.RED);
         }
-        drawRectangle(new Rectangle(player.hitbox.x - 5, player.hitbox.y - 5, 20, 20));
+        drawRectangle(new Rectangle(player.getX() - 5, player.getY() - 5, 20, 20));
         //Draw secondary recharge
         //Back bar
         render.setColor(Color.GRAY);
         render.rect(
-                player.hitboxCenter.x - 20,
-                player.hitboxCenter.y - 20,
+                player.getCenterX() - 20,
+                player.getCenterY() - 20,
                 40,
                 10
         );
         //Charge amount
         render.setColor(Color.YELLOW);
         render.rect(
-                player.hitboxCenter.x - 20,
-                player.hitboxCenter.y - 20,
-                40 * (1 - (player.secondCooldown / player.SECONDARY_COOLDOWN)),
+                player.getCenterX() - 20,
+                player.getCenterY() - 20,
+                40 * (1 - (player.getSecondCooldown() / player.getMaxSecondaryCooldown())),
                 10
         );
 
         //Draw teleport range
-        if (player.specialValue == 2) {
+        if (player.getSpecialValue() == 2) {
             render.set(ShapeRenderer.ShapeType.Line);
             render.setColor(Color.YELLOW);
-            render.circle(player.hitboxCenter.x, player.hitboxCenter.y, 100);
+            render.circle(player.getCenterX(), player.getCenterY(), 100);
         }
         //render.setColor(Color.GREEN);
         //drawRectangle(playerHitbox);
@@ -204,13 +205,13 @@ public class BattleLevel implements Screen {
      */
     public void playerShoot() {
         //Player shooting
-        if ((Gdx.input.isButtonPressed(Input.Buttons.LEFT) ^ autoShoot) && player.cooldown <= 0) {
-            float theta = MathUtils.atan2(mouse.y - player.hitbox.y, mouse.x - player.hitbox.x);
+        if ((Gdx.input.isButtonPressed(Input.Buttons.LEFT) ^ autoShoot) && player.getCooldown() <= 0) {
+            float theta = MathUtils.atan2(mouse.y - player.getY(), mouse.x - player.getX());
             float vx = MathUtils.cos(theta) * 400;
             float vy = MathUtils.sin(theta) * 400;
 
-            playerBullets.add(new BasicProjectile(this, player.hitboxCenter.x, player.hitboxCenter.y, vx, vy));
-            player.cooldown = player.PRIMARY_COOLDOWN;
+            playerBullets.add(new BasicProjectile(this, player.getCenterX(), player.getCenterY(), vx, vy));
+            player.resetCooldown();
         }
         player.special(mouse.x, mouse.y);
     }
@@ -219,7 +220,7 @@ public class BattleLevel implements Screen {
         //Enemy actions
         for (Enemy e: enemies) {
             enemyBullets.addAll(e.attack(frame));
-            if (e.canSpawn) {
+            if (e.getCanSpawn()) {
                 enemies.addAll(e.spawn(frame));
             }
             e.move();
@@ -229,44 +230,44 @@ public class BattleLevel implements Screen {
 
     public void moveBullets() {
         for (Projectile p: playerBullets) {
-            p.move(player.hitboxCenter.x, player.hitboxCenter.y, frame);
+            p.move(player.getCenterX(), player.getCenterY(), frame);
         }
 
         for (Projectile p: enemyBullets) {
-            p.move(player.hitboxCenter.x, player.hitboxCenter.y, frame);
+            p.move(player.getCenterX(), player.getCenterY(), frame);
         }
     }
 
     public void movePlayer() {
         //Player movements
         if (Gdx.input.isKeyPressed(Input.Keys.W) || Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            player.hitbox.y += player.speed * frame;
+            player.moveY(player.getSpeed() * frame);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.A) || Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            player.hitbox.x -= player.speed * frame;
+            player.moveX(-player.getSpeed() * frame);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.S) || Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            player.hitbox.y -= player.speed * frame;
+            player.moveY(-player.getSpeed() * frame);
         }
         if (Gdx.input.isKeyPressed(Input.Keys.D) || Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            player.hitbox.x += player.speed * frame;
+            player.moveX(player.getSpeed() * frame);
         }
 
         //Keep player in bounds
-        if (player.hitbox.x - 5 < 0) {
-            player.hitbox.x = 5;
-        } else if (player.hitbox.x + player.hitbox.height + 5 > LEVEL_WIDTH) {
-            player.hitbox.x = LEVEL_WIDTH - player.hitbox.width - 5;
+        if (player.getX() - 5 < 0) {
+            player.setX(5);
+        } else if (player.getX() + player.getHeight() + 5 > LEVEL_WIDTH) {
+            player.setX(LEVEL_WIDTH - player.getWidth() - 5);
         }
-        if (player.hitbox.y - 5 < 0) {
-            player.hitbox.y = 5;
-        } else if (player.hitbox.y + player.hitbox.height + 5 > LEVEL_HEIGHT) {
-            player.hitbox.y = LEVEL_HEIGHT - player.hitbox.height - 5;
+        if (player.getY() - 5 < 0) {
+            player.setY(5);
+        } else if (player.getY() + player.getHeight() + 5 > LEVEL_HEIGHT) {
+            player.setX(LEVEL_HEIGHT - player.getHeight() - 5);
         }
 
         //Control camera
-        camera.position.x = player.hitbox.x;
-        camera.position.y = player.hitbox.y;
+        camera.position.x = player.getX();
+        camera.position.y = player.getY();
         if (camera.position.x - camera.viewportWidth / 2 < 0) {
             camera.position.x = camera.viewportWidth / 2;
         } else if (camera.position.x + camera.viewportWidth / 2 + 5 > LEVEL_WIDTH) {
@@ -278,23 +279,23 @@ public class BattleLevel implements Screen {
             camera.position.y = LEVEL_HEIGHT - camera.viewportHeight / 2;
         }
         //Keep hitbox center consistent
-        player.hitbox.getCenter(player.hitboxCenter);
+        player.updatePosition();
     }
 
     public void playerCollisions() {
-        if (player.invincible > 0) {
-            player.invincible -= frame;
+        if (player.getInvincible() > 0) {
+            player.tickInvincible(frame);
         }
 
         for (Projectile p: enemyBullets) {
-            if (player.invincible <= 0 && player.hitbox.overlaps(p.hitbox)) {
-                player.invincible = player.MAX_INVINCIBLE;
+            if (player.getInvincible() <= 0 && player.getHitbox().overlaps(p.hitbox)) {
+                player.setInvincible();
             }
         }
 
         for (Enemy e: enemies) {
-            if (player.invincible <= 0 && e.collisionBox.contains(player.hitboxCenter)) {
-                player.invincible = player.MAX_INVINCIBLE;
+            if (player.getInvincible() <= 0 && e.collisionBox.contains(player.getHitboxCenter())) {
+                player.setInvincible();
             }
         }
     }
@@ -323,7 +324,7 @@ public class BattleLevel implements Screen {
         Iterator<Enemy> iterEnemy = enemies.iterator();
         while (iterEnemy.hasNext()) {
             Enemy e = iterEnemy.next();
-            if (e.health <= 0) {
+            if (e.getHealth() <= 0) {
                 iterEnemy.remove();
             }
         }
@@ -344,10 +345,10 @@ public class BattleLevel implements Screen {
         //Press either shift to toggle slow movement
         if (Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_LEFT) || Gdx.input.isKeyJustPressed(Input.Keys.SHIFT_RIGHT)) {
             //Toggles the speed
-            if (player.speed == 200) {
-                player.speed = 150;
+            if (player.getSpeed() == 200) {
+                player.setSpeed(150);
             } else {
-                player.speed = 200;
+                player.setSpeed(200);
             }
         }
         if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
@@ -357,7 +358,7 @@ public class BattleLevel implements Screen {
         //Deal damage (go to Next phase)
         if (Gdx.input.isKeyJustPressed(Input.Keys.N)) {
             for (Enemy e: enemies) {
-                e.health -= 50;
+                e.modHealth(-50);
             }
         }
 

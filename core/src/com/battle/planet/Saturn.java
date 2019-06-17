@@ -41,10 +41,7 @@ public class Saturn extends Enemy {
 
     @Override
     public Array<Projectile> attack(float frame) {
-        float x = player.getX();
-        float y = player.getY();
-
-        bullets.clear();
+        clearProjectiles();
         timeDelta = frame * timeMultiplier;
         clockTimer -= frame;
         if (clockTimer <= 0) {
@@ -60,12 +57,12 @@ public class Saturn extends Enemy {
 
         //Start of battle initializer
         if (phase == 0) {
-            canSpawn = true;
+            setCanSpawn(true);
             //Outer rings
             for (int k = 0; k < 240; k += 20) {
                 for (int i = 0; i < 360; ++i) {
                     float theta = i * MathUtils.degreesToRadians;
-                    bullets.add(new BasicProjectile(level, 600 + (600 + k) * MathUtils.cos(theta), 600 + (600 + k) * MathUtils.sin(theta), 0, 0));
+                    addProjectile(new BasicProjectile(getLevel(), 600 + (600 + k) * MathUtils.cos(theta), 600 + (600 + k) * MathUtils.sin(theta), 0, 0));
                 }
             }
         }
@@ -76,25 +73,25 @@ public class Saturn extends Enemy {
             for (int i = 0; i < 24; ++i) {
                 float theta = i * 15 * MathUtils.degreesToRadians;
 
-                bullets.add(new TimeProjectile(level, hitbox.x + 360 * MathUtils.cos(ringAngle) + 240 * MathUtils.cos(theta), hitbox.y + 360 * MathUtils.sin(ringAngle) + 240 * MathUtils.sin(theta), 0.07f));
-                bullets.add(new TimeProjectile(level, hitbox.x + 360 * MathUtils.cos(ringAngle + (2/3.0f) * MathUtils.PI) + 240 * MathUtils.cos(theta), hitbox.y + 360 * MathUtils.sin(ringAngle + (2/3.0f) * MathUtils.PI) + 240 * MathUtils.sin(theta), 0.07f));
-                bullets.add(new TimeProjectile(level, hitbox.x + 360 * MathUtils.cos(ringAngle + (4/3.0f) * MathUtils.PI) + 240 * MathUtils.cos(theta), hitbox.y + 360 * MathUtils.sin(ringAngle + (4/3.0f) * MathUtils.PI) + 240 * MathUtils.sin(theta), 0.07f));
+                addProjectile(new TimeProjectile(getLevel(), hitbox.x + 360 * MathUtils.cos(ringAngle) + 240 * MathUtils.cos(theta), hitbox.y + 360 * MathUtils.sin(ringAngle) + 240 * MathUtils.sin(theta), 0.07f));
+                addProjectile(new TimeProjectile(getLevel(), hitbox.x + 360 * MathUtils.cos(ringAngle + (2/3.0f) * MathUtils.PI) + 240 * MathUtils.cos(theta), hitbox.y + 360 * MathUtils.sin(ringAngle + (2/3.0f) * MathUtils.PI) + 240 * MathUtils.sin(theta), 0.07f));
+                addProjectile(new TimeProjectile(getLevel(), hitbox.x + 360 * MathUtils.cos(ringAngle + (4/3.0f) * MathUtils.PI) + 240 * MathUtils.cos(theta), hitbox.y + 360 * MathUtils.sin(ringAngle + (4/3.0f) * MathUtils.PI) + 240 * MathUtils.sin(theta), 0.07f));
             }
 
             beamCooldown -= frame;
             //Pre beam shot cue:
             if (beamCooldown <= 0.4f) {
                 for (int i = 0; i < 10; ++i) {
-                    bullets.add(new TimeProjectile(level, hitbox.x + MathUtils.random(-30, 30), hitbox.y + MathUtils.random(-30, 30), 0.07f));
+                    addProjectile(new TimeProjectile(getLevel(), hitbox.x + MathUtils.random(-30, 30), hitbox.y + MathUtils.random(-30, 30), 0.07f));
                 }
             }
             //Creates a 'beam' - projectiles that slow down to form a line with openings
             if (beamCooldown <= 0) {
-                float theta = MathUtils.atan2(y - hitbox.y, x - hitbox.x);
+                float theta = MathUtils.atan2(getPlayer().getCenterY() - hitbox.y, getPlayer().getCenterX() - hitbox.x);
                 beamCooldown = BEAM_MAX_COOLDOWN;
                 //Creates enough projectiles for difficult openings to form
                 for (int i = 0; i < 7; ++i) {
-                    bullets.add(new ControlledAccelerateProjectile(level,
+                    addProjectile(new ControlledAccelerateProjectile(getLevel(),
                             hitbox.x, hitbox.y,
                             (300 + i * 45) * MathUtils.cos(theta), (300 + i * 45) * MathUtils.sin(theta),
                             -300,
@@ -104,18 +101,18 @@ public class Saturn extends Enemy {
 
         }
 
-        return bullets;
+        return getBullets();
     }
 
     @Override
     public Array<Enemy> spawn(float frame) {
         Array<Enemy> enemies = new Array<Enemy>();
         if (phase == 0) {
-            enemies.add(new SaturnMoonA(this, level, hitbox.x, hitbox.y + 300));
-            enemies.add(new SaturnMoonB(this, level, hitbox.x, hitbox.y + 300));
-            enemies.add(new RingMoon(this, level, hitbox.x, hitbox.y));
-            enemies.add(new SeekerMoon(this, level, hitbox.x, hitbox.y));
-            canSpawn = false;
+            enemies.add(new SaturnMoonA(this, getLevel(), hitbox.x, hitbox.y + 300));
+            enemies.add(new SaturnMoonB(this, getLevel(), hitbox.x, hitbox.y + 300));
+            enemies.add(new RingMoon(this, getLevel(), hitbox.x, hitbox.y));
+            enemies.add(new SeekerMoon(this, getLevel(), hitbox.x, hitbox.y));
+            setCanSpawn(false);
             phase = 1;
         }
         return enemies;
@@ -141,7 +138,7 @@ public class Saturn extends Enemy {
         @Override
         public Array<Projectile> attack(float frame) {
             frame = saturn.timeDelta;
-            this.bullets.clear();
+            this.clearProjectiles();
             //Shoot
             cooldown -= frame;
 
@@ -152,7 +149,7 @@ public class Saturn extends Enemy {
 
             //Move
             spinMove(frame, 480, 0.6f);
-            return this.bullets;
+            return getBullets();
         }
     }
 
@@ -176,13 +173,13 @@ public class Saturn extends Enemy {
 
         @Override
         public Array<Projectile> attack(float frame) {
-            this.bullets.clear();
+            this.clearProjectiles();
             //Shoot
             cooldown -= frame;
 
             if (cooldown <= 0 && shots > 0) {
-                float angle = MathUtils.atan2(player.getY() - this.hitbox.y, player.getX() - this.hitbox.x);
-                this.bullets.add(new BasicProjectile(level, hitbox.x, hitbox.y, MathUtils.cos(angle) * 260, MathUtils.sin(angle) * 260));
+                float angle = MathUtils.atan2(getPlayer().getCenterY() - this.hitbox.y, getPlayer().getCenterX() - this.hitbox.x);
+                this.addProjectile(new BasicProjectile(getLevel(), hitbox.x, hitbox.y, MathUtils.cos(angle) * 260, MathUtils.sin(angle) * 260));
                 cooldown = MINI_COOLDOWN;
                 --shots;
             } else if (shots == 0) {
@@ -192,7 +189,7 @@ public class Saturn extends Enemy {
 
             //Move
             spinMove(frame,240,0.6f);
-            return this.bullets;
+            return getBullets();
         }
     }
 
@@ -211,18 +208,18 @@ public class Saturn extends Enemy {
 
         @Override
         public Array<Projectile> attack(float frame) {
-             this.bullets.clear();
+             this.clearProjectiles();
 
              for (int i = 0; i < 36; ++i) {
                  float theta = i * 10 * MathUtils.degreesToRadians;
-                 this.bullets.add(new TimeProjectile(level,
+                 this.addProjectile(new TimeProjectile(getLevel(),
                          this.hitbox.x + 90 * MathUtils.cos(theta),
                          this.hitbox.y + 90 * MathUtils.sin(theta),
                          frame * 2));
              }
 
              spinMove(frame, 240, 0.9f);
-             return this.bullets;
+             return getBullets();
         }
     }
 
@@ -246,11 +243,11 @@ public class Saturn extends Enemy {
 
         @Override
         public Array<Projectile> attack(float frame) {
-            bullets.clear();
+            clearProjectiles();
 
             if (chargeCooldown <= 0) {
-                float dst2 = (hitbox.x - player.getX()) * (hitbox.x - player.getX()) +
-                        (hitbox.y - player.getY()) * (hitbox.y - player.getY());
+                float dst2 = (hitbox.x - getPlayer().getCenterX()) * (hitbox.x - getPlayer().getCenterX()) +
+                        (hitbox.y - getPlayer().getCenterY()) * (hitbox.y - getPlayer().getCenterY());
                 if (dst2 > 10000) {
                     dst2 = (float) Math.sqrt(dst2) - 100;
                     float t = dst2 / 100;
@@ -261,7 +258,7 @@ public class Saturn extends Enemy {
 
                     acceleration = (START_VELOCITY) / t;
 
-                    float theta = MathUtils.atan2(player.getY() - hitbox.y, player.getX() - hitbox.x);
+                    float theta = MathUtils.atan2(getPlayer().getCenterY() - hitbox.y, getPlayer().getCenterX() - hitbox.x);
                     velocity.x = MathUtils.cos(theta);
                     velocity.y = MathUtils.sin(theta);
                     chargeAngle = theta;
@@ -278,7 +275,7 @@ public class Saturn extends Enemy {
                 if (chargeShot && absVelocity < 50) {
                     for (int i = -10; i <= 10; i += 5) {
                         float ang = i * MathUtils.degreesToRadians + chargeAngle;
-                        bullets.add(new BasicProjectile(level, hitbox.x, hitbox.y, MathUtils.cos(ang) * 200, MathUtils.sin(ang) * 200));
+                        addProjectile(new BasicProjectile(getLevel(), hitbox.x, hitbox.y, MathUtils.cos(ang) * 200, MathUtils.sin(ang) * 200));
                     }
                     chargeShot = false;
                 }
@@ -290,7 +287,7 @@ public class Saturn extends Enemy {
                 chargeCooldown -= frame;
             }
 
-            return bullets;
+            return getBullets();
         }
     }
 
@@ -332,16 +329,16 @@ public class Saturn extends Enemy {
                 this.hitbox.x = this.hitbox.radius;
                 this.velocity.x *= -1;
             }
-            if (this.hitbox.x + this.hitbox.radius > level.LEVEL_WIDTH) {
-                this.hitbox.x = level.LEVEL_WIDTH - this.hitbox.radius;
+            if (this.hitbox.x + this.hitbox.radius > getLevel().LEVEL_WIDTH) {
+                this.hitbox.x = getLevel().LEVEL_WIDTH - this.hitbox.radius;
                 this.velocity.x *= -1;
             }
             if (this.hitbox.y - this.hitbox.radius < 0) {
                 this.hitbox.y = this.hitbox.radius;
                 this.velocity.y *= -1;
             }
-            if (this.hitbox.y + this.hitbox.radius > level.LEVEL_HEIGHT) {
-                this.hitbox.y = level.LEVEL_HEIGHT - this.hitbox.radius;
+            if (this.hitbox.y + this.hitbox.radius > getLevel().LEVEL_HEIGHT) {
+                this.hitbox.y = getLevel().LEVEL_HEIGHT - this.hitbox.radius;
                 this.velocity.y *= -1;
             }
             */

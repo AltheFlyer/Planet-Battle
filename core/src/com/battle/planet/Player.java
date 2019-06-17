@@ -12,21 +12,21 @@ import com.battle.planet.projectiles.TimeProjectile;
 
 public class Player {
 
-    Rectangle hitbox;
-    Vector2 hitboxCenter;
-    final BattleLevel level;
+    private Rectangle hitbox;
+    private Vector2 hitboxCenter;
+    private final BattleLevel level;
 
-    final float PRIMARY_COOLDOWN = 0.08f;
-    final float SECONDARY_COOLDOWN;
-    float cooldown;
-    float secondCooldown;
-    float speed = 200;
-    float MAX_INVINCIBLE = 1f;
-    float invincible = 0;
+    private final float PRIMARY_COOLDOWN = 0.08f;
+    private final float SECONDARY_COOLDOWN;
+    private float cooldown;
+    private float secondCooldown;
+    private float speed = 200;
+    private float MAX_INVINCIBLE = 1f;
+    private float invincible = 0;
 
-    int specialValue;
+    private int specialValue;
 
-    public Player(final BattleLevel lev, float x, float y, int special){
+    public Player(final BattleLevel lev, float x, float y, int special) {
         level = lev;
         hitbox = new Rectangle(x, y, 10, 10);
         hitboxCenter = new Vector2(0, 0);
@@ -107,15 +107,108 @@ public class Player {
         }
     }
 
-    public Vector2 getPos() {
-        return hitboxCenter;
-    }
-
-    public float getX() {
+    public float getCenterX() {
         return hitboxCenter.x;
     }
 
-    public float getY() {
+    public float getCenterY() {
         return hitboxCenter.y;
+    }
+
+    public void setPosition(float x, float y) {
+        hitbox.setPosition(x - hitbox.width / 2, y - hitbox.height / 2);
+        hitboxCenter.set(x, y);
+    }
+
+    /**
+     * Updates hitbox center to center of hitbox position
+     */
+    public void updatePosition() {
+        hitbox.getCenter(hitboxCenter);
+    }
+
+    public float getX() {
+        return hitbox.x;
+    }
+
+    public float getY() {
+        return hitbox.y;
+    }
+
+    public void setX(float x) {
+        hitbox.x = x;
+    }
+
+    public void setY(float y) {
+        hitbox.y = y;
+    }
+
+
+    public float getWidth() {
+        return hitbox.width;
+    }
+
+    public float getHeight() {
+        return hitbox.height;
+    }
+
+    public void moveX(float x) {
+        hitbox.x += x;
+    }
+
+    public void moveY(float y) {
+        hitbox.y += y;
+    }
+
+    public float getSpeed() {
+        return speed;
+    }
+
+    public void setSpeed(float spd) {
+        speed = spd;
+    }
+
+    public float getCooldown() {
+        return cooldown;
+    }
+
+    public float getSecondCooldown() {
+        return secondCooldown;
+    }
+
+    public float getMaxSecondaryCooldown() {
+        return SECONDARY_COOLDOWN;
+    }
+
+    public void tickCooldown(float frame) {
+
+    }
+
+    public void resetCooldown() {
+        cooldown = PRIMARY_COOLDOWN;
+    }
+
+    public float getInvincible() {
+        return invincible;
+    }
+
+    public void setInvincible() {
+        invincible = MAX_INVINCIBLE;
+    }
+
+    public void tickInvincible(float frame) {
+        invincible -= frame;
+    }
+
+    public int getSpecialValue() {
+        return specialValue;
+    }
+
+    public Rectangle getHitbox() {
+        return hitbox;
+    }
+
+    public Vector2 getHitboxCenter() {
+        return hitboxCenter;
     }
 }

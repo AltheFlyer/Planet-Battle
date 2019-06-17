@@ -12,13 +12,13 @@ public class Deimos extends Enemy {
 
     final Mars mars;
     //Bolt attack, creates a set of stationary bolts that
-    //all aim at the player and launch at the same time.
+    //all aim at the getPlayer() and launch at the same time.
     final float MAX_BOLT_COOLDOWN = 5f;
     float boltCooldown;
     float[] boltSet = {0.5f, 0.7f, 1.0f, 1.5f, 2.0f};
 
     //Angular values, in radians
-    //Position is based on the player
+    //Position is based on the getPlayer()
     float angularPosition = 0f;
     //~50 degrees
     float angularVelocity = 0.872665f;
@@ -36,8 +36,8 @@ public class Deimos extends Enemy {
 
     @Override
     public void drawObjects(ShapeRenderer r) {
-        float x = player.getX();
-        float y = player.getY();
+        float x = getPlayer().getCenterX();
+        float y = getPlayer().getCenterY();
         r.setColor(Color.YELLOW);
         r.set(ShapeRenderer.ShapeType.Line);
         r.circle(x, y, 280);
@@ -46,9 +46,9 @@ public class Deimos extends Enemy {
 
     @Override
     public Array<Projectile> attack(float frame) {
-        float x = player.getX();
-        float y = player.getY();
-        bullets.clear();
+        float x = getPlayer().getCenterX();
+        float y = getPlayer().getCenterY();
+        clearProjectiles();
         boltCooldown -= frame;
         /*
         for (int i = 0; i < boltSet.length; ++i) {
@@ -77,7 +77,7 @@ public class Deimos extends Enemy {
         hitbox.y = y + MathUtils.sin(angularPosition) * 280;
         angularPosition += angularVelocity * frame;
 
-        return bullets;
+        return getBullets();
     }
 
     @Override
@@ -85,10 +85,10 @@ public class Deimos extends Enemy {
         for (Projectile p: projectiles) {
             if (!p.isDestroyed && this.hitbox.contains(p.hitbox.x, p.hitbox.y)) {
                 p.isDestroyed = true;
-                this.health -= 1;
+                modHealth(-1);
             }
         }
-        if (health <= 0) {
+        if (getHealth() <= 0) {
             mars.deimosDead = true;
         }
         return projectiles;

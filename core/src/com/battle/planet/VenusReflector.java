@@ -44,19 +44,19 @@ public class VenusReflector extends Enemy {
         hitbox.x = venus.hitbox.x + MathUtils.cos(angularPosition) * distance;
         hitbox.y = venus.hitbox.y + MathUtils.sin(angularPosition) * distance;
 
-        return bullets;
+        return getBullets();
     }
 
     @Override
     public Array<Projectile> collide(Array<Projectile> projectiles) {
-        bullets.clear();
+        clearProjectiles();
         for (Projectile p: projectiles) {
             if (!p.isDestroyed && this.hitbox.contains(p.hitbox.x, p.hitbox.y)) {
                 p.isDestroyed = true;
                 if (!immune) {
-                    this.health -= 1;
+                    modHealth(-1);
                 }
-                bullets.add(new BasicProjectile(level, p.hitbox.x, p.hitbox.y, -p.velocity.x, -p.velocity.y));
+                addProjectile(new BasicProjectile(getLevel(), p.hitbox.x, p.hitbox.y, -p.velocity.x, -p.velocity.y));
             }
         }
         return projectiles;

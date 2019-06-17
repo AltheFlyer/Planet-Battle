@@ -36,8 +36,8 @@ public class Phobos extends Enemy {
 
     @Override
     public void drawObjects(ShapeRenderer r) {
-        float x = player.getX();
-        float y = player.getY();
+        float x = getPlayer().getCenterX();
+        float y = getPlayer().getCenterY();
         r.setColor(Color.YELLOW);
         r.set(ShapeRenderer.ShapeType.Line);
         r.circle(x, y, 170);
@@ -46,19 +46,19 @@ public class Phobos extends Enemy {
 
     @Override
     public Array<Projectile> attack(float frame) {
-        float x = player.getX();
-        float y = player.getY();
-        bullets.clear();
+        float x = getPlayer().getCenterX();
+        float y = getPlayer().getCenterY();
+        clearProjectiles();
         boltCooldown -= frame;
         if (boltCooldown <= 0) {
-            bullets.add(new DelayProjectile(level, new Rectangle(hitbox.x, hitbox.y, 15, 15), 2f));
+            addProjectile(new DelayProjectile(getLevel(), new Rectangle(hitbox.x, hitbox.y, 15, 15), 2f));
             boltCooldown = MAX_BOLT_COOLDOWN;
         }
         //Movement
         hitbox.x = x + MathUtils.cos(angularPosition) * 170;
         hitbox.y = y + MathUtils.sin(angularPosition) * 170;
         angularPosition += angularVelocity * frame;
-        return bullets;
+        return getBullets();
     }
 
     @Override
@@ -66,10 +66,10 @@ public class Phobos extends Enemy {
         for (Projectile p: projectiles) {
             if (!p.isDestroyed && this.hitbox.contains(p.hitbox.x, p.hitbox.y)) {
                 p.isDestroyed = true;
-                this.health -= 1;
+                modHealth(-1);
             }
         }
-        if (health <= 0) {
+        if (getHealth() <= 0) {
             mars.phobosDead = true;
         }
         return projectiles;

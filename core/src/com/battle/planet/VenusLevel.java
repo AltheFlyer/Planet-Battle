@@ -5,7 +5,7 @@ public class VenusLevel extends BattleLevel {
     public VenusLevel(PlanetBattle g, int abilitySelection) {
         super(g, abilitySelection);
         enemies.add(new Venus(this, 300, 300));
-        player.hitbox.setPosition(150, 300);
+        player.setPosition(150, 300);
     }
 
     @Override
