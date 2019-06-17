@@ -49,7 +49,7 @@ public class Mars extends Enemy {
         spearCooldown = SPEAR_MAX_COOLDOWN;
         chargeCooldown = CHARGE_MAX_COOLDOWN;
         burstCooldown = BURST_MAX_COOLDOWN;
-        phaseMarkers.add(300);
+        addPhaseMarkers(300);
         chargeDestination = new Vector2(x, y);
         chargeVelocity = new Vector2(0, 0);
     }
@@ -74,9 +74,9 @@ public class Mars extends Enemy {
 
     @Override
     public Array<Projectile> attack(float frame) {
-        float x = player.hitboxCenter.x;
-        float y = player.hitboxCenter.y;
-        bullets.clear();
+        float x = getPlayer().getCenterX();
+        float y = getPlayer().getCenterY();
+        clearProjectiles();
         if (phase == 1) {
             spearCooldown -= frame;
             burstCooldown -= frame;
@@ -191,13 +191,13 @@ public class Mars extends Enemy {
             }
         }
         //Transition to 2nd phase
-        if (phase == 1 && health <= 300) {
+        if (phase == 1 && getHealth() <= 300) {
             phase = -1;
             //Enters charge to get to top of screen
             chargeDestination.set(hitbox.x, 550);
             chargeVelocity.set(0, 200);
             inCharge = true;
-            canSpawn = true;
+            setCanSpawn(true);
         }
         //Transition between phase 1 and 2
         if (phase == -1) {
@@ -219,17 +219,17 @@ public class Mars extends Enemy {
             float angle = MathUtils.atan2(y - hitbox.y, x - hitbox.x);
             chargeVelocity.set(MathUtils.cos(angle) * 250, MathUtils.sin(angle) * 250);
         }
-        return bullets;
+        return getBullets();
     }
 
     @Override
     public Array<Enemy> spawn(float frame) {
-        float x = player.hitboxCenter.x;
-        float y = player.hitboxCenter.y;
+        float x = getPlayer().getCenterX();
+        float y = getPlayer().getCenterY();
         Array<Enemy> e = new Array<Enemy>();
-        e.add(new Phobos(level, this, x, y));
-        e.add(new Deimos(level, this, x, y));
-        canSpawn = false;
+        e.add(new Phobos(getLevel(), this, x, y));
+        e.add(new Deimos(getLevel(), this, x, y));
+        setCanSpawn(false);
         return e;
     }
 
@@ -240,7 +240,7 @@ public class Mars extends Enemy {
             r.setColor(Color.DARK_GRAY);
             r.rect(hitbox.x - hitbox.radius, hitbox.y - hitbox.radius, hitbox.radius * 2, 10);
             r.setColor(Color.valueOf("#68d9ff"));
-            r.rect(hitbox.x - hitbox.radius, hitbox.y - hitbox.radius, hitbox.radius * 2 * (health / MAX_HEALTH), 10);
+            r.rect(hitbox.x - hitbox.radius, hitbox.y - hitbox.radius, hitbox.radius * 2 * (getHealth() / getMaxHealth()), 10);
         } else {
             super.drawHealthBars(r);
         }
@@ -249,26 +249,26 @@ public class Mars extends Enemy {
     public void createSpear(float theta) {
         //Shaft
         for (int i = 0; i <= 80; i+=5) {
-            bullets.add(new BasicProjectile(level, hitbox.x + i * MathUtils.cos(theta), hitbox.y + i * MathUtils.sin(theta), 180 * MathUtils.cos(theta), 180 * MathUtils.sin(theta)));
+            addProjectile(new BasicProjectile(getLevel(), hitbox.x + i * MathUtils.cos(theta), hitbox.y + i * MathUtils.sin(theta), 180 * MathUtils.cos(theta), 180 * MathUtils.sin(theta)));
         }
 
         //Sides
         for (int i = 5; i <= 25; i+=5) {
-            bullets.add(new BasicProjectile(level, hitbox.x + (80 - i) * MathUtils.cos(theta + i * 0.0174533f), hitbox.y + (80 - i) * MathUtils.sin(theta + i * 0.0174533f), 180 * MathUtils.cos(theta), 180 * MathUtils.sin(theta)));
-            bullets.add(new BasicProjectile(level, hitbox.x + (80 - i) * MathUtils.cos(theta - i * 0.0174533f), hitbox.y + (80 - i) * MathUtils.sin(theta - i * 0.0174533f), 180 * MathUtils.cos(theta), 180 * MathUtils.sin(theta)));
+            addProjectile(new BasicProjectile(getLevel(), hitbox.x + (80 - i) * MathUtils.cos(theta + i * 0.0174533f), hitbox.y + (80 - i) * MathUtils.sin(theta + i * 0.0174533f), 180 * MathUtils.cos(theta), 180 * MathUtils.sin(theta)));
+            addProjectile(new BasicProjectile(getLevel(), hitbox.x + (80 - i) * MathUtils.cos(theta - i * 0.0174533f), hitbox.y + (80 - i) * MathUtils.sin(theta - i * 0.0174533f), 180 * MathUtils.cos(theta), 180 * MathUtils.sin(theta)));
         }
     }
 
     public void createSpear(float theta, float speed) {
         //Shaft
         for (int i = 0; i <= 80; i+=5) {
-            bullets.add(new BasicProjectile(level, hitbox.x + i * MathUtils.cos(theta), hitbox.y + i * MathUtils.sin(theta), speed * MathUtils.cos(theta), speed * MathUtils.sin(theta)));
+            addProjectile(new BasicProjectile(getLevel(), hitbox.x + i * MathUtils.cos(theta), hitbox.y + i * MathUtils.sin(theta), speed * MathUtils.cos(theta), speed * MathUtils.sin(theta)));
         }
 
         //Sides
         for (int i = 5; i <= 25; i+=5) {
-            bullets.add(new BasicProjectile(level, hitbox.x + (80 - i) * MathUtils.cos(theta + i * 0.0174533f), hitbox.y + (80 - i) * MathUtils.sin(theta + i * 0.0174533f), speed * MathUtils.cos(theta), speed * MathUtils.sin(theta)));
-            bullets.add(new BasicProjectile(level, hitbox.x + (80 - i) * MathUtils.cos(theta - i * 0.0174533f), hitbox.y + (80 - i) * MathUtils.sin(theta - i * 0.0174533f), speed * MathUtils.cos(theta), speed * MathUtils.sin(theta)));
+            addProjectile(new BasicProjectile(getLevel(), hitbox.x + (80 - i) * MathUtils.cos(theta + i * 0.0174533f), hitbox.y + (80 - i) * MathUtils.sin(theta + i * 0.0174533f), speed * MathUtils.cos(theta), speed * MathUtils.sin(theta)));
+            addProjectile(new BasicProjectile(getLevel(), hitbox.x + (80 - i) * MathUtils.cos(theta - i * 0.0174533f), hitbox.y + (80 - i) * MathUtils.sin(theta - i * 0.0174533f), speed * MathUtils.cos(theta), speed * MathUtils.sin(theta)));
         }
     }
 
@@ -278,7 +278,7 @@ public class Mars extends Enemy {
             for (Projectile p : projectiles) {
                 if (!p.isDestroyed && this.hitbox.contains(p.hitbox.x, p.hitbox.y)) {
                     p.isDestroyed = true;
-                    this.health -= 1;
+                    modHealth(-1);
                 }
             }
         }

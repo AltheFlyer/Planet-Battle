@@ -33,7 +33,7 @@ public class VenusRingProjectile extends OrbitalProjectile {
             hitbox.y += velocity.y * frame;
             wait -= frame;
         }
-        if (venus.phase != 1) {
+        if (venus.getPhase() != 1) {
             float newAngle = MathUtils.atan2(hitbox.y - (300 + 200 * MathUtils.sin(angularPosition)), hitbox.x - (300 + 200 * MathUtils.cos(angularPosition)));
             velocity = new Vector2(MathUtils.cos(newAngle) * 300, MathUtils.sin(newAngle) * 300);
             orbiting = false;

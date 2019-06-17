@@ -49,9 +49,9 @@ public class AcidCloud extends Enemy {
         hitbox.y += velocity.y * frame;
         //Destroy when too far offscreen
         if (hitbox.x < -150 || hitbox.x >= 750 || hitbox.y < -150 || hitbox.y > 750) {
-            health = 0;
+            setHealth(0);
         }
-        return bullets;
+        return getBullets();
     }
 
 }
