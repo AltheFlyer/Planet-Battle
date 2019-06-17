@@ -36,8 +36,8 @@ public class Phobos extends Enemy {
 
     @Override
     public void drawObjects(ShapeRenderer r) {
-        float x = player.getX();
-        float y = player.getY();
+        float x = player.hitboxCenter.x;
+        float y = player.hitboxCenter.y;
         r.setColor(Color.YELLOW);
         r.set(ShapeRenderer.ShapeType.Line);
         r.circle(x, y, 170);
@@ -46,8 +46,8 @@ public class Phobos extends Enemy {
 
     @Override
     public Array<Projectile> attack(float frame) {
-        float x = player.getX();
-        float y = player.getY();
+        float x = player.hitboxCenter.x;
+        float y = player.hitboxCenter.y;
         bullets.clear();
         boltCooldown -= frame;
         if (boltCooldown <= 0) {

@@ -107,15 +107,4 @@ public class Player {
         }
     }
 
-    public Vector2 getPos() {
-        return hitboxCenter;
-    }
-
-    public float getX() {
-        return hitboxCenter.x;
-    }
-
-    public float getY() {
-        return hitboxCenter.y;
-    }
 }
