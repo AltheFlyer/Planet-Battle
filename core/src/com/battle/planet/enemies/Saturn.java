@@ -1,10 +1,11 @@
-package com.battle.planet;
+package com.battle.planet.enemies;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
+import com.battle.planet.BattleLevel;
 import com.battle.planet.projectiles.BasicProjectile;
 import com.battle.planet.projectiles.ControlledAccelerateProjectile;
 import com.battle.planet.projectiles.Projectile;
@@ -12,8 +13,8 @@ import com.battle.planet.projectiles.TimeProjectile;
 
 public class Saturn extends Enemy {
 
-    int moonsLeft = 53;//or 62 including unnamed.
-    int phase = 0;
+    private int moonsLeft = 53;//or 62 including unnamed.
+    private int phase = 0;
 
     //float ringCooldown = 0;
     //float RING_MAX_COOLDOWN = 10;

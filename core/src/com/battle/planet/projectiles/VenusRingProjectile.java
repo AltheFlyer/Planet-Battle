@@ -3,7 +3,7 @@ package com.battle.planet.projectiles;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.battle.planet.BattleLevel;
-import com.battle.planet.Venus;
+import com.battle.planet.enemies.Venus;
 
 public class VenusRingProjectile extends OrbitalProjectile {
 

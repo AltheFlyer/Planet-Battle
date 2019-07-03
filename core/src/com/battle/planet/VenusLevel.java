@@ -1,5 +1,8 @@
 package com.battle.planet;
 
+import com.battle.planet.enemies.Enemy;
+import com.battle.planet.enemies.Venus;
+
 public class VenusLevel extends BattleLevel {
 
     public VenusLevel(PlanetBattle g, int abilitySelection) {

@@ -1,10 +1,12 @@
-package com.battle.planet;
+package com.battle.planet.enemies;
 
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
+import com.battle.planet.BattleLevel;
+import com.battle.planet.Player;
 import com.battle.planet.projectiles.BasicProjectile;
 import com.battle.planet.projectiles.Projectile;
 import com.battle.planet.projectiles.WaveProjectile;
@@ -97,7 +99,6 @@ abstract public class Enemy {
     public void createSpread(float theta, int amount, float spread) {
         for (int i = 0; i < amount; ++i) {
             float angle = theta + ((float) i / amount) * spread - (spread / 2);
-            ;
             bullets.add(new BasicProjectile(level, hitbox.x, hitbox.y, MathUtils.cos(angle) * 180, MathUtils.sin(angle) * 180));
         }
     }
@@ -105,7 +106,6 @@ abstract public class Enemy {
     public void createSpread(float theta, int amount, float spread, float speed) {
         for (int i = 0; i < amount; ++i) {
             float angle = theta + ((float) i / amount) * spread - (spread / 2);
-            ;
             bullets.add(new BasicProjectile(level, hitbox.x, hitbox.y, MathUtils.cos(angle) * speed, MathUtils.sin(angle) * speed));
         }
     }
@@ -113,7 +113,6 @@ abstract public class Enemy {
     public void createWaveSpread(float theta, int amount, float spread, float mo) {
         for (int i = 0; i < amount; ++i) {
             float angle = theta + ((float) i / amount) * spread - (spread / 2);
-            ;
             bullets.add(new WaveProjectile(level, hitbox.x, hitbox.y, MathUtils.cos(angle) * 180, MathUtils.sin(angle) * 180, mo));
         }
     }
@@ -192,5 +191,9 @@ abstract public class Enemy {
 
     public boolean getCanSpawn() {
         return canSpawn;
+    }
+
+    public Circle getCollisionBox() {
+        return collisionBox;
     }
 }

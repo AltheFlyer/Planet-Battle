@@ -12,6 +12,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
+import com.battle.planet.enemies.Enemy;
 import com.battle.planet.projectiles.BasicProjectile;
 import com.battle.planet.projectiles.Projectile;
 
@@ -27,7 +28,7 @@ public class BattleLevel implements Screen {
     OrthographicCamera camera;
 
     //Player values
-    Player player;
+    public Player player;
 
     //Other level things
     public Array<Projectile> playerBullets;
@@ -294,7 +295,7 @@ public class BattleLevel implements Screen {
         }
 
         for (Enemy e: enemies) {
-            if (player.getInvincible() <= 0 && e.collisionBox.contains(player.getHitboxCenter())) {
+            if (player.getInvincible() <= 0 && e.getCollisionBox().contains(player.getHitboxCenter())) {
                 player.setInvincible();
             }
         }

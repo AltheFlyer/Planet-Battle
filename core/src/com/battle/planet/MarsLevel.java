@@ -1,5 +1,7 @@
 package com.battle.planet;
 
+import com.battle.planet.enemies.Mars;
+
 public class MarsLevel extends BattleLevel {
 
 	public MarsLevel(final PlanetBattle g, int abilitySelection) {

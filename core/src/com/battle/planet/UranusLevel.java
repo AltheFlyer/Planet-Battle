@@ -1,5 +1,7 @@
 package com.battle.planet;
 
+import com.battle.planet.enemies.Uranus;
+
 public class UranusLevel extends BattleLevel {
 
     public UranusLevel(PlanetBattle g, int abilitySelection) {
