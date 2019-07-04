@@ -196,4 +196,8 @@ abstract public class Enemy {
     public Circle getCollisionBox() {
         return collisionBox;
     }
+
+    public Circle getHitbox() {
+        return hitbox;
+    }
 }

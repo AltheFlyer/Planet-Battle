@@ -6,6 +6,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.battle.planet.BattleLevel;
+import com.battle.planet.enemies.moons.SaturnMoon;
 import com.battle.planet.projectiles.BasicProjectile;
 import com.battle.planet.projectiles.ControlledAccelerateProjectile;
 import com.battle.planet.projectiles.Projectile;
@@ -16,42 +17,84 @@ public class Saturn extends Enemy {
     private int moonsLeft = 53;//or 62 including unnamed.
     private int phase = 0;
 
+    private float subPhaseTimer = 0;
+    private final float PRE_SECOND_PHASE_DURATION = 3;
+
     //float ringCooldown = 0;
     //float RING_MAX_COOLDOWN = 10;
 
-
+    //First Phase
     final float BEAM_MAX_COOLDOWN = 2f;
     float beamCooldown = BEAM_MAX_COOLDOWN * 2;
+
+    //Second Phase
+    //Hour hand
+    float hourHandRotation = MathUtils.PI / 2;
+    final float HOUR_HAND_ANGULAR_VELOCITY = -8 * (MathUtils.PI / 180f);
+
+    float minuteHandRotation = MathUtils.PI / 2;
+    final float MINUTE_HAND_ANGULAR_VELOCITY = -25 * (MathUtils.PI / 180f);
+
+    float secondHandRotation = MathUtils.PI / 2;
+    final float SECOND_HAND_ANGULAR_VELOCITY = -40 * (MathUtils.PI / 180f);
+    final float SECOND_HAND_GAP_WIDTH = 100;
+    float secondHandGap = 0;
+    float secondHandGapDelta = 150;
 
     float ringAngle = 0;
 
     float timeDelta;
-    float timeMultiplier = 1;
+    public float timeMultiplier = 1;
 
     float clockTimer = 0;
 
     public Saturn(BattleLevel lev, float x, float y) {
         super(lev, x, y, 100, 120, 2500);
+        clockTimer = 5;
     }
 
     @Override
     public void drawBody(ShapeRenderer r) {
         r.setColor(Color.GOLDENROD);
         r.circle(hitbox.x, hitbox.y, hitbox.radius);
+
+        if (phase == -1) {
+            r.setColor(new Color(0.7f, 0.7f, 0, 0.5f));
+            r.rectLine(hitbox.x, hitbox.y,
+                   hitbox.x + 300 * MathUtils.cos(hourHandRotation),
+                   hitbox.y + 300 * MathUtils.sin(hourHandRotation), 3);
+            r.rectLine(hitbox.x, hitbox.y,
+                    hitbox.x + 500 * MathUtils.cos(minuteHandRotation),
+                    hitbox.y + 500 * MathUtils.sin(minuteHandRotation), 3);
+            r.rectLine(hitbox.x, hitbox.y,
+                    hitbox.x + 600 * MathUtils.cos(secondHandRotation),
+                    hitbox.y + 600 * MathUtils.sin(secondHandRotation), 3);
+        }
     }
 
     @Override
     public Array<Projectile> attack(float frame) {
         clearProjectiles();
-        timeDelta = frame * timeMultiplier;
-        clockTimer -= frame;
+        clockTimer -= frame / timeMultiplier;
         if (clockTimer <= 0) {
-            if (timeMultiplier == 2) {
-                timeMultiplier = 1;
-                clockTimer = 10;
+            if (timeMultiplier != 1) {
+                if (phase == 1) {
+                    timeMultiplier = 1;
+                    clockTimer = 10;
+                } else if (phase == 2) {
+                    timeMultiplier = 1;
+                    clockTimer = (3 * MathUtils.PI2) /
+                            (4 * -8 * (MathUtils.PI / 180f));
+                }
             } else {
-                timeMultiplier = 2;
-                clockTimer = 3;
+                if (phase == 1) {
+                    timeMultiplier = 1.4f;
+                    clockTimer = 3;
+                } else if (phase == 2) {
+                    timeMultiplier = 2f;
+                    clockTimer = MathUtils.PI2 /
+                            (4 * -8 * (MathUtils.PI / 180f));
+                }
             }
 
         }
@@ -100,6 +143,87 @@ public class Saturn extends Enemy {
                 }
             }
 
+        } else if (phase == 2) {
+            //Spinning clock hands
+            //Hour hand
+            hourHandRotation += HOUR_HAND_ANGULAR_VELOCITY * frame;
+            if (hourHandRotation > MathUtils.PI * 2) {
+                hourHandRotation -= MathUtils.PI * 2;
+            }
+            minuteHandRotation += MINUTE_HAND_ANGULAR_VELOCITY * frame;
+            if (minuteHandRotation > MathUtils.PI * 2) {
+                minuteHandRotation -= MathUtils.PI * 2;
+            }
+
+            secondHandRotation += SECOND_HAND_ANGULAR_VELOCITY * frame;
+            if (secondHandRotation > MathUtils.PI * 2) {
+                secondHandRotation -= MathUtils.PI * 2;
+            }
+
+            secondHandGap += secondHandGapDelta * frame;
+            if (secondHandGap < 0) {
+                secondHandGapDelta *= -1;
+                secondHandGap = 0;
+            } else if (secondHandGap > 600 - SECOND_HAND_GAP_WIDTH) {
+                secondHandGap = 600 - SECOND_HAND_GAP_WIDTH;
+                secondHandGapDelta *= -1;
+            }
+
+
+            for (int i = 0; i < 30; ++i) {
+                addProjectile(new TimeProjectile(getLevel(),
+                        hitbox.x + MathUtils.cos(hourHandRotation) * (i * 10),
+                        hitbox.y + MathUtils.sin(hourHandRotation) * (i * 10),
+                        0.07f)
+                );
+            }
+
+            for (int i = 0; i < 8; ++i) {
+                addProjectile(new TimeProjectile(getLevel(),
+                        hitbox.x + MathUtils.cos(minuteHandRotation) * (i * (60)),
+                        hitbox.y + MathUtils.sin(minuteHandRotation) * (i * (60)),
+                        0.07f)
+                );
+            }
+
+            for (int i = 0; i < 30; ++i) {
+                addProjectile(new TimeProjectile(getLevel(),
+                        hitbox.x + MathUtils.cos(secondHandRotation) * (i * (secondHandGap / 30)),
+                        hitbox.y + MathUtils.sin(secondHandRotation) * (i * (secondHandGap / 30)),
+                        0.07f)
+                );
+                addProjectile(new TimeProjectile(getLevel(),
+                        hitbox.x + MathUtils.cos(secondHandRotation) * (secondHandGap + SECOND_HAND_GAP_WIDTH + i * ((600 - (secondHandGap + SECOND_HAND_GAP_WIDTH)) / 30)),
+                        hitbox.y + MathUtils.sin(secondHandRotation) * (secondHandGap + SECOND_HAND_GAP_WIDTH + i * ((600 - (secondHandGap + SECOND_HAND_GAP_WIDTH)) / 30)),
+                        0.07f)
+                );
+            }
+
+
+        } else if (phase == -1) {
+            if (subPhaseTimer < PRE_SECOND_PHASE_DURATION) {
+                subPhaseTimer += frame / timeMultiplier;
+                hourHandRotation += HOUR_HAND_ANGULAR_VELOCITY * frame;
+                if (hourHandRotation > MathUtils.PI * 2) {
+                    hourHandRotation -= MathUtils.PI * 2;
+                }
+                minuteHandRotation += MINUTE_HAND_ANGULAR_VELOCITY * frame;
+                if (minuteHandRotation > MathUtils.PI * 2) {
+                    minuteHandRotation -= MathUtils.PI * 2;
+                }
+                secondHandRotation += SECOND_HAND_ANGULAR_VELOCITY * frame;
+                if (secondHandRotation > MathUtils.PI * 2) {
+                    secondHandRotation -= MathUtils.PI * 2;
+                }
+            } else {
+                subPhaseTimer = 0;
+                phase = 2;
+                clockTimer = MathUtils.PI2 / (-8 * (MathUtils.PI / 180f));
+            }
+        }
+
+        if (phase == 1 && getHealth() < 2400) {
+            phase = -1;
         }
 
         return getBullets();
@@ -109,10 +233,9 @@ public class Saturn extends Enemy {
     public Array<Enemy> spawn(float frame) {
         Array<Enemy> enemies = new Array<Enemy>();
         if (phase == 0) {
-            enemies.add(new SaturnMoonA(this, getLevel(), hitbox.x, hitbox.y + 300));
-            enemies.add(new SaturnMoonB(this, getLevel(), hitbox.x, hitbox.y + 300));
-            enemies.add(new RingMoon(this, getLevel(), hitbox.x, hitbox.y));
-            enemies.add(new SeekerMoon(this, getLevel(), hitbox.x, hitbox.y));
+            //enemies.add(new SaturnMoonA(this, getLevel(), hitbox.x, hitbox.y + 300));
+            //enemies.add(new SaturnMoonB(this, getLevel(), hitbox.x, hitbox.y + 300));
+            //enemies.add(new SeekerMoon(this, getLevel(), hitbox.x, hitbox.y));
             setCanSpawn(false);
             phase = 1;
         }
@@ -138,7 +261,6 @@ public class Saturn extends Enemy {
 
         @Override
         public Array<Projectile> attack(float frame) {
-            frame = saturn.timeDelta;
             this.clearProjectiles();
             //Shoot
             cooldown -= frame;
@@ -191,36 +313,6 @@ public class Saturn extends Enemy {
             //Move
             spinMove(frame,240,0.6f);
             return getBullets();
-        }
-    }
-
-    public class RingMoon extends SaturnMoon {
-
-        public RingMoon(Saturn s, BattleLevel lev, float x, float y) {
-            super(s, lev, x, y, 50, 60, 100);
-            setVelocity(100, -100);
-        }
-
-        @Override
-        public void drawBody(ShapeRenderer r) {
-            r.setColor(Color.GRAY);
-            r.circle(this.hitbox.x, this.hitbox.y, this.hitbox.radius);
-        }
-
-        @Override
-        public Array<Projectile> attack(float frame) {
-             this.clearProjectiles();
-
-             for (int i = 0; i < 36; ++i) {
-                 float theta = i * 10 * MathUtils.degreesToRadians;
-                 this.addProjectile(new TimeProjectile(getLevel(),
-                         this.hitbox.x + 90 * MathUtils.cos(theta),
-                         this.hitbox.y + 90 * MathUtils.sin(theta),
-                         frame * 2));
-             }
-
-             spinMove(frame, 240, 0.9f);
-             return getBullets();
         }
     }
 
@@ -292,58 +384,6 @@ public class Saturn extends Enemy {
         }
     }
 
-    public class SaturnMoon extends Enemy {
 
-        public final Saturn saturn;
-        public Vector2 velocity;
-        //Position is based on the player
-        float angularPosition = 0f;
-
-        public SaturnMoon(Saturn s, BattleLevel lev, float x, float y, float r0, float r1, int hp) {
-            super(lev, x, y, r0, r1, hp);
-            saturn = s;
-            velocity = new Vector2();
-        }
-
-        @Override
-        public void drawBody(ShapeRenderer r) {
-            r.setColor(Color.GRAY);
-            r.circle(this.hitbox.x, this.hitbox.y, this.hitbox.radius);
-        }
-
-
-        public void setVelocity(float x, float y) {
-            velocity.set(x, y);
-        }
-
-        public void spinMove(float frame, float distance, float angularVelocity) {
-            float x = saturn.hitbox.x;
-            float y = saturn.hitbox.y;
-            hitbox.x = x + MathUtils.cos(angularPosition) * distance;
-            hitbox.y = y + MathUtils.sin(angularPosition) * distance;
-            angularPosition += angularVelocity * frame;
-
-            /*
-            this.hitbox.x += this.velocity.x * frame;
-            this.hitbox.y += this.velocity.y * frame;
-            if (this.hitbox.x - this.hitbox.radius < 0) {
-                this.hitbox.x = this.hitbox.radius;
-                this.velocity.x *= -1;
-            }
-            if (this.hitbox.x + this.hitbox.radius > getLevel().LEVEL_WIDTH) {
-                this.hitbox.x = getLevel().LEVEL_WIDTH - this.hitbox.radius;
-                this.velocity.x *= -1;
-            }
-            if (this.hitbox.y - this.hitbox.radius < 0) {
-                this.hitbox.y = this.hitbox.radius;
-                this.velocity.y *= -1;
-            }
-            if (this.hitbox.y + this.hitbox.radius > getLevel().LEVEL_HEIGHT) {
-                this.hitbox.y = getLevel().LEVEL_HEIGHT - this.hitbox.radius;
-                this.velocity.y *= -1;
-            }
-            */
-        }
-    }
 
 }

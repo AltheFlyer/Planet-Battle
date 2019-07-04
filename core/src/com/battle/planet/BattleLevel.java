@@ -44,7 +44,7 @@ public class BattleLevel implements Screen {
     public float SCREEN_HEIGHT = 600;
 
     //Render function things
-    float frame;
+    public float frame;
     Vector3 mouse;
 
     //Special controls
