@@ -50,4 +50,9 @@ abstract public class Projectile {
     public void drawSpecial(ShapeRenderer r) {
 
     }
+
+
+    public void draw(ShapeRenderer r) {
+        r.rect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
+    }
 }

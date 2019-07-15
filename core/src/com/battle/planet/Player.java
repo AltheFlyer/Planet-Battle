@@ -137,10 +137,12 @@ public class Player {
 
     public void setX(float x) {
         hitbox.x = x;
+        updatePosition();
     }
 
     public void setY(float y) {
         hitbox.y = y;
+        updatePosition();
     }
 
 
@@ -154,10 +156,12 @@ public class Player {
 
     public void moveX(float x) {
         hitbox.x += x;
+        updatePosition();
     }
 
     public void moveY(float y) {
         hitbox.y += y;
+        updatePosition();
     }
 
     public float getSpeed() {

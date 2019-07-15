@@ -186,13 +186,15 @@ public class BattleLevel implements Screen {
         render.set(ShapeRenderer.ShapeType.Filled);
         render.setColor(Color.YELLOW);
         for (Projectile p: playerBullets) {
-            drawRectangle(p.hitbox);
+            p.draw(render);
+            //drawRectangle(p.hitbox);
             p.drawSpecial(render);
         }
 
         for (Projectile p: enemyBullets) {
             render.setColor(Color.RED);
-            drawRectangle(p.hitbox);
+            p.draw(render);
+            //drawRectangle(p.hitbox);
             p.drawSpecial(render);
         }
 

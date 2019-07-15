@@ -1,5 +1,6 @@
 package com.battle.planet.projectiles;
 
+import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.battle.planet.BattleLevel;
@@ -30,11 +31,16 @@ public class TimeProjectile extends Projectile {
 
     @Override
     public void move(float x, float y, float frame) {
-        lifespan -= frame;
-        if (lifespan <= 0) {
+        if (lifespan < 0) {
             isDestroyed = true;
         }
+        lifespan -= frame;
         hitbox.x += velocity.x * frame;
         hitbox.y += velocity.y * frame;
+    }
+
+    @Override
+    public void draw(ShapeRenderer r) {
+        super.draw(r);
     }
 }
