@@ -9,10 +9,7 @@ import com.battle.planet.BattleLevel;
 import com.battle.planet.enemies.moons.ChaserMoon;
 import com.battle.planet.enemies.moons.SaturnMoon;
 import com.battle.planet.enemies.moons.SaturnMoonA;
-import com.battle.planet.projectiles.BasicProjectile;
-import com.battle.planet.projectiles.ControlledAccelerateProjectile;
-import com.battle.planet.projectiles.Projectile;
-import com.battle.planet.projectiles.TimeProjectile;
+import com.battle.planet.projectiles.*;
 
 public class Saturn extends Enemy {
 
@@ -38,23 +35,27 @@ public class Saturn extends Enemy {
 
     //Second Phase
     //Hour hand
-    float hourHandRotation = MathUtils.PI / 2;
     final float HOUR_HAND_ANGULAR_VELOCITY = -8 * (MathUtils.PI / 180f);
+    float hourHandRotation = (MathUtils.PI / 2) - (PRE_SECOND_PHASE_DURATION * HOUR_HAND_ANGULAR_VELOCITY);
 
-    float minuteHandRotation = MathUtils.PI / 2;
     final float MINUTE_HAND_ANGULAR_VELOCITY = -25 * (MathUtils.PI / 180f);
+    float minuteHandRotation = (MathUtils.PI / 2) - (PRE_SECOND_PHASE_DURATION * HOUR_HAND_ANGULAR_VELOCITY);
 
-    float secondHandRotation = MathUtils.PI / 2;
+    float secondHandRotation = (MathUtils.PI / 2) - (PRE_SECOND_PHASE_DURATION * HOUR_HAND_ANGULAR_VELOCITY);
     final float SECOND_HAND_ANGULAR_VELOCITY = -40 * (MathUtils.PI / 180f);
     final float SECOND_HAND_GAP_WIDTH = 100;
     float secondHandGap = 0;
     float secondHandGapDelta = 50;
 
+    float wiggleCooldown = 0;
+    float MAX_WIGGLE_COOLDOWN = 0.15f;
+
     float ringAngle = 0;
 
-    float timeDelta;
+    //Used to multiply how fast everything is
     public float timeMultiplier = 1;
 
+    //Controls how long periods of time multiplication occur for
     float clockTimer = 0;
 
     public Saturn(BattleLevel lev, float x, float y) {
@@ -122,8 +123,8 @@ public class Saturn extends Enemy {
                     clockTimer = 10;
                 } else if (phase == 2) {
                     timeMultiplier = 1;
-                    clockTimer = (3 * MathUtils.PI2) /
-                            (4 * Math.abs(HOUR_HAND_ANGULAR_VELOCITY));
+                    clockTimer = (MathUtils.PI2) /
+                            (Math.abs(HOUR_HAND_ANGULAR_VELOCITY));
                     System.out.println(clockTimer);
                 }
             } else {
@@ -131,7 +132,7 @@ public class Saturn extends Enemy {
                     timeMultiplier = 1.4f;
                     clockTimer = 3;
                 } else if (phase == 2) {
-                    timeMultiplier = 1.5f;
+                    timeMultiplier = 1.1f;
                     clockTimer = (MathUtils.PI2) /
                             (4 * Math.abs(HOUR_HAND_ANGULAR_VELOCITY));
                     System.out.println(clockTimer);
@@ -186,28 +187,37 @@ public class Saturn extends Enemy {
         } else if (phase == 2) {
             //Spinning clock hands
             //Hour hand
-            hourHandRotation += HOUR_HAND_ANGULAR_VELOCITY * frame;
-            if (hourHandRotation > MathUtils.PI * 2) {
-                hourHandRotation -= MathUtils.PI * 2;
-            }
+            if (timeMultiplier == 1) {
+                hourHandRotation += HOUR_HAND_ANGULAR_VELOCITY * frame;
+                if (hourHandRotation > MathUtils.PI * 2) {
+                    hourHandRotation -= MathUtils.PI * 2;
+                }
 
-            minuteHandRotation += MINUTE_HAND_ANGULAR_VELOCITY * frame;
-            if (minuteHandRotation > MathUtils.PI * 2) {
-                minuteHandRotation -= MathUtils.PI * 2;
-            }
+                minuteHandRotation += MINUTE_HAND_ANGULAR_VELOCITY * frame;
+                if (minuteHandRotation > MathUtils.PI * 2) {
+                    minuteHandRotation -= MathUtils.PI * 2;
+                }
 
-            secondHandRotation += SECOND_HAND_ANGULAR_VELOCITY * frame;
-            if (secondHandRotation > MathUtils.PI * 2) {
-                secondHandRotation -= MathUtils.PI * 2;
-            }
+                secondHandRotation += SECOND_HAND_ANGULAR_VELOCITY * frame;
+                if (secondHandRotation > MathUtils.PI * 2) {
+                    secondHandRotation -= MathUtils.PI * 2;
+                }
 
-            secondHandGap += secondHandGapDelta * frame;
-            if (secondHandGap < hitbox.radius) {
-                secondHandGapDelta *= -1;
-                secondHandGap = hitbox.radius;
-            } else if (secondHandGap > 600 - SECOND_HAND_GAP_WIDTH) {
-                secondHandGap = 600 - SECOND_HAND_GAP_WIDTH;
-                secondHandGapDelta *= -1;
+                secondHandGap += secondHandGapDelta * frame;
+                if (secondHandGap < hitbox.radius) {
+                    secondHandGapDelta *= -1;
+                    secondHandGap = hitbox.radius;
+                } else if (secondHandGap > 600 - SECOND_HAND_GAP_WIDTH) {
+                    secondHandGap = 600 - SECOND_HAND_GAP_WIDTH;
+                    secondHandGapDelta *= -1;
+                }
+            } else {
+                System.out.println(wiggleCooldown);
+                wiggleCooldown -= frame;
+                if (wiggleCooldown <= 0) {
+                    wiggleCooldown += MAX_WIGGLE_COOLDOWN;
+                    createWaveSpread(0, 10, MathUtils.PI2, 10);
+                }
             }
 
             //Creates clock hands
@@ -230,7 +240,7 @@ public class Saturn extends Enemy {
                 );
             }
 
-            //Second hand:
+            //Seconds hand: spans the full radius of the arena area, and has a small (moving) gap to go through
             for (int i = 0; i < 30; ++i) {
                 addProjectile(new TimeProjectile(getLevel(),
                         hitbox.x + MathUtils.cos(secondHandRotation) * (i * (secondHandGap / 30)),
@@ -246,24 +256,28 @@ public class Saturn extends Enemy {
 
 
         } else if (phase == -1) {
+            //Prepare cues for phase 2
             if (subPhaseTimer < PRE_SECOND_PHASE_DURATION) {
                 subPhaseTimer += frame / timeMultiplier;
                 hourHandRotation += HOUR_HAND_ANGULAR_VELOCITY * frame;
-                if (hourHandRotation > MathUtils.PI * 2) {
-                    hourHandRotation -= MathUtils.PI * 2;
+                if (hourHandRotation > MathUtils.PI2) {
+                    hourHandRotation -= MathUtils.PI2;
                 }
                 minuteHandRotation += MINUTE_HAND_ANGULAR_VELOCITY * frame;
-                if (minuteHandRotation > MathUtils.PI * 2) {
-                    minuteHandRotation -= MathUtils.PI * 2;
+                if (minuteHandRotation > MathUtils.PI2) {
+                    minuteHandRotation -= MathUtils.PI2;
                 }
                 secondHandRotation += SECOND_HAND_ANGULAR_VELOCITY * frame;
-                if (secondHandRotation > MathUtils.PI * 2) {
-                    secondHandRotation -= MathUtils.PI * 2;
+                if (secondHandRotation > MathUtils.PI2) {
+                    secondHandRotation -= MathUtils.PI2;
                 }
             } else {
                 subPhaseTimer = 0;
                 phase = 2;
-                clockTimer = MathUtils.PI2 / (-8 * (MathUtils.PI / 180f));
+                timeMultiplier = 1;
+                clockTimer = (MathUtils.PI2) /
+                        (Math.abs(HOUR_HAND_ANGULAR_VELOCITY));
+                System.out.println(clockTimer);
             }
         }
 

@@ -252,8 +252,8 @@ public class Venus extends Enemy {
         }
         if (phase == 5) {
             float angle = MathUtils.random(360) * MathUtils.degreesToRadians;
-            for (int i = 0; i < 6; ++i) {
-                angle += MathUtils.PI/3;
+            for (int i = 0; i < 4; ++i) {
+                angle += MathUtils.PI/2;
                 enemies.add(new AcidCloud(getLevel(), 300 + MathUtils.cos(angle) * 400, 300 + MathUtils.sin(angle) * 400, -MathUtils.cos(angle) * 100, -MathUtils.sin(angle) * 100));
             }
             setCanSpawn(false);

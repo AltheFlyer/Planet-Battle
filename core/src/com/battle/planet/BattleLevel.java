@@ -265,7 +265,7 @@ public class BattleLevel implements Screen {
         if (player.getY() - 5 < 0) {
             player.setY(5);
         } else if (player.getY() + player.getHeight() + 5 > LEVEL_HEIGHT) {
-            player.setX(LEVEL_HEIGHT - player.getHeight() - 5);
+            player.setY(LEVEL_HEIGHT - player.getHeight() - 5);
         }
 
         //Control camera
