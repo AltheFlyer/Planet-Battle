@@ -33,7 +33,7 @@ public class BattleLevel implements Screen {
     //Other level things
     public Array<Projectile> playerBullets;
     public Array<Projectile> enemyBullets;
-    Array<Enemy> enemies;
+    public Array<Enemy> enemies;
 
     //Arena values
     public float LEVEL_WIDTH = 600;

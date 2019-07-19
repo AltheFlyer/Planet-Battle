@@ -14,7 +14,7 @@ public class ChaserMoon extends SaturnMoon {
     Array<Vector2> trail;
 
     public ChaserMoon(Saturn s, BattleLevel lev, float x, float y) {
-        super(s, lev, x, y, 40, 50, 100);
+        super(s, lev, x, y, 40, 50, 50);
         velocity = new Vector2();
 
         trail = new Array<Vector2>();

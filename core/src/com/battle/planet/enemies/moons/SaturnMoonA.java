@@ -13,7 +13,7 @@ public class SaturnMoonA extends SaturnMoon {
     float MAX_COOLDOWN = 1.0f;
 
     public SaturnMoonA(Saturn s, BattleLevel lev, float x, float y) {
-        super(s, lev, x, y, 50, 60, 100);
+        super(s, lev, x, y, 50, 60, 50);
         setVelocity(120, 120);
         cooldown = MAX_COOLDOWN * 2;
     }

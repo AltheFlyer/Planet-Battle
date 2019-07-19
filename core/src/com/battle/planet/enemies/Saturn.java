@@ -7,14 +7,14 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.battle.planet.BattleLevel;
 import com.battle.planet.enemies.moons.ChaserMoon;
+import com.battle.planet.enemies.moons.MoonFactory;
 import com.battle.planet.enemies.moons.SaturnMoon;
 import com.battle.planet.enemies.moons.SaturnMoonA;
 import com.battle.planet.projectiles.*;
 
 public class Saturn extends Enemy {
 
-    String[] moonNames = {};
-    private int moonsLeft = 53;//or 62 including unnamed.
+    private MoonFactory moonGenerator;
     public int activeMoons = 0;
     private Vector2 spawnPosition = new Vector2(0, 0);
 
@@ -28,6 +28,7 @@ public class Saturn extends Enemy {
 
     private float subPhaseTimer = 0;
     private final float PRE_SECOND_PHASE_DURATION = 3;
+    private static final float PRE_THIRD_PHASE_TIMER = 5;
 
     //First Phase
     final float BEAM_MAX_COOLDOWN = 2f;
@@ -61,6 +62,7 @@ public class Saturn extends Enemy {
     public Saturn(BattleLevel lev, float x, float y) {
         super(lev, x, y, 100, 120, 2500);
         clockTimer = 5;
+        moonGenerator = new MoonFactory();
     }
 
     @Override
@@ -129,13 +131,27 @@ public class Saturn extends Enemy {
                 }
             } else {
                 if (phase == 1) {
-                    timeMultiplier = 1.4f;
+                    timeMultiplier = 1.1f;
                     clockTimer = 3;
                 } else if (phase == 2) {
                     timeMultiplier = 1.1f;
                     clockTimer = (MathUtils.PI2) /
                             (4 * Math.abs(HOUR_HAND_ANGULAR_VELOCITY));
                     System.out.println(clockTimer);
+                    //Burst of bullets from each moon + Saturn
+                    for (int j = 0; j < 36; ++j) {
+                        float theta = (j / 36.0f) * MathUtils.PI2;
+                        for (int i = 0; i < getLevel().enemies.size; ++i) {
+                            addProjectile(new WaveProjectile(
+                                    getLevel(),
+                                    getLevel().enemies.get(i).hitbox.x,
+                                    getLevel().enemies.get(i).hitbox.y,
+                                    MathUtils.cos(theta) * 200,
+                                    MathUtils.sin(theta) * 200,
+                                    10
+                                    ));
+                        }
+                    }
                 }
             }
         }
@@ -211,7 +227,7 @@ public class Saturn extends Enemy {
                     secondHandGap = 600 - SECOND_HAND_GAP_WIDTH;
                     secondHandGapDelta *= -1;
                 }
-            } else {
+            } else if (clockTimer > 4f) {
                 System.out.println(wiggleCooldown);
                 wiggleCooldown -= frame;
                 if (wiggleCooldown <= 0) {
@@ -279,10 +295,20 @@ public class Saturn extends Enemy {
                         (Math.abs(HOUR_HAND_ANGULAR_VELOCITY));
                 System.out.println(clockTimer);
             }
+        } else if (phase == -2) {
+            if (subPhaseTimer < PRE_THIRD_PHASE_TIMER) {
+                timeMultiplier = 1;
+
+                subPhaseTimer += frame;
+            } else {
+
+            }
         }
 
         if (phase == 1 && getHealth() < 2400) {
             phase = -1;
+        } else if (phase == 2 && getHealth() < 2300) {
+            phase = -2;
         }
 
         return getBullets();
@@ -292,18 +318,18 @@ public class Saturn extends Enemy {
     public Array<Enemy> spawn(float frame) {
         Array<Enemy> enemies = new Array<Enemy>();
         if (phase == 0) {
-            //enemies.add(new SaturnMoonA(this, getLevel(), spawnPosition.x, spawnPosition.y));
-            //enemies.add(new ChaserMoon(this, getLevel(), hitbox.x, hitbox.y + 300));
-            //enemies.add(new SeekerMoon(this, getLevel(), hitbox.x, hitbox.y));
-            setCanSpawn(false);
-            phase = 1;
-            activeMoons += 1;
+            if (moonGenerator.canGenerateMoon()) {
+                enemies.add(moonGenerator.generateMoon(this, spawnPosition.x, spawnPosition.y));
+                setCanSpawn(false);
+                phase = 1;
+                activeMoons += 1;
+            }
         } else {
-            enemies.add(new SaturnMoonA(this, getLevel(), spawnPosition.x, spawnPosition.y));
-            //enemies.add(new SaturnMoonB(this, getLevel(), hitbox.x, hitbox.y + 300));
-            //enemies.add(new SeekerMoon(this, getLevel(), hitbox.x, hitbox.y));
-            setCanSpawn(false);
-            activeMoons += 1;
+            if (moonGenerator.canGenerateMoon()) {
+                enemies.add(moonGenerator.generateMoon(this, spawnPosition.x, spawnPosition.y));
+                setCanSpawn(false);
+                activeMoons += 1;
+            }
         }
         return enemies;
     }
