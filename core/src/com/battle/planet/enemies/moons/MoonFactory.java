@@ -12,7 +12,9 @@ public class MoonFactory {
 
     public Enemy generateMoon(Saturn s, float x, float y) {
         moonsLeft--;
-        if (moonsLeft % 2 == 0) {
+        if (moonsLeft % 4 == 0) {
+            return new TrailerMoon(s, s.getLevel(), x, y);
+        } else if (moonsLeft % 2 == 0) {
             return new SaturnMoonA(s, s.getLevel(), x, y);
         } else {
             return new ChaserMoon(s, s.getLevel(), x, y);

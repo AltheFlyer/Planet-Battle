@@ -6,10 +6,7 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.battle.planet.BattleLevel;
-import com.battle.planet.enemies.moons.ChaserMoon;
 import com.battle.planet.enemies.moons.MoonFactory;
-import com.battle.planet.enemies.moons.SaturnMoon;
-import com.battle.planet.enemies.moons.SaturnMoonA;
 import com.battle.planet.projectiles.*;
 
 public class Saturn extends Enemy {
@@ -21,10 +18,10 @@ public class Saturn extends Enemy {
     private int phase = 0;
 
     private float moonSpawnTimer = 3f;
-    private float MAX_MOON_SPAWNER_TIMER = 3f;
+    private final float MAX_MOON_SPAWNER_TIMER = 3f;
 
     private float moonPrepTime = 0;
-    private float MAX_MOON_PREP_TIME = 3f;
+    private final float MAX_MOON_PREP_TIME = 3f;
 
     private float subPhaseTimer = 0;
     private final float PRE_SECOND_PHASE_DURATION = 3;
@@ -53,11 +50,16 @@ public class Saturn extends Enemy {
 
     float ringAngle = 0;
 
+    //Third Phase
+    float wideRingPosition = 0;
+    float wideRingConstant = 400;
+
     //Used to multiply how fast everything is
     public float timeMultiplier = 1;
 
     //Controls how long periods of time multiplication occur for
     float clockTimer = 0;
+
 
     public Saturn(BattleLevel lev, float x, float y) {
         super(lev, x, y, 100, 120, 2500);
@@ -112,8 +114,12 @@ public class Saturn extends Enemy {
             if (moonSpawnTimer <= 0) {
                 moonSpawnTimer = 0;
                 moonPrepTime = MAX_MOON_PREP_TIME;
-                spawnPosition = new Vector2(MathUtils.random(getLevel().LEVEL_WIDTH - 300) + 300,
-                        MathUtils.random(getLevel().LEVEL_HEIGHT - 300) + 300);
+                float theta = MathUtils.random(0, MathUtils.PI2);
+                float dist = MathUtils.random(hitbox.radius, 600);
+                spawnPosition = new Vector2(
+                        getHitbox().x + MathUtils.cos(theta) * dist,
+                        getHitbox().y + MathUtils.sin(theta) * dist
+                );
             }
         }
 
@@ -131,7 +137,7 @@ public class Saturn extends Enemy {
                 }
             } else {
                 if (phase == 1) {
-                    timeMultiplier = 1.1f;
+                    timeMultiplier = 1.0f;
                     clockTimer = 3;
                 } else if (phase == 2) {
                     timeMultiplier = 1.1f;
@@ -269,7 +275,17 @@ public class Saturn extends Enemy {
                         0.00f)
                 );
             }
-
+        } else if (phase == 3) {
+            wideRingPosition += frame;
+            float dst = wideRingConstant + (MathUtils.sin(wideRingPosition) * 100 + 100);
+            for (int i = 0; i < 360; ++i) {
+                addProjectile(new TimeProjectile(
+                        getLevel(),
+                        getHitbox().x + MathUtils.cos(i / 360.0f * MathUtils.PI2) * dst,
+                        getHitbox().y + MathUtils.sin(i / 360.0f * MathUtils.PI2) * dst,
+                        0
+                ));
+            }
 
         } else if (phase == -1) {
             //Prepare cues for phase 2
@@ -301,7 +317,7 @@ public class Saturn extends Enemy {
 
                 subPhaseTimer += frame;
             } else {
-
+                phase = 3;
             }
         }
 
