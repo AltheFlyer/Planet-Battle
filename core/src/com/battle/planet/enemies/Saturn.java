@@ -51,8 +51,13 @@ public class Saturn extends Enemy {
     float ringAngle = 0;
 
     //Third Phase
-    float wideRingPosition = 0;
+    float wideRingPosition = 1;
     float wideRingConstant = 400;
+
+    final float MAX_BURST_COOLDOWN = 1;
+    float burstCooldown = MAX_BURST_COOLDOWN;
+    //The multiplier for the direction that the burst is aimed at
+    int burstDirectionTick = 0;
 
     //Used to multiply how fast everything is
     public float timeMultiplier = 1;
@@ -85,7 +90,6 @@ public class Saturn extends Enemy {
                     hitbox.y + 600 * MathUtils.sin(secondHandRotation), 3);
         }
 
-
         if (moonPrepTime > 0) {
             r.setColor(new Color(1, 0.647f, 0, 0.5f));
             r.circle(spawnPosition.x, spawnPosition.y, 70);
@@ -96,7 +100,7 @@ public class Saturn extends Enemy {
     public Array<Projectile> attack(float frame) {
         clearProjectiles();
         clockTimer -= frame / timeMultiplier;
-
+        System.out.println(activeMoons);
 
         if (moonSpawnTimer == 0) {
 
@@ -276,8 +280,9 @@ public class Saturn extends Enemy {
                 );
             }
         } else if (phase == 3) {
+            //Outer ring
+            float dst = wideRingConstant + (MathUtils.cos(wideRingPosition) * 100 + 100);
             wideRingPosition += frame;
-            float dst = wideRingConstant + (MathUtils.sin(wideRingPosition) * 100 + 100);
             for (int i = 0; i < 360; ++i) {
                 addProjectile(new TimeProjectile(
                         getLevel(),
@@ -285,6 +290,16 @@ public class Saturn extends Enemy {
                         getHitbox().y + MathUtils.sin(i / 360.0f * MathUtils.PI2) * dst,
                         0
                 ));
+            }
+
+            burstCooldown -= frame;
+            if (burstCooldown <= 0) {
+                burstCooldown += MAX_BURST_COOLDOWN;
+                createSpread((burstDirectionTick / 72f) * MathUtils.PI, 24, MathUtils.PI2, 120);
+                burstDirectionTick++;
+                if (burstDirectionTick >= 72) {
+                    burstDirectionTick = 0;
+                }
             }
 
         } else if (phase == -1) {
@@ -325,6 +340,23 @@ public class Saturn extends Enemy {
             phase = -1;
         } else if (phase == 2 && getHealth() < 2300) {
             phase = -2;
+            //Prepare some bullets
+            //Calculate distance
+            float vel = 50;
+            float dst = 600 + vel * PRE_THIRD_PHASE_TIMER;
+            for (int i = 0; i < 360; ++i) {
+                float theta = (i / 36.0f) * MathUtils.PI2;
+                addProjectile(
+                        new TimeProjectile(
+                                getLevel(),
+                                hitbox.x + dst * MathUtils.cos(theta),
+                                hitbox.y + dst * MathUtils.sin(theta),
+                                -vel * MathUtils.cos(theta),
+                                -vel * MathUtils.sin(theta),
+                                PRE_THIRD_PHASE_TIMER
+                        )
+                );
+            }
         }
 
         return getBullets();
@@ -334,17 +366,16 @@ public class Saturn extends Enemy {
     public Array<Enemy> spawn(float frame) {
         Array<Enemy> enemies = new Array<Enemy>();
         if (phase == 0) {
-            if (moonGenerator.canGenerateMoon()) {
-                enemies.add(moonGenerator.generateMoon(this, spawnPosition.x, spawnPosition.y));
-                setCanSpawn(false);
-                phase = 1;
-                activeMoons += 1;
-            }
+            enemies.add(moonGenerator.generateMoon(this, hitbox.x, hitbox.y + hitbox.radius));
+            enemies.add(moonGenerator.generateMoon(this, hitbox.x, hitbox.y - hitbox.radius));
+            setCanSpawn(false);
+            phase = 1;
+            activeMoons += 2;
         } else {
             if (moonGenerator.canGenerateMoon()) {
                 enemies.add(moonGenerator.generateMoon(this, spawnPosition.x, spawnPosition.y));
                 setCanSpawn(false);
-                activeMoons += 1;
+                activeMoons++;
             }
         }
         return enemies;

@@ -9,12 +9,16 @@ import com.battle.planet.projectiles.TimeProjectile;
 
 public class TrailerMoon extends SaturnMoon {
 
-    float velocity = 200f;
-    float orbitRadius;
+    private final float VELOCITY = 200f;
+    private float orbitRadius;
+    private float angularPosition;
+    private float angularVelocity;
 
     public TrailerMoon(Saturn s, BattleLevel lev, float x, float y) {
         super(s, lev, x, y, 50, 60, 50);
         orbitRadius = (float) Math.sqrt((s.getHitbox().x - x) * (s.getHitbox().x - x) + (s.getHitbox().y - y) * (s.getHitbox().y - y));
+        angularPosition = MathUtils.atan2(getHitbox().y - saturn.getHitbox().y, getHitbox().x - saturn.getHitbox().x);
+        angularVelocity = VELOCITY / orbitRadius;
     }
 
     @Override
@@ -32,10 +36,12 @@ public class TrailerMoon extends SaturnMoon {
         }
 
         //Move, find angle to add
-        float currentAngle = MathUtils.atan2(getHitbox().y - saturn.getHitbox().y, getHitbox().x - saturn.getHitbox().x);
-        float theta = currentAngle + (velocity * frame) / orbitRadius;
-        getHitbox().setX(saturn.getHitbox().x + orbitRadius * MathUtils.cos(theta));
-        getHitbox().setY(saturn.getHitbox().y + orbitRadius * MathUtils.sin(theta));
+        angularPosition += angularVelocity * frame;
+        if (angularPosition > MathUtils.PI2) {
+            angularPosition -= MathUtils.PI2;
+        }
+        getHitbox().setX(saturn.getHitbox().x + orbitRadius * MathUtils.cos(angularPosition));
+        getHitbox().setY(saturn.getHitbox().y + orbitRadius * MathUtils.sin(angularPosition));
 
         return getBullets();
     }
