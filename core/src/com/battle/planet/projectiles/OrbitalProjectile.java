@@ -43,7 +43,7 @@ public class OrbitalProjectile extends Projectile {
     }
 
     @Override
-    public void move(float x, float y, float frame) {
+    public void move(float frame) {
         angularPosition += angularVelocity * frame;
         center.x += velocity.x * frame;
         center.y += velocity.y * frame;

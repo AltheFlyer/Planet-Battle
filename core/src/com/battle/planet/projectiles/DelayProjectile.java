@@ -34,7 +34,7 @@ public class DelayProjectile extends Projectile {
     }
 
     @Override
-    public void move(float x, float y, float frame) {
+    public void move(float frame) {
         if (delay > 0) {
             delay -= frame;
             hitbox.x += velocity.x * frame;
@@ -42,7 +42,7 @@ public class DelayProjectile extends Projectile {
         }
         if (delay <= 0 && !moving) {
             moving = true;
-            float angle = MathUtils.atan2(y - hitbox.y, x - hitbox.x);
+            float angle = MathUtils.atan2(level.player.getCenterY() - hitbox.y, level.player.getCenterX() - hitbox.x);
             velocity = new Vector2(MathUtils.cos(angle) * speed, MathUtils.sin(angle) * speed);
         }
         if (moving) {

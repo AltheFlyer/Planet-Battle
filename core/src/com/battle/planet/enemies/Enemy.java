@@ -88,7 +88,7 @@ abstract public class Enemy {
      */
     public Array<Projectile> collide(Array<Projectile> projectiles) {
         for (Projectile p : projectiles) {
-            if (!p.isDestroyed && this.hitbox.contains(p.hitbox.x, p.hitbox.y)) {
+            if (!p.isDestroyed && p.overlaps(hitbox)) {
                 p.isDestroyed = true;
                 this.health -= 1;
             }

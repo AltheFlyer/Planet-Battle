@@ -233,11 +233,11 @@ public class BattleLevel implements Screen {
 
     public void moveBullets() {
         for (Projectile p: playerBullets) {
-            p.move(player.getCenterX(), player.getCenterY(), frame);
+            p.move(frame);
         }
 
         for (Projectile p: enemyBullets) {
-            p.move(player.getCenterX(), player.getCenterY(), frame);
+            p.move(frame);
         }
     }
 
@@ -291,7 +291,7 @@ public class BattleLevel implements Screen {
         }
 
         for (Projectile p: enemyBullets) {
-            if (player.getInvincible() <= 0 && player.getHitbox().overlaps(p.hitbox)) {
+            if (player.getInvincible() <= 0 && p.overlaps(player.getHitbox())) {
                 player.setInvincible();
             }
         }

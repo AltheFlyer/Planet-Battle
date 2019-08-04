@@ -54,10 +54,17 @@ public class Saturn extends Enemy {
     float wideRingPosition = 1;
     float wideRingConstant = 400;
 
-    final float MAX_BURST_COOLDOWN = 1;
+    //Continuous bursts
+    final float MAX_BURST_COOLDOWN = 1.5f;
     float burstCooldown = MAX_BURST_COOLDOWN;
     //The multiplier for the direction that the burst is aimed at
     int burstDirectionTick = 0;
+
+    //Swinging arms
+    float armTheta = 0;
+    final float ARM_ANGULAR_VELOCITY = -MathUtils.PI / 6;
+    final float ARM_AMPLITUDE = 100;
+
 
     //Used to multiply how fast everything is
     public float timeMultiplier = 1;
@@ -300,6 +307,26 @@ public class Saturn extends Enemy {
                 if (burstDirectionTick >= 72) {
                     burstDirectionTick = 0;
                 }
+            }
+
+            armTheta += ARM_ANGULAR_VELOCITY * frame;
+            /*
+            if (armTheta > MathUtils.PI2) {
+                armTheta -= MathUtils.PI2;
+            }
+            */
+            System.out.println(armTheta);
+            for (int i = 0; i < 200; ++i) {
+                Vector2 pos = new Vector2(
+                        (i / 200f) * 1200 - 600,
+                        MathUtils.sin((i / 200f) * MathUtils.PI2) * ARM_AMPLITUDE);
+                pos.rotate(armTheta * MathUtils.radiansToDegrees);
+                addProjectile(new TimeProjectile(
+                        getLevel(),
+                        pos.x + 600,
+                        pos.y + 600,
+                        0
+                ));
             }
 
         } else if (phase == -1) {

@@ -1,6 +1,7 @@
 package com.battle.planet.projectiles;
 
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
+import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.battle.planet.BattleLevel;
@@ -39,10 +40,6 @@ abstract public class Projectile {
         time += frame;
     }
 
-    public void move(float x, float y, float frame) {
-        this.move(frame);
-    }
-
     /**
      * Draws any special graphics for the projectile
      * @param r
@@ -54,5 +51,26 @@ abstract public class Projectile {
 
     public void draw(ShapeRenderer r) {
         r.rect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
+    }
+
+    /**
+     * Checks if the projectile overlaps with a rectangle
+     * @param r the rectangle to check
+     * @return boolean, whether the two shapes overlap
+     */
+    public boolean overlaps(Rectangle r) {
+        return hitbox.overlaps(r);
+    }
+
+    /**
+     * Checks if the projectile overlaps with a rectangle
+     * @param c the circle to check
+     * @return boolean, whether the two shapes overlap
+     */
+    public boolean overlaps(Circle c) {
+        //return c.contains(hitbox.x, hitbox.y);
+        float deltaX = c.x - Math.max(hitbox.x, Math.min(c.x, hitbox.x + hitbox.width));
+        float deltaY = c.y - Math.max(hitbox.y, Math.min(c.y, hitbox.y + hitbox.height));
+        return ((deltaX * deltaX) + (deltaY * deltaY)) <= (c.radius * c.radius);
     }
 }

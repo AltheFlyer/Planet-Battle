@@ -30,7 +30,7 @@ public class TimeProjectile extends Projectile {
     }
 
     @Override
-    public void move(float x, float y, float frame) {
+    public void move(float frame) {
         if (lifespan < 0) {
             isDestroyed = true;
         }

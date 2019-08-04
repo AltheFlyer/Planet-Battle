@@ -23,7 +23,7 @@ public class VenusRingProjectile extends OrbitalProjectile {
     }
 
     @Override
-    public void move(float x, float y, float frame) {
+    public void move(float frame) {
         if (orbiting && wait <= 0) {
             angularPosition += angularVelocity * frame;
             hitbox.x = center.x + MathUtils.cos(angularPosition) * distance;
