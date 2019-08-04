@@ -12,6 +12,8 @@ public class PlanetBattle extends Game {
     public ShapeRenderer render;
     public BitmapFont font;
 
+    public int selectedPlayerAbility = 0;
+
     @Override
     public void create() {
         render = new ShapeRenderer();

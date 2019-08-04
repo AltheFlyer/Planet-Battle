@@ -21,7 +21,7 @@ public class LevelSelectScreen implements Screen {
     //The list of secondary abilities
     Array<Rectangle> secondaries;
     //The selected secondary
-    int abilitySelection = 0;
+    int abilitySelection;
 
     String[] abilityTitles = {
         "Shotgun",
@@ -40,6 +40,7 @@ public class LevelSelectScreen implements Screen {
     public LevelSelectScreen(final PlanetBattle g) {
         game = g;
 
+        abilitySelection = game.selectedPlayerAbility;
         camera = new OrthographicCamera();
         camera.setToOrtho(false, 600, 600);
         mouse = new Vector3();
@@ -149,6 +150,7 @@ public class LevelSelectScreen implements Screen {
                 game.font.draw(game.batch, abilityText[i], 400, 400, 190, 1, true);
                 if (Gdx.input.isTouched()) {
                     abilitySelection = i;
+                    game.selectedPlayerAbility = i;
                 }
             }
         }

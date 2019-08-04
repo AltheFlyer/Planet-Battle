@@ -107,8 +107,6 @@ public class Saturn extends Enemy {
     public Array<Projectile> attack(float frame) {
         clearProjectiles();
         clockTimer -= frame / timeMultiplier;
-        System.out.println(activeMoons);
-
         if (moonSpawnTimer == 0) {
 
             moonPrepTime -= frame / timeMultiplier;
@@ -116,7 +114,6 @@ public class Saturn extends Enemy {
                 moonPrepTime = 0;
                 moonSpawnTimer = MAX_MOON_SPAWNER_TIMER;
                 setCanSpawn(true);
-                System.out.println("Time to Spawn!");
             }
         } else {
             //Moon spawn timer, moons spawn more slowly the more there are
@@ -144,7 +141,6 @@ public class Saturn extends Enemy {
                     timeMultiplier = 1;
                     clockTimer = (MathUtils.PI2) /
                             (Math.abs(HOUR_HAND_ANGULAR_VELOCITY));
-                    System.out.println(clockTimer);
                 }
             } else {
                 if (phase == 1) {
@@ -154,7 +150,6 @@ public class Saturn extends Enemy {
                     timeMultiplier = 1.1f;
                     clockTimer = (MathUtils.PI2) /
                             (4 * Math.abs(HOUR_HAND_ANGULAR_VELOCITY));
-                    System.out.println(clockTimer);
                     //Burst of bullets from each moon + Saturn
                     for (int j = 0; j < 36; ++j) {
                         float theta = (j / 36.0f) * MathUtils.PI2;
@@ -245,7 +240,6 @@ public class Saturn extends Enemy {
                     secondHandGapDelta *= -1;
                 }
             } else if (clockTimer > 4f) {
-                System.out.println(wiggleCooldown);
                 wiggleCooldown -= frame;
                 if (wiggleCooldown <= 0) {
                     wiggleCooldown += MAX_WIGGLE_COOLDOWN;
@@ -315,7 +309,6 @@ public class Saturn extends Enemy {
                 armTheta -= MathUtils.PI2;
             }
             */
-            System.out.println(armTheta);
             for (int i = 0; i < 200; ++i) {
                 Vector2 pos = new Vector2(
                         (i / 200f) * 1200 - 600,
@@ -351,7 +344,6 @@ public class Saturn extends Enemy {
                 timeMultiplier = 1;
                 clockTimer = (MathUtils.PI2) /
                         (Math.abs(HOUR_HAND_ANGULAR_VELOCITY));
-                System.out.println(clockTimer);
             }
         } else if (phase == -2) {
             if (subPhaseTimer < PRE_THIRD_PHASE_TIMER) {

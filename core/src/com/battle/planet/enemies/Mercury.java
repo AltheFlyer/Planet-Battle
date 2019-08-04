@@ -121,10 +121,10 @@ public class Mercury extends Enemy {
             if (aimCooldown <= 0) {
                 float angle;
                 //Normally shoot at player,
-                //Occasionally create 10 extra random projectiles
+                //Occasionally create 3 extra random projectiles
                 if (MathUtils.random(0, 7) == 7) {
-                    for (int i = 0; i < 10; ++i) {
-                        angle = i;
+                    for (int i = 0; i < 3; ++i) {
+                        angle = MathUtils.random() * MathUtils.PI2;
                         addProjectile(new WaveProjectile(getLevel(), hitbox.x, hitbox.y, MathUtils.cos(angle) * 300, MathUtils.sin(angle) * 300, 20));
                     }
                 }
