@@ -154,7 +154,7 @@ public class BattleLevel implements Screen {
         } else {
             render.setColor(Color.RED);
         }
-        drawRectangle(new Rectangle(player.getX() - 5, player.getY() - 5, 20, 20));
+        drawRectangle(new Rectangle(player.getX() - ((20 - player.getHitbox().width) / 2), player.getY() - ((20 - player.getHitbox().height) / 2), 20, 20));
         //Draw secondary recharge
         //Back bar
         render.setColor(Color.GRAY);

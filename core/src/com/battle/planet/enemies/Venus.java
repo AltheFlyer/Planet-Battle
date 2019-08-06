@@ -168,8 +168,8 @@ public class Venus extends Enemy {
 
         if (phase == 0) {
             //Create orbital ring
-            for (int i = 0; i < 72; ++i) {
-                float angle = (float) (i/72.0) * 6.28f;
+            for (int i = 0; i < 144; ++i) {
+                float angle = (float) (i/144.0) * MathUtils.PI2;
                 addProjectile(new VenusRingProjectile(getLevel(), 150,300 + 200 * MathUtils.cos(angle), 300 + 200 * MathUtils.sin(angle), 1.0f, 3.14f, this));
             }
             phase = 1;

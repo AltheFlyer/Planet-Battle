@@ -51,6 +51,9 @@ public class Saturn extends Enemy {
 
     float ringAngle = 0;
 
+    final float MAX_RANDOM_SCATTER_COOLDOWN = 0.2f;
+    float randomScatterCooldown = MAX_RANDOM_SCATTER_COOLDOWN;
+
     //Third Phase
     float wideRingPosition = 1;
     float wideRingConstant = 400;
@@ -72,13 +75,14 @@ public class Saturn extends Enemy {
 
     //Controls how long periods of time multiplication occur for
     float clockTimer = 0;
+    public boolean timeStopped = false;
 
 
     public Saturn(BattleLevel lev, float x, float y) {
-        super(lev, x, y, 100, 120, 2500);
+        super(lev, x, y, 100, 120, 1750);
         clockTimer = 5;
         moonGenerator = new MoonFactory();
-        addPhaseMarkers(2000, 1500);
+        addPhaseMarkers(1750 - 500, 1750 - 500 - 750);
     }
 
     @Override
@@ -108,18 +112,17 @@ public class Saturn extends Enemy {
     @Override
     public Array<Projectile> attack(float frame) {
         clearProjectiles();
-        clockTimer -= frame / timeMultiplier;
-        if (moonSpawnTimer == 0) {
 
-            moonPrepTime -= frame / timeMultiplier;
+        if (moonSpawnTimer == 0) {
+            moonPrepTime -= frame;
             if (moonPrepTime <= 0) {
                 moonPrepTime = 0;
                 moonSpawnTimer = MAX_MOON_SPAWNER_TIMER;
                 setCanSpawn(true);
             }
-        } else {
+        } else if (!timeStopped) {
             //Moon spawn timer, moons spawn more slowly the more there are
-            moonSpawnTimer -= ((MathUtils.random() / (activeMoons)) * frame) / timeMultiplier;
+            moonSpawnTimer -= ((MathUtils.random() / (activeMoons)) * frame);
 
             if (moonSpawnTimer <= 0) {
                 moonSpawnTimer = 0;
@@ -134,39 +137,31 @@ public class Saturn extends Enemy {
         }
 
 
-        if (clockTimer <= 0) {
-            if (timeMultiplier != 1) {
-                if (phase == 1) {
-                    timeMultiplier = 1;
-                    clockTimer = 10;
-                } else if (phase == 2) {
-                    timeMultiplier = 1;
-                    clockTimer = (MathUtils.PI2) /
-                            (Math.abs(HOUR_HAND_ANGULAR_VELOCITY));
-                }
-            } else {
-                if (phase == 1) {
-                    timeMultiplier = 1.0f;
-                    clockTimer = 3;
-                } else if (phase == 2) {
-                    timeMultiplier = 1.1f;
-                    clockTimer = (MathUtils.PI2) /
-                            (4 * Math.abs(HOUR_HAND_ANGULAR_VELOCITY));
-                    //Burst of bullets from each moon + Saturn
-                    for (int j = 0; j < 36; ++j) {
-                        float theta = (j / 36.0f) * MathUtils.PI2;
-                        for (int i = 0; i < getLevel().enemies.size; ++i) {
-                            addProjectile(new WaveProjectile(
-                                    getLevel(),
-                                    getLevel().enemies.get(i).hitbox.x,
-                                    getLevel().enemies.get(i).hitbox.y,
-                                    MathUtils.cos(theta) * 200,
-                                    MathUtils.sin(theta) * 200,
-                                    10
-                                    ));
-                        }
+        if (phase == 2) {
+            clockTimer -= frame / timeMultiplier;
+            if (clockTimer <= 0 && timeStopped) {
+                timeMultiplier = 1;
+                clockTimer = (MathUtils.PI2) /
+                        (Math.abs(HOUR_HAND_ANGULAR_VELOCITY));
+                timeStopped = false;
+            } else if (clockTimer <= 0 && !timeStopped) {
+                clockTimer = (MathUtils.PI2) /
+                        (4 * Math.abs(HOUR_HAND_ANGULAR_VELOCITY));
+                //Burst of bullets from each moon + Saturn
+                for (int j = 0; j < 36; ++j) {
+                    float theta = (j / 36.0f) * MathUtils.PI2;
+                    for (int i = 0; i < getLevel().enemies.size; ++i) {
+                        addProjectile(new WaveProjectile(
+                                getLevel(),
+                                getLevel().enemies.get(i).hitbox.x,
+                                getLevel().enemies.get(i).hitbox.y,
+                                MathUtils.cos(theta) * 200,
+                                MathUtils.sin(theta) * 200,
+                                10
+                        ));
                     }
                 }
+                timeStopped = true;
             }
         }
 
@@ -215,72 +210,87 @@ public class Saturn extends Enemy {
             }
 
         } else if (phase == 2) {
-            //Spinning clock hands
-            //Hour hand
-            if (timeMultiplier == 1) {
-                hourHandRotation += HOUR_HAND_ANGULAR_VELOCITY * frame;
-                if (hourHandRotation > MathUtils.PI * 2) {
-                    hourHandRotation -= MathUtils.PI * 2;
+
+            if (!timeStopped) {
+                //Spinning clock hands
+                //Hour hand
+
+                if (timeMultiplier == 1) {
+                    hourHandRotation += HOUR_HAND_ANGULAR_VELOCITY * frame;
+                    if (hourHandRotation > MathUtils.PI * 2) {
+                        hourHandRotation -= MathUtils.PI * 2;
+                    }
+
+                    minuteHandRotation += MINUTE_HAND_ANGULAR_VELOCITY * frame;
+                    if (minuteHandRotation > MathUtils.PI * 2) {
+                        minuteHandRotation -= MathUtils.PI * 2;
+                    }
+
+                    secondHandRotation += SECOND_HAND_ANGULAR_VELOCITY * frame;
+                    if (secondHandRotation > MathUtils.PI * 2) {
+                        secondHandRotation -= MathUtils.PI * 2;
+                    }
+
+                    secondHandGap += secondHandGapDelta * frame;
+                    if (secondHandGap < hitbox.radius) {
+                        secondHandGapDelta *= -1;
+                        secondHandGap = hitbox.radius;
+                    } else if (secondHandGap > 600 - SECOND_HAND_GAP_WIDTH) {
+                        secondHandGap = 600 - SECOND_HAND_GAP_WIDTH;
+                        secondHandGapDelta *= -1;
+                    }
                 }
 
-                minuteHandRotation += MINUTE_HAND_ANGULAR_VELOCITY * frame;
-                if (minuteHandRotation > MathUtils.PI * 2) {
-                    minuteHandRotation -= MathUtils.PI * 2;
+                //Creates clock hands
+                //Hour hand: constant width, close to saturn
+                for (int i = 0; i < 30; ++i) {
+                    addProjectile(new TimeProjectile(getLevel(),
+                            hitbox.x + MathUtils.cos(hourHandRotation) * (i * 10),
+                            hitbox.y + MathUtils.sin(hourHandRotation) * (i * 10),
+                            0.00f)
+                    );
                 }
 
-                secondHandRotation += SECOND_HAND_ANGULAR_VELOCITY * frame;
-                if (secondHandRotation > MathUtils.PI * 2) {
-                    secondHandRotation -= MathUtils.PI * 2;
+                //Minute hand: constant width, doesn't quite reach the edge of the circle from phase 0
+                //Has gaps inside of it
+                for (int i = 0; i < 8; ++i) {
+                    addProjectile(new TimeProjectile(getLevel(),
+                            hitbox.x + MathUtils.cos(minuteHandRotation) * (i * (60)),
+                            hitbox.y + MathUtils.sin(minuteHandRotation) * (i * (60)),
+                            0.00f)
+                    );
                 }
 
-                secondHandGap += secondHandGapDelta * frame;
-                if (secondHandGap < hitbox.radius) {
-                    secondHandGapDelta *= -1;
-                    secondHandGap = hitbox.radius;
-                } else if (secondHandGap > 600 - SECOND_HAND_GAP_WIDTH) {
-                    secondHandGap = 600 - SECOND_HAND_GAP_WIDTH;
-                    secondHandGapDelta *= -1;
+                //Seconds hand: spans the full radius of the arena area, and has a small (moving) gap to go through
+                for (int i = 0; i < 30; ++i) {
+                    addProjectile(new TimeProjectile(getLevel(),
+                            hitbox.x + MathUtils.cos(secondHandRotation) * (i * (secondHandGap / 30)),
+                            hitbox.y + MathUtils.sin(secondHandRotation) * (i * (secondHandGap / 30)),
+                            0.00f)
+                    );
+                    addProjectile(new TimeProjectile(getLevel(),
+                            hitbox.x + MathUtils.cos(secondHandRotation) * (secondHandGap + SECOND_HAND_GAP_WIDTH + i * ((600 - (secondHandGap + SECOND_HAND_GAP_WIDTH)) / 30)),
+                            hitbox.y + MathUtils.sin(secondHandRotation) * (secondHandGap + SECOND_HAND_GAP_WIDTH + i * ((600 - (secondHandGap + SECOND_HAND_GAP_WIDTH)) / 30)),
+                            0.00f)
+                    );
                 }
-            } else if (clockTimer > 4f) {
-                wiggleCooldown -= frame;
-                if (wiggleCooldown <= 0) {
-                    wiggleCooldown += MAX_WIGGLE_COOLDOWN;
-                    createWaveSpread(0, 10, MathUtils.PI2, 10);
+
+                //Random projectiles for fun
+                randomScatterCooldown -= frame;
+                if (randomScatterCooldown <= 0) {
+                    randomScatterCooldown = MAX_RANDOM_SCATTER_COOLDOWN;
+                    for (int i = 0; i < 2; ++i) {
+                        addProjectile(new BasicProjectile(getLevel(), 0, MathUtils.random(0, 1200), 100, 0));
+                    }
                 }
-            }
-
-            //Creates clock hands
-            //Hour hand: constant width, close to saturn
-            for (int i = 0; i < 30; ++i) {
-                addProjectile(new TimeProjectile(getLevel(),
-                        hitbox.x + MathUtils.cos(hourHandRotation) * (i * 10),
-                        hitbox.y + MathUtils.sin(hourHandRotation) * (i * 10),
-                        0.00f)
-                );
-            }
-
-            //Minute hand: constant width, doesn't quite reach the edge of the circle from phase 0
-            //Has gaps inside of it
-            for (int i = 0; i < 8; ++i) {
-                addProjectile(new TimeProjectile(getLevel(),
-                        hitbox.x + MathUtils.cos(minuteHandRotation) * (i * (60)),
-                        hitbox.y + MathUtils.sin(minuteHandRotation) * (i * (60)),
-                        0.00f)
-                );
-            }
-
-            //Seconds hand: spans the full radius of the arena area, and has a small (moving) gap to go through
-            for (int i = 0; i < 30; ++i) {
-                addProjectile(new TimeProjectile(getLevel(),
-                        hitbox.x + MathUtils.cos(secondHandRotation) * (i * (secondHandGap / 30)),
-                        hitbox.y + MathUtils.sin(secondHandRotation) * (i * (secondHandGap / 30)),
-                        0.00f)
-                );
-                addProjectile(new TimeProjectile(getLevel(),
-                        hitbox.x + MathUtils.cos(secondHandRotation) * (secondHandGap + SECOND_HAND_GAP_WIDTH + i * ((600 - (secondHandGap + SECOND_HAND_GAP_WIDTH)) / 30)),
-                        hitbox.y + MathUtils.sin(secondHandRotation) * (secondHandGap + SECOND_HAND_GAP_WIDTH + i * ((600 - (secondHandGap + SECOND_HAND_GAP_WIDTH)) / 30)),
-                        0.00f)
-                );
+            } else {
+                if (clockTimer > 4f) {
+                    wiggleCooldown -= frame;
+                    if (wiggleCooldown <= 0) {
+                        wiggleCooldown += MAX_WIGGLE_COOLDOWN;
+                        createWaveSpread(0, 10, MathUtils.PI2, 10);
+                    }
+                }
             }
         } else if (phase == 3) {
             //Outer ring
@@ -343,7 +353,6 @@ public class Saturn extends Enemy {
             } else {
                 subPhaseTimer = 0;
                 phase = 2;
-                timeMultiplier = 1;
                 clockTimer = (MathUtils.PI2) /
                         (Math.abs(HOUR_HAND_ANGULAR_VELOCITY));
             }
@@ -366,9 +375,9 @@ public class Saturn extends Enemy {
             }
         }
 
-        if (phase == 1 && getHealth() < 2000) {
+        if (phase == 1 && getHealth() < 1750 - 500) {
             phase = -1;
-        } else if (phase == 2 && getHealth() < 1500) {
+        } else if (phase == 2 && getHealth() < 1750 - 500 - 750) {
             phase = -2;
             //Prepare some bullets
             //Calculate distance
@@ -387,6 +396,8 @@ public class Saturn extends Enemy {
                         )
                 );
             }
+            //If saturn dies during time stop somehow, restart time
+            timeStopped = false;
         }
 
         return getBullets();

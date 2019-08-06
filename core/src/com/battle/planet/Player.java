@@ -28,7 +28,7 @@ public class Player {
 
     public Player(final BattleLevel lev, float x, float y, int special) {
         level = lev;
-        hitbox = new Rectangle(x, y, 10, 10);
+        hitbox = new Rectangle(x, y, 5, 5);
         hitboxCenter = new Vector2(0, 0);
         float cd = 0;
         if (special == 0) {
