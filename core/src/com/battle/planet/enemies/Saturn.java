@@ -18,8 +18,9 @@ public class Saturn extends Enemy {
     private int phase = 0;
 
     private float moonSpawnTimer = 3f;
-    private final float MAX_MOON_SPAWNER_TIMER = 3f;
+    private final float MAX_MOON_SPAWNER_TIMER = 4f;
 
+    //The time that the moon indicator appears for
     private float moonPrepTime = 0;
     private final float MAX_MOON_PREP_TIME = 3f;
 
@@ -63,7 +64,7 @@ public class Saturn extends Enemy {
     //Swinging arms
     float armTheta = 0;
     final float ARM_ANGULAR_VELOCITY = -MathUtils.PI / 6;
-    final float ARM_AMPLITUDE = 100;
+    final float ARM_AMPLITUDE = 80;
 
 
     //Used to multiply how fast everything is
@@ -77,6 +78,7 @@ public class Saturn extends Enemy {
         super(lev, x, y, 100, 120, 2500);
         clockTimer = 5;
         moonGenerator = new MoonFactory();
+        addPhaseMarkers(2000, 1500);
     }
 
     @Override
@@ -350,14 +352,23 @@ public class Saturn extends Enemy {
                 timeMultiplier = 1;
 
                 subPhaseTimer += frame;
+                burstCooldown -= frame;
+                if (burstCooldown < 0) {
+                    burstCooldown = MAX_BURST_COOLDOWN * 0.3f;
+                    for (int i = -12; i < 12; ++i) {
+                        addProjectile(new BasicProjectile(getLevel(), hitbox.x, hitbox.y + (i * 10), 200, 0));
+                        addProjectile(new BasicProjectile(getLevel(), hitbox.x, hitbox.y + (i * 10), -200, 0));
+                    }
+                }
             } else {
                 phase = 3;
+                burstCooldown = MAX_BURST_COOLDOWN;
             }
         }
 
-        if (phase == 1 && getHealth() < 2400) {
+        if (phase == 1 && getHealth() < 2000) {
             phase = -1;
-        } else if (phase == 2 && getHealth() < 2300) {
+        } else if (phase == 2 && getHealth() < 1500) {
             phase = -2;
             //Prepare some bullets
             //Calculate distance
