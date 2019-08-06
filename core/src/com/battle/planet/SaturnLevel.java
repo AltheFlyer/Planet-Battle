@@ -82,4 +82,24 @@ public class SaturnLevel extends BattleLevel {
             super.moveBullets();
         }
     }
+
+    @Override
+    public void checkWin() {
+        if (saturn.getHealth() <= 0) {
+            game.setScreen(new LevelSelectScreen(game));
+            dispose();
+        }
+    }
+
+    @Override
+    public void removeEnemies() {
+        //Remove dead enemies
+        Iterator<Enemy> iterEnemy = enemies.iterator();
+        while (iterEnemy.hasNext()) {
+            Enemy e = iterEnemy.next();
+            if (!e.equals(saturn) && e.getHealth() <= 0) {
+                iterEnemy.remove();
+            }
+        }
+    }
 }

@@ -114,7 +114,9 @@ public class Saturn extends Enemy {
         clearProjectiles();
 
         if (moonSpawnTimer == 0) {
-            moonPrepTime -= frame;
+            if (!timeStopped) {
+                moonPrepTime -= frame;
+            }
             if (moonPrepTime <= 0) {
                 moonPrepTime = 0;
                 moonSpawnTimer = MAX_MOON_SPAWNER_TIMER;
@@ -362,6 +364,23 @@ public class Saturn extends Enemy {
 
                 subPhaseTimer += frame;
                 burstCooldown -= frame;
+
+                int sinePercent = (int) ((subPhaseTimer / PRE_THIRD_PHASE_TIMER) * 100);
+
+                for (int i = (100 - sinePercent); i < 200 - (100 - sinePercent); ++i) {
+                    Vector2 pos = new Vector2(
+                            (i / 200f) * 1200 - 600,
+                            MathUtils.sin((i / 200f) * MathUtils.PI2) * ARM_AMPLITUDE);
+                    pos.rotate(armTheta * MathUtils.radiansToDegrees);
+                    addProjectile(new TimeProjectile(
+                            getLevel(),
+                            pos.x + 600,
+                            pos.y + 600,
+                            0
+                    ));
+                }
+
+                /*
                 if (burstCooldown < 0) {
                     burstCooldown = MAX_BURST_COOLDOWN * 0.3f;
                     for (int i = -12; i < 12; ++i) {
@@ -369,6 +388,8 @@ public class Saturn extends Enemy {
                         addProjectile(new BasicProjectile(getLevel(), hitbox.x, hitbox.y + (i * 10), -200, 0));
                     }
                 }
+                */
+
             } else {
                 phase = 3;
                 burstCooldown = MAX_BURST_COOLDOWN;
