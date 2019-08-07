@@ -57,6 +57,7 @@ public class Saturn extends Enemy {
     //Third Phase
     float wideRingPosition = 1;
     float wideRingConstant = 400;
+    int inOrOut = 1;
 
     //Continuous bursts
     final float MAX_BURST_COOLDOWN = 1.5f;
@@ -297,7 +298,13 @@ public class Saturn extends Enemy {
         } else if (phase == 3) {
             //Outer ring
             float dst = wideRingConstant + (MathUtils.cos(wideRingPosition) * 100 + 100);
-            wideRingPosition += frame;
+            wideRingPosition += frame * inOrOut/3;
+            if (wideRingPosition > Math.PI || wideRingPosition < 0){
+                inOrOut *= -1;
+            }
+
+            timeMultiplier = (6 + wideRingPosition)/6;
+
             for (int i = 0; i < 360; ++i) {
                 addProjectile(new TimeProjectile(
                         getLevel(),
