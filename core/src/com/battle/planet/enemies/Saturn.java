@@ -249,7 +249,7 @@ public class Saturn extends Enemy {
                     addProjectile(new TimeProjectile(getLevel(),
                             hitbox.x + MathUtils.cos(hourHandRotation) * (i * 10),
                             hitbox.y + MathUtils.sin(hourHandRotation) * (i * 10),
-                            0.00f)
+                            1.50f)
                     );
                 }
 
@@ -259,7 +259,7 @@ public class Saturn extends Enemy {
                     addProjectile(new TimeProjectile(getLevel(),
                             hitbox.x + MathUtils.cos(minuteHandRotation) * (i * (60)),
                             hitbox.y + MathUtils.sin(minuteHandRotation) * (i * (60)),
-                            0.00f)
+                            0.25f)
                     );
                 }
 
