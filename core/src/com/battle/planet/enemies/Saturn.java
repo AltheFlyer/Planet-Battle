@@ -379,17 +379,6 @@ public class Saturn extends Enemy {
                             0
                     ));
                 }
-
-                /*
-                if (burstCooldown < 0) {
-                    burstCooldown = MAX_BURST_COOLDOWN * 0.3f;
-                    for (int i = -12; i < 12; ++i) {
-                        addProjectile(new BasicProjectile(getLevel(), hitbox.x, hitbox.y + (i * 10), 200, 0));
-                        addProjectile(new BasicProjectile(getLevel(), hitbox.x, hitbox.y + (i * 10), -200, 0));
-                    }
-                }
-                */
-
             } else {
                 phase = 3;
                 burstCooldown = MAX_BURST_COOLDOWN;

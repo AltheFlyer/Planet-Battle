@@ -10,6 +10,7 @@ import com.battle.planet.BattleLevel;
 import com.battle.planet.Player;
 import com.battle.planet.projectiles.*;
 
+@Deprecated
 public class Uranus extends Enemy {
 
     int phase = 0;
