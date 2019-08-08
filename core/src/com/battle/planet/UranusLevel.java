@@ -11,7 +11,7 @@ public class UranusLevel extends BattleLevel {
         LEVEL_HEIGHT = 1200;
         LEVEL_WIDTH = 1200;
         enemies.add(new NewUranus(this, 600, 800));
-        enemies.add(new BlackHole(this, 600, 800));
+        enemies.add(new BlackHole(this, 1000, 1000));
         player.setPosition(600, 600);
     }
 }
