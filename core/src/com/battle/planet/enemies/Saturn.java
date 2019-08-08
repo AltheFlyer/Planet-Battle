@@ -3,6 +3,7 @@ package com.battle.planet.enemies;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.glutils.ShapeRenderer;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
 import com.battle.planet.BattleLevel;
@@ -102,6 +103,18 @@ public class Saturn extends Enemy {
             r.rectLine(hitbox.x, hitbox.y,
                     hitbox.x + 600 * MathUtils.cos(secondHandRotation),
                     hitbox.y + 600 * MathUtils.sin(secondHandRotation), 3);
+        }
+
+        if (phase == 2) {
+            r.setColor(new Color(1, 0, 0, 0.5f));
+            if (timeStopped) {
+                r.arc(hitbox.x, hitbox.y, hitbox.radius,
+                         90 - (clockTimer / ((MathUtils.PI2) / (4 * Math.abs(HOUR_HAND_ANGULAR_VELOCITY)))) * 360,
+                        (clockTimer / ((MathUtils.PI2) / (4 * Math.abs(HOUR_HAND_ANGULAR_VELOCITY)))) * 360);
+                System.out.println(clockTimer);
+            } else {
+                r.arc(hitbox.x, hitbox.y, hitbox.radius, hourHandRotation * MathUtils.radiansToDegrees, (90 - hourHandRotation * MathUtils.radiansToDegrees));
+            }
         }
 
         if (moonPrepTime > 0) {
@@ -220,18 +233,18 @@ public class Saturn extends Enemy {
 
                 if (timeMultiplier == 1) {
                     hourHandRotation += HOUR_HAND_ANGULAR_VELOCITY * frame;
-                    if (hourHandRotation > MathUtils.PI * 2) {
-                        hourHandRotation -= MathUtils.PI * 2;
+                    if (hourHandRotation < -MathUtils.PI2 + (MathUtils.PI / 2)) {
+                        hourHandRotation += MathUtils.PI * 2;
                     }
 
                     minuteHandRotation += MINUTE_HAND_ANGULAR_VELOCITY * frame;
-                    if (minuteHandRotation > MathUtils.PI * 2) {
-                        minuteHandRotation -= MathUtils.PI * 2;
+                    if (minuteHandRotation < -MathUtils.PI2 + (MathUtils.PI / 2)) {
+                        minuteHandRotation += MathUtils.PI * 2;
                     }
 
                     secondHandRotation += SECOND_HAND_ANGULAR_VELOCITY * frame;
-                    if (secondHandRotation > MathUtils.PI * 2) {
-                        secondHandRotation -= MathUtils.PI * 2;
+                    if (secondHandRotation < -MathUtils.PI2 + (MathUtils.PI / 2)) {
+                        secondHandRotation += MathUtils.PI * 2;
                     }
 
                     secondHandGap += secondHandGapDelta * frame;
@@ -248,9 +261,9 @@ public class Saturn extends Enemy {
                 //Hour hand: constant width, close to saturn
                 for (int i = 0; i < 30; ++i) {
                     addProjectile(new TimeProjectile(getLevel(),
-                            hitbox.x + MathUtils.cos(hourHandRotation) * (i * 10),
-                            hitbox.y + MathUtils.sin(hourHandRotation) * (i * 10),
-                            1.50f)
+                            new Rectangle(hitbox.x + MathUtils.cos(hourHandRotation) * (i * 10),
+                            hitbox.y + MathUtils.sin(hourHandRotation) * (i * 10), 10, 10),
+                            0.00f)
                     );
                 }
 
@@ -258,9 +271,9 @@ public class Saturn extends Enemy {
                 //Has gaps inside of it
                 for (int i = 0; i < 8; ++i) {
                     addProjectile(new TimeProjectile(getLevel(),
-                            hitbox.x + MathUtils.cos(minuteHandRotation) * (i * (60)),
-                            hitbox.y + MathUtils.sin(minuteHandRotation) * (i * (60)),
-                            0.25f)
+                            new Rectangle(hitbox.x + MathUtils.cos(minuteHandRotation) * (i * (60)),
+                            hitbox.y + MathUtils.sin(minuteHandRotation) * (i * (60)), 10, 10),
+                            0.00f)
                     );
                 }
 
